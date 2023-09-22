@@ -9,8 +9,10 @@ public class Readme : ScriptableObject
     public bool loadedLayout;
 
     [Serializable]
+    
     public class Section
     {
         public string heading, text, linkText, url;
+    
     }
 }
