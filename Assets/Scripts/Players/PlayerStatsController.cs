@@ -14,13 +14,15 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     public NetworkVariable <int> statsTemplateSelected;
 
     [Header("Stats")]
-    [SerializeField] private NetworkVariable<int> haste;
-    [SerializeField] private NetworkVariable<int> health;
-    [SerializeField] private NetworkVariable<int> stamina;
-    [SerializeField] private NetworkVariable<int> damage;
-    [SerializeField] private NetworkVariable<int> armor;
-    [SerializeField] private NetworkVariable<float> speed;
+    [SerializeField] private NetworkVariable<int> haste = new NetworkVariable<int>();
+    [SerializeField] private NetworkVariable<int> health = new NetworkVariable<int>();
+    [SerializeField] private NetworkVariable<int> stamina = new NetworkVariable<int>();
+    [SerializeField] private NetworkVariable<int> damage = new NetworkVariable<int>();
+    [SerializeField] private NetworkVariable<int> armor = new NetworkVariable<int>();
+    [SerializeField] private NetworkVariable<float> speed = new NetworkVariable<float>();
 
+    [Header("Current Gamelogic")]
+    NetworkVariable<int> zoneAsigned=new NetworkVariable<int>();
 
 
     [Header("Interfaces")]
@@ -67,7 +69,10 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         SetArmorServerRpc(statsTemplates[statsTemplateSelected.Value].armor);
         SetSpeedServerRpc(statsTemplates[statsTemplateSelected.Value].speed);
 
-
+        //Stats on controller player
+        Debug.Log("Before setting speed: " + speed.Value);
+        transform.GetComponent<PlayerController>().SetSpeedStateServerRpc(statsTemplates[statsTemplateSelected.Value].speed);
+        Debug.Log("After setting speed: " + speed.Value);
 
     }
 
@@ -148,5 +153,23 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     }
 
 
+    [ServerRpc]
+    public void SetZoneAsignedStateServerRpc(int zone)
+    {
+        if (IsServer)
+        {
+            zoneAsigned.Value = zone;
+        }
+        else
+        {
+            SetZoneAsignedClientServerRpc(zone);
+        }
+    }
+
+    [ServerRpc]
+    public void SetZoneAsignedClientServerRpc(int zone)
+    {
+        zoneAsigned.Value = zone;
+    }
     #endregion
 }

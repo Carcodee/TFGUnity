@@ -47,22 +47,21 @@ public class AnimationController : NetworkBehaviour
     }
     void AimAnimation() {
 
-        if (IsServer)
+ 
+        if (Input.GetKey(KeyCode.Mouse1))
         {
-            if (Input.GetKey(KeyCode.Mouse1))
-            {
-                aimAnimation += Time.deltaTime * 5;
-            }
-            else
-            {
-                aimAnimation -= Time.deltaTime * 5;
-            }
+            aimAnimation += Time.deltaTime * 5;
+        }
+        else
+        {
+            aimAnimation -= Time.deltaTime * 5;
+        }
             aimAnimation = Mathf.Clamp(aimAnimation, 0, 1);
 
             float LerpedAnim = Mathf.Clamp(Mathf.Lerp(0, 1, aimAnimation), 0, 1);
             SetAimAnimationStateServerRpc(LerpedAnim);
 
-        }
+        
 
     }
     //public void FinishJump()
