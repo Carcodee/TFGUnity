@@ -136,7 +136,7 @@ public class AnimationController : NetworkBehaviour
     [ServerRpc]
     public void SetAimLerpTimeServerRpc(float value)
     {
-        networkAimAnimation.Value = value;
+        networkAimAnimation.Value = 1;
     }
     //Movement
 
