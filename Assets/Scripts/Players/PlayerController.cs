@@ -10,12 +10,14 @@ public class PlayerController : NetworkBehaviour
     [Header("Player Stats")]
     public NetworkVariable<float> networkSpeed = new NetworkVariable<float>();
     public float speedHolder;
-
+    private float speedFactor;
 
     [Header("Player Components")]
     public GameObject cameraPrefab;
     private CinemachineVirtualCamera cinemachineVirtualCameraInstance;
     bool jump = false;
+    bool isSprinting = false;
+    bool isCrouching = false;
 
     //[Header("Anim")]
     void Start()
@@ -44,11 +46,27 @@ public class PlayerController : NetworkBehaviour
     
     void Move()
     {
-
+            CrouchAndSprint();
             float horizontal = Input.GetAxis("Horizontal");
             float vertical = Input.GetAxis("Vertical");
             Vector3 move = new Vector3(horizontal, 0, vertical);
-            transform.Translate(move * networkSpeed.Value * Time.deltaTime);
+            transform.GetComponent<CharacterController>().Move(move * speedFactor * networkSpeed.Value * Time.deltaTime);
+
+    }
+    public void CrouchAndSprint()
+    {
+        if (isSprinting&& Input.GetKey(KeyCode.LeftControl))
+        {
+            isSprinting = true;
+            isCrouching = true;
+        }
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            isSprinting = true;
+        }
+        speedFactor = 1f;
+        isCrouching = false;
+        isSprinting = false;
 
     }
 

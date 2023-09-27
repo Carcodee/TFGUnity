@@ -266,7 +266,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 372611058870039632}
-  - component: {fileID: 8030236084837111276}
   - component: {fileID: 645085415590272702}
   - component: {fileID: -7418596798578313428}
   - component: {fileID: -7641705093438705100}
@@ -277,6 +276,7 @@ GameObject:
   - component: {fileID: 6344872551529989650}
   - component: {fileID: 1071611250771317373}
   - component: {fileID: 3989233279740246775}
+  - component: {fileID: -7918970974976374508}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -301,27 +301,6 @@ Transform:
   - {fileID: 2341437576093580743}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &8030236084837111276
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3940185642830209463}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 2.37, z: 1}
-  m_Center: {x: 0, y: 1.29, z: 0}
 --- !u!114 &645085415590272702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -367,7 +346,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 32
   m_CollisionDetection: 0
 --- !u!114 &-7641705093438705100
 MonoBehaviour:
@@ -458,7 +437,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1138cd1f2ab782a45a71c9ebdc6b5078, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
+  networkSpeed:
+    m_InternalValue: 0
+  speedHolder: 0
   cameraPrefab: {fileID: 2763996978624655819, guid: 70976f809ab9bac479ca9692002cd81f,
     type: 3}
 --- !u!114 &6344872551529989650
@@ -525,6 +506,32 @@ MonoBehaviour:
     m_InternalValue: 0
   networkYMovement:
     m_InternalValue: 0
+--- !u!143 &-7918970974976374508
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3940185642830209463}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 5.45
+  m_Radius: 1.01
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 2.8, z: 0}
 --- !u!1 &5743769336294010465
 GameObject:
   m_ObjectHideFlags: 0

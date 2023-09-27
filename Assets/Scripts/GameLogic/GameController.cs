@@ -10,42 +10,26 @@ public class GameController : NetworkBehaviour
     public MapLogic mapLogic;
 
 
-    [Header("Map Logic")]
-    public NetworkVariable<float> zoneRadius;
-    public NetworkVariable<float> zoneRadiusExpandSpeed;
-    public NetworkVariable<float> totalTime;
-    public NetworkVariable <float> enemiesSpawnRate;
-    public zoneColors[] zoneColors;
-
-    void Start()
+    public override void OnNetworkSpawn()
     {
         SetNumberOfPlayersAliveServerRpc(2);
         SetNumberOfPlayersServerRpc(2);
-        mapLogic=new MapLogic(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0, 0, 0, 0);
+        SetMapLogicServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 0, 0, 5);
         //SetMapLogicServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0, 0, 0, 0);
+    }
+    void Start()
+    {
+        if (IsClient)
+        {
+            SetMapLogicServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 0, 0, 5);
+        }
+
     }
 
     void Update()
     {
         
     }
-
-
-
-
-    public void ExpandZone()
-    {
-        zoneRadius.Value = zoneRadiusExpandSpeed.Value*Time.deltaTime;
-    }
-    public void SetPlayerZones(Transform[] players)
-    {
-        for (int i = 0; i < players.Length; i++)
-        {
-            zoneColors[i] = (zoneColors)i;
-            players[i].GetComponent<PlayerStatsController>().SetZoneAsignedStateServerRpc((int)zoneColors[i]);
-        }
-    }
-
 
 
     #region ServerRpc
@@ -58,7 +42,7 @@ public class GameController : NetworkBehaviour
         }
         else
         {
-            SetNumberOfPlayersAliveClientServerRpc(numberOfPlayers);
+            SetNumberOfPlayersClientRpc(numberOfPlayers);
         }
 
     }
@@ -71,28 +55,44 @@ public class GameController : NetworkBehaviour
         }
         else
         {
-            SetNumberOfPlayersClientServerRpc(numberOfPlayersAlive);
+            SetNumberOfPlayersAliveClientRpc(numberOfPlayersAlive);
         }
 
     }
+    [ServerRpc]
+    public void SetMapLogicServerRpc(int numberOfPlayers, int numberOfPlayersAlive, float zoneRadiusExpandSpeed, int totalTime, float enemiesSpawnRate, float zoneRadius)
+    {
+        if (IsServer)
+        {
+            mapLogic = new MapLogic(numberOfPlayers, numberOfPlayersAlive, zoneRadiusExpandSpeed, totalTime, enemiesSpawnRate, zoneRadius);
+        }
+        else
+        {
+            SetMapLogicClientRpc(numberOfPlayers, numberOfPlayersAlive, zoneRadiusExpandSpeed, totalTime, enemiesSpawnRate, zoneRadius);
 
-
+        }
+    }
     #endregion
 
     #region ClientRpc
-    [ServerRpc]
-    public void SetNumberOfPlayersClientServerRpc(int numberOfPlayers)
+
+    [ClientRpc]
+    public void SetNumberOfPlayersClientRpc(int numberOfPlayers)
     {
         this.numberOfPlayers.Value = numberOfPlayers;
     }
-    [ServerRpc]
-    public void SetNumberOfPlayersAliveClientServerRpc(int numberOfPlayersAlive)
+    [ClientRpc]
+    public void SetNumberOfPlayersAliveClientRpc(int numberOfPlayersAlive)
     {
         this.numberOfPlayersAlive.Value = numberOfPlayersAlive;
     }
 
-
     #endregion
+    [ClientRpc]
+    public void SetMapLogicClientRpc(int numberOfPlayers,int numberOfPlayersAlive,float zoneRadiusExpandSpeed,int totalTime,float enemiesSpawnRate,float zoneRadius)
+    {
+        mapLogic = new MapLogic(numberOfPlayers, numberOfPlayersAlive, zoneRadiusExpandSpeed, totalTime, enemiesSpawnRate, zoneRadius);
+    }
 
 }
 
