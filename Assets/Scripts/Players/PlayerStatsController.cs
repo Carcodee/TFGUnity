@@ -22,7 +22,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     [SerializeField] private NetworkVariable<float> speed = new NetworkVariable<float>();
 
     [Header("Current Gamelogic")]
-    NetworkVariable<int> zoneAsigned=new NetworkVariable<int>();
+    NetworkVariable<zoneColors> zoneAsigned=new NetworkVariable<zoneColors>();
 
 
     [Header("Interfaces")]
@@ -154,7 +154,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
 
 
     [ServerRpc]
-    public void SetZoneAsignedStateServerRpc(int zone)
+    public void SetZoneAsignedStateServerRpc(zoneColors zone)
     {
         if (IsServer)
         {
@@ -167,7 +167,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     }
 
     [ServerRpc]
-    public void SetZoneAsignedClientServerRpc(int zone)
+    public void SetZoneAsignedClientServerRpc(zoneColors zone)
     {
         zoneAsigned.Value = zone;
     }

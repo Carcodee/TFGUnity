@@ -1,10 +1,12 @@
+using Newtonsoft.Json.Bson;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
 [System.Serializable]
-public class MapLogic
+public class MapLogic:INetworkSerializable
 {
     public int numberOfPlayers;
     public int numberOfPlayersAlive;
@@ -12,9 +14,13 @@ public class MapLogic
     public float zoneRadiusExpandSpeed;
     public float totalTime;
     public float enemiesSpawnRate;
-    public zoneColors [] zoneColors;
       
-    public MapLogic(int numberOfPlayers, int numberOfPlayersAlive, float zoneRadiusExpandSpeed, float totalTime, float enemiesSpawnRate, float zoneRadius)
+    public MapLogic()
+    {
+
+    }
+
+    public void SetMap(int numberOfPlayers, int numberOfPlayersAlive, float zoneRadiusExpandSpeed, float totalTime, float enemiesSpawnRate, float zoneRadius)
     {
         this.numberOfPlayers = numberOfPlayers;
         this.numberOfPlayersAlive = numberOfPlayersAlive;
@@ -22,7 +28,6 @@ public class MapLogic
         this.totalTime = totalTime;
         this.enemiesSpawnRate = enemiesSpawnRate;
         this.zoneRadius = zoneRadius;
-        zoneColors = new zoneColors[numberOfPlayers];
     }
 
 
@@ -30,14 +35,20 @@ public class MapLogic
     {
         zoneRadius+= zoneRadiusExpandSpeed * Time.deltaTime;
     }
-    public void SetPlayerZones(Transform[] players)
-    {
-        for (int i = 0; i < players.Length; i++)
-        {
-            zoneColors[i] = (zoneColors)i;
-            players[i].GetComponent<PlayerStatsController>().SetZoneAsignedStateServerRpc((int)zoneColors[i]);
-        }
+ 
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {            
+
+        serializer.SerializeValue(ref numberOfPlayers);
+        serializer.SerializeValue(ref numberOfPlayersAlive);
+        serializer.SerializeValue(ref zoneRadius);
+        serializer.SerializeValue(ref zoneRadiusExpandSpeed);
+        serializer.SerializeValue(ref totalTime);
+        serializer.SerializeValue(ref enemiesSpawnRate);
     }
 
+ 
+
 }
+
 

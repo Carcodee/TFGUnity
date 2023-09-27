@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerController : NetworkBehaviour
 {
     [Header("Player Stats")]
     public NetworkVariable<float> networkSpeed = new NetworkVariable<float>();
     public float speedHolder;
-    private float speedFactor;
+    public NetworkVariable<float> netSprintFactor = new NetworkVariable<float>();
+
 
     [Header("Player Components")]
     public GameObject cameraPrefab;
@@ -46,13 +48,13 @@ public class PlayerController : NetworkBehaviour
     
     void Move()
     {
-            CrouchAndSprint();
             float horizontal = Input.GetAxis("Horizontal");
             float vertical = Input.GetAxis("Vertical");
             Vector3 move = new Vector3(horizontal, 0, vertical);
-            transform.GetComponent<CharacterController>().Move(move * speedFactor * networkSpeed.Value * Time.deltaTime);
+            transform.Translate(move * networkSpeed.Value * Time.deltaTime);
 
     }
+    
     public void CrouchAndSprint()
     {
         if (isSprinting&& Input.GetKey(KeyCode.LeftControl))
@@ -62,9 +64,11 @@ public class PlayerController : NetworkBehaviour
         }
         if (Input.GetKey(KeyCode.LeftShift))
         {
+            SetSprintFactorClientRpc(1.5f);
+
             isSprinting = true;
         }
-        speedFactor = 1f;
+        SetSprintFactorClientRpc(1f);
         isCrouching = false;
         isSprinting = false;
 
@@ -93,6 +97,11 @@ public class PlayerController : NetworkBehaviour
         networkSpeed.Value = speed;
     }
 
+    [ClientRpc]
+    void SetSprintFactorClientRpc(float sprintFactor)
+    {
+        netSprintFactor.Value = sprintFactor;
+    }
 
     #endregion
 

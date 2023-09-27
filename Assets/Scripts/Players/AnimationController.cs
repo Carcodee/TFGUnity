@@ -166,6 +166,7 @@ public class AnimationController : NetworkBehaviour
         
         }
     }
+    [ServerRpc]
     public void SetIsCrouchingServerRpc(bool value)
     {
         if (IsServer)
@@ -256,10 +257,14 @@ public class AnimationController : NetworkBehaviour
     {
         networkCrouchingVal.Value = value;
     }
+
+    [ServerRpc]
     public void SetIsCrouchinClientServerRpc(bool value)
     {
         networkIsCrouching.Value = value;
     }
+
+    [ServerRpc]
     public void SetIsSprintingClientServerRpc(bool value)
     {
         networkIsSprinting.Value = value;

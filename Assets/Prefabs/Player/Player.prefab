@@ -28,8 +28,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1874250046363828081}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.23014204, y: -0, z: -0, w: 0.97315705}
-  m_LocalPosition: {x: 0, y: 7.2, z: -10}
+  m_LocalRotation: {x: 0.23014437, y: 0.000002830009, z: -0.0000006692764, w: 0.9731565}
+  m_LocalPosition: {x: 0.0000039972874, y: 6.820036, z: -9.999974}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -277,6 +277,7 @@ GameObject:
   - component: {fileID: 1071611250771317373}
   - component: {fileID: 3989233279740246775}
   - component: {fileID: -7918970974976374508}
+  - component: {fileID: 7439418814137783279}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -344,7 +345,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 32
   m_CollisionDetection: 0
@@ -440,6 +441,8 @@ MonoBehaviour:
   networkSpeed:
     m_InternalValue: 0
   speedHolder: 0
+  netSprintFactor:
+    m_InternalValue: 0
   cameraPrefab: {fileID: 2763996978624655819, guid: 70976f809ab9bac479ca9692002cd81f,
     type: 3}
 --- !u!114 &6344872551529989650
@@ -506,6 +509,14 @@ MonoBehaviour:
     m_InternalValue: 0
   networkYMovement:
     m_InternalValue: 0
+  networkSprintingVal:
+    m_InternalValue: 0
+  networkCrouchingVal:
+    m_InternalValue: 0
+  networkIsSprinting:
+    m_InternalValue: 0
+  networkIsCrouching:
+    m_InternalValue: 0
 --- !u!143 &-7918970974976374508
 CharacterController:
   m_ObjectHideFlags: 0
@@ -523,15 +534,36 @@ CharacterController:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Height: 5.45
   m_Radius: 1.01
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_StepOffset: 1.14
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 2.8, z: 0}
+  m_Center: {x: 0, y: 3.14, z: 0}
+--- !u!65 &7439418814137783279
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3940185642830209463}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 5.4, z: 1}
+  m_Center: {x: 0, y: 3.08, z: 0}
 --- !u!1 &5743769336294010465
 GameObject:
   m_ObjectHideFlags: 0
@@ -595,7 +627,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 8f06c4ee7dc1f9e4f9a8638aa87c4b28,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.01
+      value: 0.49
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f06c4ee7dc1f9e4f9a8638aa87c4b28,
         type: 3}
