@@ -24,10 +24,13 @@ public class PlayerComponentsHandler : NetworkBehaviour
         }
     }
 
+
     void Update()
     {
         
     }
+
+
     void InstanciateComponents()
     {
         GameObject camera = Instantiate(cameraPrefab);

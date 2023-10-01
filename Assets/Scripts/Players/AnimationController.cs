@@ -14,11 +14,10 @@ public class AnimationController : NetworkBehaviour
     public NetworkVariable<float> networkAimAnimation = new NetworkVariable<float>();
     public NetworkVariable<float> networkXMovement = new NetworkVariable<float>();
     public NetworkVariable<float> networkYMovement = new NetworkVariable<float>();
-    public NetworkVariable<float> networkSprintingVal = new NetworkVariable<float>();
-    public NetworkVariable<float> networkCrouchingVal = new NetworkVariable<float>();
 
     public NetworkVariable<bool> networkIsSprinting = new NetworkVariable<bool>();
     public NetworkVariable<bool> networkIsCrouching = new NetworkVariable<bool>();
+
     void Start()
     {
 
@@ -31,6 +30,10 @@ public class AnimationController : NetworkBehaviour
         {
             MovementAnimation();
             AimAnimation();
+            CrouchAndSprint();
+            CrouchAnim();
+            SetSprintAnim();
+
         }
 
     }
@@ -41,6 +44,7 @@ public class AnimationController : NetworkBehaviour
 
     }
 
+
     void MovementAnimation()
     {
 
@@ -48,33 +52,49 @@ public class AnimationController : NetworkBehaviour
         float y = Input.GetAxis("Vertical");
         SetMoveAnimationStateServerRpc(x, y);
 
-
-
     }
 
-    public void SprintAndCrouchAnim()
+    public void SetSprintAnim()
     {
-        if (networkIsCrouching.Value && networkIsSprinting.Value)
+        if (IsServer)
         {
-            return;
-        }
-        if (networkIsSprinting.Value)
-        {
+            networkAnimator.Animator.SetBool("Sprint", networkIsSprinting.Value);
 
         }
+        else
+        {
+            SetSprintAnimationServerRpc();
+        }
+    }
+    public void CrouchAnim()
+    {
+        if (IsServer)
+        {
+           networkAnimator.Animator.SetBool("Crouch", networkIsCrouching.Value);
+        }
+        else
+        {
+            SetCrouchAnimatorServerRpc();
+        }  
 
     }
     public void CrouchAndSprint()
     {
-        if (networkIsSprinting.Value && Input.GetKey(KeyCode.LeftControl))
+        if (Input.GetKey(KeyCode.LeftControl))
         {
             SetIsCrouchingServerRpc(true);
-            SetIsSprintingServerRpc(true);
+
             return;
         }
         if (Input.GetKey(KeyCode.LeftShift))
         {
             SetIsSprintingServerRpc(true);
+            if (Input.GetKey(KeyCode.LeftControl))
+            {
+                //slide
+                SetIsCrouchingServerRpc(true);
+            }
+            return;
         }
         SetIsCrouchingServerRpc(false);
         SetIsSprintingServerRpc(false);
@@ -154,17 +174,10 @@ public class AnimationController : NetworkBehaviour
     }
     //Crouch
     [ServerRpc]
-    public void SetCrouchValServerRpc(float val)
+    public void SetCrouchAnimatorServerRpc()
     {
-        if (IsServer)
-        {
-            networkCrouchingVal.Value=val;
-        }
-        else
-        {
-            SetCrouchingClientServerRpc(networkCrouchingVal.Value);
-        
-        }
+
+        networkAnimator.Animator.SetBool("Crouch", networkIsCrouching.Value);
     }
     [ServerRpc]
     public void SetIsCrouchingServerRpc(bool value)
@@ -175,23 +188,12 @@ public class AnimationController : NetworkBehaviour
         }
         else
         {
-            SetIsCrouchinClientServerRpc(value);
+            SetCrouchingClientServerRpc(value);
         }
     }
-    //Sprint
-    [ServerRpc]
-    public void SetSprintValServerRpc(float val)
-    {
-        if (IsServer)
-        {
-            networkSprintingVal.Value = val;
-        }
-        else
-        {
-            SetSprintingClientServerRpc(networkSprintingVal.Value);
 
-        }
-    }
+    //Sprint
+
     [ServerRpc]
     public void SetIsSprintingServerRpc(bool value)
     {
@@ -222,19 +224,20 @@ public class AnimationController : NetworkBehaviour
         networkAnimator.Animator.SetFloat("X", x);
         networkAnimator.Animator.SetFloat("Y", y);
     }
+    [ServerRpc]
+    public void SetSprintAnimationServerRpc()
+    {
+        networkAnimator.Animator.SetBool("Sprint", networkIsSprinting.Value);
 
+    }
     [ServerRpc]
     public void SetAimLerpTimeServerRpc(float value)
     {
         networkAimAnimation.Value = value;
     }
-    [ServerRpc]
-    public void SetCrouchAnimServerRpc(float val)
-    {
-        networkAimAnimation.Value = val;
-    }
-    //Movement
 
+
+    //Movement
 
     [ServerRpc]
     public void SetXMovementServerRpc(float valueX)
@@ -247,22 +250,13 @@ public class AnimationController : NetworkBehaviour
         networkYMovement.Value = valueY;
     }
 
-    [ServerRpc]
-    public void SetSprintingClientServerRpc(float value)
-    {
-        networkSprintingVal.Value = value;
-    }
-    [ServerRpc]
-    public void SetCrouchingClientServerRpc(float value)
-    {
-        networkCrouchingVal.Value = value;
-    }
 
     [ServerRpc]
-    public void SetIsCrouchinClientServerRpc(bool value)
+    public void SetCrouchingClientServerRpc(bool value)
     {
         networkIsCrouching.Value = value;
     }
+
 
     [ServerRpc]
     public void SetIsSprintingClientServerRpc(bool value)
