@@ -10,12 +10,15 @@ public class PlayerComponentsHandler : NetworkBehaviour
 {
     [Header("Player Components")]
     public Canvas canvasPrefab;
-    public GameObject cameraPrefab;
+    public GameObject cameraPrefab; 
 
 
     [Header("Ref")]
     private CinemachineVirtualCamera cinemachineVirtualCameraInstance;
 
+    [Header("UI")]
+    public TextMeshProUGUI playerNameText;
+    float timer = 0;
     void Start()
     {
         if (IsOwner)
@@ -27,7 +30,15 @@ public class PlayerComponentsHandler : NetworkBehaviour
 
     void Update()
     {
-        
+        if (IsOwner)
+        {
+            timer += Time.deltaTime;
+            playerNameText.text ="Time left for Battle royale "+ (GameController.instance.mapLogic.Value.totalTime - timer).ToString("0.0");
+            if (timer> GameController.instance.mapLogic.Value.totalTime)
+            {
+                Debug.Log("BattleRoyale starts");
+            }
+        }
     }
 
 
@@ -39,6 +50,6 @@ public class PlayerComponentsHandler : NetworkBehaviour
         cinemachineVirtualCameraInstance.Follow = transform;
         Canvas canvas = Instantiate(canvasPrefab,transform);
         canvas.GetComponentInChildren<Button>().onClick.AddListener(transform.GetComponent<PlayerStatsController>().OnSpawnPlayer);
-
+        playerNameText = canvas.GetComponentInChildren<TextMeshProUGUI>();
     }
 }

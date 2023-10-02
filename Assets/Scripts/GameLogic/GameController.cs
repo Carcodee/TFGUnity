@@ -1,23 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.IO.Compression;
+using TMPro;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameController : NetworkBehaviour
 {
+    public static GameController instance;
     public NetworkVariable<int> numberOfPlayers=new NetworkVariable<int>();
     public NetworkVariable<int> numberOfPlayersAlive=new NetworkVariable<int>();
     public NetworkVariable<MapLogic> mapLogic = new NetworkVariable<MapLogic>();
 
-    zoneColors[] zoneColors;
-    public string numberOfPlayersAliveMap;
 
+    zoneColors[] zoneColors;
+    
     private void Awake()
     {
-
-        
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(this);
+        }
+        else
+        {
+            Destroy(this);
+        }
         
     }
     
@@ -36,13 +41,19 @@ public class GameController : NetworkBehaviour
             {
                 numberOfPlayers.Value ++;
                 numberOfPlayersAlive.Value ++;
-                mapLogic.Value.SetMap(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 0, 0, 5);
+                mapLogic.Value.SetMap(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 0, 5);
+
+                for (ulong i = 0; i <(ulong)NetworkManager.Singleton.ConnectedClients.Count; i++)
+                {
+
+                    NetworkManager.Singleton.ConnectedClients[i].PlayerObject.GetComponent<PlayerStatsController>().zoneAsigned.Value = (zoneColors)i;
+                }
             } 
             else if (IsClient&&IsOwner)
             {
                 OnPlayerEnterServerRpc();
-                SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 0, 0, 5);
-
+                SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 0, 5);
+                SetNumberOfPlayerListServerRpc(clientId);
             }
 
         };
@@ -51,14 +62,19 @@ public class GameController : NetworkBehaviour
         {
             if (IsServer)
             {
-
-                mapLogic.Value.SetMap(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 0, 0, 5);
-
+                numberOfPlayers.Value--;
+                numberOfPlayersAlive.Value--;
+                mapLogic.Value.SetMap(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 0, 5);
+                for (int i = 0; i < NetworkManager.Singleton.ConnectedClients.Count; i++)
+                {
+                    NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerStatsController>().zoneAsigned.Value = (zoneColors)i;
+                }
             }
             else if (IsClient && IsOwner)
             {
                 OnPlayerOutServerRpc();
-                SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 0, 0, 5);
+                SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 0, 5);
+                SetNumberOfPlayerListServerRpc(clientId);
 
             }
 
@@ -84,21 +100,29 @@ public class GameController : NetworkBehaviour
     }
     #region ServerRpc
 
-
-
-    #endregion
-
-    #region ClientRpc
-
-
-
-    #endregion
-
     [ServerRpc]
     public void SetMapLogicClientServerRpc(int numberOfPlayers,int numberOfPlayersAlive,float zoneRadiusExpandSpeed,int totalTime,float enemiesSpawnRate,float zoneRadius)
     {
         Debug.Log("Called on client");
         mapLogic.Value.SetMap(numberOfPlayers, numberOfPlayersAlive, zoneRadiusExpandSpeed, totalTime, enemiesSpawnRate, zoneRadius);
+    }
+    [ServerRpc]
+    public void SetNumberOfPlayerListServerRpc(ulong clientId) {
+
+        for (int i = 0; i < NetworkManager.Singleton.ConnectedClients.Count; i++)
+        {
+            NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerStatsController>().zoneAsigned.Value = (zoneColors)i;
+        }
+    }
+    [ServerRpc]
+    public void SetTimeLeftOnClientsServerRpc(ulong clientId)
+    {
+        for (ulong i = 0; i < (ulong)NetworkManager.Singleton.ConnectedClients.Count; i++)
+        {
+            GameObject player = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.gameObject;
+            player.GetComponentInChildren<Canvas>().GetComponentInChildren<TextMeshProUGUI>().text = "Player" + i+1;
+        }
+
     }
     [ServerRpc]
     public void OnPlayerEnterServerRpc()
@@ -112,6 +136,7 @@ public class GameController : NetworkBehaviour
         numberOfPlayersAlive.Value--;
         numberOfPlayers.Value--;
     }
+    #endregion
 
 }
 

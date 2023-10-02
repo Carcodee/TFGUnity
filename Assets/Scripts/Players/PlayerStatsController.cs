@@ -22,7 +22,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     [SerializeField] private NetworkVariable<float> speed = new NetworkVariable<float>();
 
     [Header("Current Gamelogic")]
-    NetworkVariable<zoneColors> zoneAsigned=new NetworkVariable<zoneColors>();
+    public NetworkVariable<zoneColors> zoneAsigned=new NetworkVariable<zoneColors>();
 
 
     [Header("Interfaces")]

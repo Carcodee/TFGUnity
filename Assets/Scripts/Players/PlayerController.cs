@@ -28,7 +28,7 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
 
-            SetSpeedStateServerRpc(5);
+            SetSpeedStateServerRpc(8);
             GameObject camera = Instantiate(cameraPrefab); 
             cinemachineVirtualCameraInstance = camera.GetComponentInChildren<CinemachineVirtualCamera>();
             cinemachineVirtualCameraInstance.LookAt = transform;
@@ -40,41 +40,62 @@ public class PlayerController : NetworkBehaviour
     {
         GetComponentInChildren<Camera>().enabled = IsOwner;
 
+
+    }
+    private void FixedUpdate()
+    {
         if (IsOwner)
         {
+            CrouchAndSprint();
             Move();
         }
     }
-    
     void Move()
     {
             float horizontal = Input.GetAxis("Horizontal");
             float vertical = Input.GetAxis("Vertical");
             Vector3 move = new Vector3(horizontal, 0, vertical);
-            transform.Translate(move * networkSpeed.Value * Time.deltaTime);
+            transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.deltaTime);
 
     }
     
     public void CrouchAndSprint()
     {
-        if (isSprinting&& Input.GetKey(KeyCode.LeftControl))
-        {
-            isSprinting = true;
-            isCrouching = true;
-        }
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            SetSprintFactorClientRpc(1.5f);
-
+            SetSprintFactor(2.5f);
             isSprinting = true;
+            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl))
+            {
+                isCrouching = true;
+                return;
+            }
+            return;
         }
-        SetSprintFactorClientRpc(1f);
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            isCrouching = true;
+            SetSprintFactor(0.5f);
+            return;
+        }
+
+        SetSprintFactor(1f);
         isCrouching = false;
         isSprinting = false;
 
     }
 
-
+    public void SetSprintFactor(float val)
+    {
+        if (IsServer)
+        {
+            netSprintFactor.Value = val;
+        }
+        else
+        {
+            SetSprintFactorClientRpc(val);
+        }
+    }
 
     #region ServerRpc
     [ServerRpc]
@@ -90,6 +111,8 @@ public class PlayerController : NetworkBehaviour
             SetSpeedClientClientRpc(speed);
         }
     }
+
+
 
     [ClientRpc]
     void SetSpeedClientClientRpc(float speed)
