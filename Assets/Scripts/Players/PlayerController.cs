@@ -93,7 +93,7 @@ public class PlayerController : NetworkBehaviour
         }
         else
         {
-            SetSprintFactorClientRpc(val);
+            SetSprintFactorServerRpc(val);
         }
     }
 
@@ -108,20 +108,20 @@ public class PlayerController : NetworkBehaviour
         }
         else
         {
-            SetSpeedClientClientRpc(speed);
+            SetSpeedClientServerRpc(speed);
         }
     }
 
 
 
-    [ClientRpc]
-    void SetSpeedClientClientRpc(float speed)
+    [ServerRpc]
+    void SetSpeedClientServerRpc(float speed)
     {
         networkSpeed.Value = speed;
     }
 
-    [ClientRpc]
-    void SetSprintFactorClientRpc(float sprintFactor)
+    [ServerRpc]
+    void SetSprintFactorServerRpc(float sprintFactor)
     {
         netSprintFactor.Value = sprintFactor;
     }
