@@ -55,7 +55,7 @@ public class PlayerController : NetworkBehaviour
             float horizontal = Input.GetAxis("Horizontal");
             float vertical = Input.GetAxis("Vertical");
             Vector3 move = new Vector3(horizontal, 0, vertical);
-            transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.deltaTime);
+            transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * ((float)NetworkManager.Singleton.NetworkTimeSystem.LocalTime/1000));
 
     }
     

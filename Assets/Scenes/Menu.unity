@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2158.1477, g: 2262.5608, b: 3286.2583, a: 1}
+  m_IndirectSpecularColor: {r: 2158.2913, g: 2260.5627, b: 3278.3013, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -206,7 +206,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 842132078}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: ShadowsHigh
         m_Mode: 1
@@ -506,7 +506,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 842132078}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: AmbientOcclusion
         m_Mode: 1
@@ -1705,7 +1705,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 842132078}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: ShadowsLow
         m_Mode: 1
@@ -2687,7 +2687,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 842132078}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: MotionBlur
         m_Mode: 1
@@ -3739,7 +3739,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 842132078}
+        - m_Target: {fileID: 0}
           m_TargetAssemblyTypeName: 
           m_MethodName: SensitivitySmoothing
           m_Mode: 1
@@ -6442,7 +6442,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 842132078}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: CameraEffects
         m_Mode: 1
@@ -9355,7 +9355,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 842132078}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: HardcoreDifficulty
         m_Mode: 1
@@ -11106,7 +11106,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 842132078}
+        - m_Target: {fileID: 0}
           m_TargetAssemblyTypeName: 
           m_MethodName: MusicSlider
           m_Mode: 1
@@ -11181,7 +11181,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 842132078}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: SlimUI.ModernMenu.UISettingsManager, Assembly-CSharp
         m_MethodName: MusicSlider
         m_Mode: 1
@@ -11239,7 +11239,6 @@ GameObject:
   - component: {fileID: 842132081}
   - component: {fileID: 842132080}
   - component: {fileID: 842132079}
-  - component: {fileID: 842132078}
   m_Layer: 5
   m_Name: Lobby Selection
   m_TagString: Untagged
@@ -11272,50 +11271,6 @@ RectTransform:
   m_AnchoredPosition: {x: -32.61, y: 1.4}
   m_SizeDelta: {x: 1980, y: 1024}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &842132078
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 842132076}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8f6aa6586f77764fab668a0a62d8f7a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  platform: 0
-  mobileSFXtext: {fileID: 0}
-  mobileMusictext: {fileID: 0}
-  mobileShadowofftextLINE: {fileID: 0}
-  mobileShadowlowtextLINE: {fileID: 0}
-  mobileShadowhightextLINE: {fileID: 0}
-  fullscreentext: {fileID: 1106918309}
-  ambientocclusiontext: {fileID: 965235011}
-  shadowofftextLINE: {fileID: 472367147}
-  shadowlowtextLINE: {fileID: 1523332256}
-  shadowhightextLINE: {fileID: 1136097184}
-  aaofftextLINE: {fileID: 2040873502}
-  aa2xtextLINE: {fileID: 179046172}
-  aa4xtextLINE: {fileID: 1021724905}
-  aa8xtextLINE: {fileID: 766750573}
-  vsynctext: {fileID: 1825126516}
-  motionblurtext: {fileID: 205083264}
-  texturelowtextLINE: {fileID: 755794263}
-  texturemedtextLINE: {fileID: 1198713410}
-  texturehightextLINE: {fileID: 1230848640}
-  cameraeffectstext: {fileID: 2146222543}
-  showhudtext: {fileID: 30157720}
-  tooltipstext: {fileID: 1764511752}
-  difficultynormaltext: {fileID: 468698776}
-  difficultynormaltextLINE: {fileID: 641039553}
-  difficultyhardcoretext: {fileID: 1313866418}
-  difficultyhardcoretextLINE: {fileID: 1915353558}
-  invertmousetext: {fileID: 850053532}
-  musicSlider: {fileID: 812647374}
-  sensitivityXSlider: {fileID: 1439271494}
-  sensitivityYSlider: {fileID: 1202879387}
-  mouseSmoothSlider: {fileID: 225461853}
 --- !u!114 &842132079
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11462,7 +11417,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 842132078}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: FullScreen
         m_Mode: 1
@@ -11785,7 +11740,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 842132078}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: TexturesLow
         m_Mode: 1
@@ -15716,7 +15671,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 842132078}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: ShadowsOff
         m_Mode: 1
@@ -17298,7 +17253,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 842132078}
+        - m_Target: {fileID: 0}
           m_TargetAssemblyTypeName: 
           m_MethodName: SensitivityYSlider
           m_Mode: 1
@@ -18881,7 +18836,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 842132078}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: vsync
         m_Mode: 1
@@ -20245,7 +20200,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 842132078}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: NormalDifficulty
         m_Mode: 1
@@ -20330,7 +20285,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 842132078}
+        - m_Target: {fileID: 0}
           m_TargetAssemblyTypeName: 
           m_MethodName: SensitivityXSlider
           m_Mode: 1
@@ -20489,9 +20444,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Controls
-
-'
+  m_text: Enter Lobby
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0b65c99348f068b49bef5db0bb76a6e4, type: 2}
   m_sharedMaterial: {fileID: 21809785584020342, guid: 0b65c99348f068b49bef5db0bb76a6e4,
@@ -21044,7 +20997,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 842132078}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: TexturesMed
         m_Mode: 1
@@ -22342,7 +22295,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 842132078}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: TexturesHigh
         m_Mode: 1
@@ -23893,7 +23846,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 842132078}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: ToolTips
         m_Mode: 1
@@ -26014,6 +25967,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 609586003cd614c41bec48067a0e4855, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hostCode: 
+  joinText: 
   SceneAsset: {fileID: 102900000, guid: 8124e5870f4fd4c779e7a5f994e84ad1, type: 3}
   m_SceneName: Game
 --- !u!4 &1807994634
@@ -27724,7 +27679,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 842132078}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: InvertMouse
         m_Mode: 1
@@ -28227,7 +28182,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 842132078}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: ShowHUD
         m_Mode: 1
@@ -30103,9 +30058,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114173851760721469}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: ControlsPanel
+      - m_Target: {fileID: 1807994633}
+        m_TargetAssemblyTypeName: NetworkSceneManager, Assembly-CSharp
+        m_MethodName: StartClient
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

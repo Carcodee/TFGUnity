@@ -23,33 +23,21 @@ public class GameController : NetworkBehaviour
         {
             Destroy(this);
         }
-        
-    }
-    
-    public override void OnNetworkSpawn()
-    {
-  
-
-
-    }
-
-    void Start()
-    {
-        NetworkManager.Singleton.OnClientConnectedCallback+= (clientId) =>
+        NetworkManager.Singleton.OnClientConnectedCallback += (clientId) =>
         {
             if (IsServer)
             {
-                numberOfPlayers.Value ++;
-                numberOfPlayersAlive.Value ++;
+                numberOfPlayers.Value++;
+                numberOfPlayersAlive.Value++;
                 mapLogic.Value.SetMap(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 0, 5);
-
-                for (ulong i = 0; i <(ulong)NetworkManager.Singleton.ConnectedClients.Count; i++)
+                Debug.Log("Called on server");
+                for (ulong i = 0; i < (ulong)NetworkManager.Singleton.ConnectedClients.Count; i++)
                 {
 
-                    NetworkManager.Singleton.ConnectedClients[i].PlayerObject.GetComponent<PlayerStatsController>().zoneAsigned.Value = (zoneColors)i;
+                    NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerStatsController>().zoneAsigned.Value = (zoneColors)i;
                 }
-            } 
-            else if (IsClient&&IsOwner)
+            }
+            if (IsClient && IsOwner)
             {
                 OnPlayerEnterServerRpc();
                 SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 0, 5);
@@ -79,6 +67,19 @@ public class GameController : NetworkBehaviour
             }
 
         };
+    }
+    
+    public override void OnNetworkSpawn()
+    {
+
+
+
+    }
+
+    void Start()
+    {
+        
+ 
 
         
 

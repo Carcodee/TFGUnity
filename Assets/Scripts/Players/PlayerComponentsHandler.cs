@@ -32,12 +32,12 @@ public class PlayerComponentsHandler : NetworkBehaviour
     {
         if (IsOwner)
         {
-            timer += Time.deltaTime;
-            playerNameText.text ="Time left for Battle royale "+ (GameController.instance.mapLogic.Value.totalTime - timer).ToString("0.0");
-            if (timer> GameController.instance.mapLogic.Value.totalTime)
-            {
-                Debug.Log("BattleRoyale starts");
-            }
+            //timer += Time.deltaTime;
+            //playerNameText.text ="Time left for Battle royale "+ (GameController.instance.mapLogic.Value.totalTime - timer).ToString("0.0");
+            //if (timer> GameController.instance.mapLogic.Value.totalTime)
+            //{
+            //    Debug.Log("BattleRoyale starts");
+            //}
         }
     }
 
