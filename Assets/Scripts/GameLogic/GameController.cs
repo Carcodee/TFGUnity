@@ -23,6 +23,20 @@ public class GameController : NetworkBehaviour
         {
             Destroy(this);
         }
+
+    }
+    
+    public override void OnNetworkSpawn()
+    {
+
+
+
+    }
+
+    void Start()
+    {
+
+
         NetworkManager.Singleton.OnClientConnectedCallback += (clientId) =>
         {
             if (IsServer)
@@ -67,21 +81,7 @@ public class GameController : NetworkBehaviour
             }
 
         };
-    }
-    
-    public override void OnNetworkSpawn()
-    {
 
-
-
-    }
-
-    void Start()
-    {
-        
- 
-
-        
 
 
     }
