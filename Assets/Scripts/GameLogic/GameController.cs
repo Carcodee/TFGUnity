@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -8,9 +9,15 @@ public class GameController : NetworkBehaviour
     public NetworkVariable<int> numberOfPlayers=new NetworkVariable<int>();
     public NetworkVariable<int> numberOfPlayersAlive=new NetworkVariable<int>();
     public NetworkVariable<MapLogic> mapLogic = new NetworkVariable<MapLogic>();
+    public bool started;
+    public NetworkVariable<float> netTimeToStart = new NetworkVariable<float>();
+    public float waitingTime;
 
+    [Header("Zones")]
+    public Transform[] spawnPoints;
     public Transform zoneInstances;
-    public PlayerZoneController zoneController;
+    public PlayerZoneController zoneControllerPrefab;
+    public List<PlayerZoneController> zoneControllers;
     zoneColors[] zoneColors;
     
     private void Awake()
@@ -55,7 +62,7 @@ public class GameController : NetworkBehaviour
             if (IsClient && IsOwner)
             {
                 OnPlayerEnterServerRpc();
-                SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 0, 5);
+                SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 3, 5);
                 SetNumberOfPlayerListServerRpc(clientId);
             }
 
@@ -76,7 +83,7 @@ public class GameController : NetworkBehaviour
             if (IsClient && IsOwner)
             {
                 OnPlayerOutServerRpc();
-                SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 0, 5);
+                SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 3, 5);
                 SetNumberOfPlayerListServerRpc(clientId);
 
             }
@@ -89,13 +96,38 @@ public class GameController : NetworkBehaviour
 
     void Update()
     {
+        
+            Debug.Log(netTimeToStart.Value);
+            if (IsServer && !started)
+            {
+                netTimeToStart.Value += Time.deltaTime;
+
+            }
+            else if (IsClient && !started&&IsOwner)
+            {
+                SetTimeToStartServerRpc(Time.deltaTime);
+            }
+            if (netTimeToStart.Value > waitingTime && !started)
+            {
+                StartGame();
+            }
 
     }
-    public void CreateZonePrefab(int playerIndex)
+    public void StartGame()
     {
-        PlayerZoneController playerZoneController = Instantiate(zoneController, Vector3.zero,Quaternion.identity, zoneInstances);
-        playerZoneController.enemiesSpawnRate=mapLogic.Value.enemiesSpawnRate;
-        playerZoneController.zoneAsigned.Value = zoneColors[playerIndex];
+       
+            for (int i = 0; i < numberOfPlayers.Value; i++)
+            {
+                PlayerZoneController playerZoneController = Instantiate(zoneControllerPrefab, spawnPoints[i].position, Quaternion.identity, zoneInstances);
+                playerZoneController.enemiesSpawnRate = mapLogic.Value.enemiesSpawnRate;
+                if (IsOwner) playerZoneController.SetZone(i);
+                zoneControllers.Add(playerZoneController);
+            }
+            started = true;
+        
+
+
+
     }
     public void CreatePlayerZones()
     {
@@ -105,7 +137,27 @@ public class GameController : NetworkBehaviour
             zoneColors[i] = (zoneColors)i;
         }
     }
+
+    public void CreateZonePrefab(int numberOfPlayers)
+    {
+        for (int i = 0; i < numberOfPlayers; i++)
+        {
+            PlayerZoneController playerZoneController = Instantiate(zoneControllerPrefab, spawnPoints[i].position, Quaternion.identity, zoneInstances);
+            playerZoneController.enemiesSpawnRate = mapLogic.Value.enemiesSpawnRate;
+            zoneControllers.Add(playerZoneController);
+        }
+
+    }
+
     #region ServerRpc
+    [ServerRpc]
+    public void SetTimeToStartServerRpc(float time)
+    {
+        netTimeToStart.Value += time;
+    }
+
+    
+
 
     [ServerRpc]
     public void SetMapLogicClientServerRpc(int numberOfPlayers,int numberOfPlayersAlive,float zoneRadiusExpandSpeed,int totalTime,float enemiesSpawnRate,float zoneRadius)
@@ -113,12 +165,13 @@ public class GameController : NetworkBehaviour
         Debug.Log("Called on client");
         mapLogic.Value.SetMap(numberOfPlayers, numberOfPlayersAlive, zoneRadiusExpandSpeed, totalTime, enemiesSpawnRate, zoneRadius);
     }
+
     [ServerRpc]
     public void SetNumberOfPlayerListServerRpc(ulong clientId) {
-
         for (int i = 0; i < NetworkManager.Singleton.ConnectedClients.Count; i++)
         {
             NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerStatsController>().zoneAsigned.Value = (zoneColors)i;
+
         }
     }
     [ServerRpc]
@@ -128,7 +181,6 @@ public class GameController : NetworkBehaviour
         {
             GameObject player = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.gameObject;
             player.GetComponentInChildren<Canvas>().GetComponentInChildren<TextMeshProUGUI>().text = "Player" + i+1;
-            CreateZonePrefab((int)i);
         }
 
     }

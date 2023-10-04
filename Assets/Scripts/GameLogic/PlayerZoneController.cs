@@ -20,4 +20,21 @@ public class PlayerZoneController : NetworkBehaviour
     {
         
     }
+
+    public void SetZone(int val)
+    {
+        if (IsServer)
+        {
+            zoneColors zone = (zoneColors)val;
+        }
+        else
+        {
+            SetZoneServerRpc(val);
+        }
+    }
+    [ServerRpc]
+    public void SetZoneServerRpc(int val)
+    {
+        zoneColors zone = (zoneColors)val;
+    }
 }
