@@ -27,7 +27,6 @@ public class PlayerController : NetworkBehaviour
 
         if (IsOwner)
         {
-
             SetSpeedStateServerRpc(8);
             GameObject camera = Instantiate(cameraPrefab); 
             cinemachineVirtualCameraInstance = camera.GetComponentInChildren<CinemachineVirtualCamera>();
@@ -55,15 +54,20 @@ public class PlayerController : NetworkBehaviour
             float horizontal = Input.GetAxis("Horizontal");
             float vertical = Input.GetAxis("Vertical");
             Vector3 move = new Vector3(horizontal, 0, vertical);
-            transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * ((float)NetworkManager.Singleton.NetworkTimeSystem.LocalTime/1000));
-
+            transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * NetworkManager.Singleton.LocalTime.TimeAsFloat / 500f);
     }
     
     public void CrouchAndSprint()
     {
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            isCrouching = true;
+            SetSprintFactor(0.5f);
+            return;
+        }
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            SetSprintFactor(2.5f);
+            SetSprintFactor(1.5f);
             isSprinting = true;
             if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl))
             {
@@ -72,12 +76,7 @@ public class PlayerController : NetworkBehaviour
             }
             return;
         }
-        if (Input.GetKey(KeyCode.LeftControl))
-        {
-            isCrouching = true;
-            SetSprintFactor(0.5f);
-            return;
-        }
+        
 
         SetSprintFactor(1f);
         isCrouching = false;

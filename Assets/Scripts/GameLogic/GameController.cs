@@ -9,7 +9,8 @@ public class GameController : NetworkBehaviour
     public NetworkVariable<int> numberOfPlayersAlive=new NetworkVariable<int>();
     public NetworkVariable<MapLogic> mapLogic = new NetworkVariable<MapLogic>();
 
-
+    public Transform zoneInstances;
+    public PlayerZoneController zoneController;
     zoneColors[] zoneColors;
     
     private void Awake()
@@ -39,18 +40,18 @@ public class GameController : NetworkBehaviour
 
         NetworkManager.Singleton.OnClientConnectedCallback += (clientId) =>
         {
-            if (IsServer)
-            {
-                numberOfPlayers.Value++;
-                numberOfPlayersAlive.Value++;
-                mapLogic.Value.SetMap(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 0, 5);
-                Debug.Log("Called on server");
-                for (ulong i = 0; i < (ulong)NetworkManager.Singleton.ConnectedClients.Count; i++)
-                {
+            //if (IsServer)
+            //{
+            //    numberOfPlayers.Value++;
+            //    numberOfPlayersAlive.Value++;
+            //    mapLogic.Value.SetMap(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 0, 5);
+            //    Debug.Log("Called on server");
+            //    for (ulong i = 0; i < (ulong)NetworkManager.Singleton.ConnectedClients.Count; i++)
+            //    {
 
-                    NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerStatsController>().zoneAsigned.Value = (zoneColors)i;
-                }
-            }
+            //        NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerStatsController>().zoneAsigned.Value = (zoneColors)i;
+            //    }
+            //}
             if (IsClient && IsOwner)
             {
                 OnPlayerEnterServerRpc();
@@ -62,17 +63,17 @@ public class GameController : NetworkBehaviour
 
         NetworkManager.Singleton.OnClientDisconnectCallback += (clientId) =>
         {
-            if (IsServer)
-            {
-                numberOfPlayers.Value--;
-                numberOfPlayersAlive.Value--;
-                mapLogic.Value.SetMap(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 0, 5);
-                for (int i = 0; i < NetworkManager.Singleton.ConnectedClients.Count; i++)
-                {
-                    NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerStatsController>().zoneAsigned.Value = (zoneColors)i;
-                }
-            }
-            else if (IsClient && IsOwner)
+            //if (IsServer)
+            //{
+            //    numberOfPlayers.Value--;
+            //    numberOfPlayersAlive.Value--;
+            //    mapLogic.Value.SetMap(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 0, 5);
+            //    for (int i = 0; i < NetworkManager.Singleton.ConnectedClients.Count; i++)
+            //    {
+            //        NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerStatsController>().zoneAsigned.Value = (zoneColors)i;
+            //    }
+            //}
+            if (IsClient && IsOwner)
             {
                 OnPlayerOutServerRpc();
                 SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 0, 5);
@@ -90,7 +91,12 @@ public class GameController : NetworkBehaviour
     {
 
     }
-
+    public void CreateZonePrefab(int playerIndex)
+    {
+        PlayerZoneController playerZoneController = Instantiate(zoneController, Vector3.zero,Quaternion.identity, zoneInstances);
+        playerZoneController.enemiesSpawnRate=mapLogic.Value.enemiesSpawnRate;
+        playerZoneController.zoneAsigned.Value = zoneColors[playerIndex];
+    }
     public void CreatePlayerZones()
     {
         zoneColors = new zoneColors[numberOfPlayers.Value];
@@ -122,6 +128,7 @@ public class GameController : NetworkBehaviour
         {
             GameObject player = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.gameObject;
             player.GetComponentInChildren<Canvas>().GetComponentInChildren<TextMeshProUGUI>().text = "Player" + i+1;
+            CreateZonePrefab((int)i);
         }
 
     }

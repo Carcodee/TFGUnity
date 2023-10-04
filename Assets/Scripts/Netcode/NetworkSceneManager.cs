@@ -67,7 +67,7 @@ public class NetworkSceneManager : NetworkBehaviour
 
     public async void StartHost()
     {
-        Allocation a = await RelayService.Instance.CreateAllocationAsync(8);
+        Allocation a = await RelayService.Instance.CreateAllocationAsync(2,"europe-west2");
         hostCode= await RelayService.Instance.GetJoinCodeAsync(a.AllocationId);
        
         _transport.SetHostRelayData(a.RelayServer.IpV4,(ushort)a.RelayServer.Port,a.AllocationIdBytes, a.Key, a.ConnectionData);
