@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Services.Authentication;
@@ -19,7 +20,8 @@ public class NetworkSceneManager : NetworkBehaviour
     /// </summary>
 
     public string hostCode;
-    public string joinText;
+    public TMP_InputField joinCode;
+    private string joinText;
     private UnityTransport _transport;
 
     private async void Awake()
@@ -76,6 +78,7 @@ public class NetworkSceneManager : NetworkBehaviour
     }
     public async void StartClient()
     {
+        joinText = joinCode.text;
         JoinAllocation a = await RelayService.Instance.JoinAllocationAsync(joinText);
 
         _transport.SetClientRelayData(a.RelayServer.IpV4, (ushort)a.RelayServer.Port, a.AllocationIdBytes, a.Key, a.ConnectionData,a.HostConnectionData);

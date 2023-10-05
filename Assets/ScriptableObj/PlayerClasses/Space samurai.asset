@@ -18,4 +18,4 @@ MonoBehaviour:
   stamina: 10
   damage: 10
   armor: 10
-  speed: 20
+  speed: 2000

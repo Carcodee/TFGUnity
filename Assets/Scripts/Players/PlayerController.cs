@@ -1,4 +1,5 @@
 using Cinemachine;
+using Newtonsoft.Json.Bson;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -16,35 +17,40 @@ public class PlayerController : NetworkBehaviour
 
     [Header("Player Components")]
     public GameObject cameraPrefab;
-    private CinemachineVirtualCamera cinemachineVirtualCameraInstance;
+
+
+
+    [Header("TargetConfigs")]
+    public float mouseSensitivity = 100f;
+    public float offset = 20.0f;
+    public Transform targetPos;
+
+    [Header("Player Movement")]
     bool jump = false;
     bool isSprinting = false;
     bool isCrouching = false;
+    float xRotation = 0f;
 
-    //[Header("Anim")]
     void Start()
     {  
 
         if (IsOwner)
         {
-            SetSpeedStateServerRpc(8);
-            GameObject camera = Instantiate(cameraPrefab); 
-            cinemachineVirtualCameraInstance = camera.GetComponentInChildren<CinemachineVirtualCamera>();
-            cinemachineVirtualCameraInstance.LookAt = transform;
-            cinemachineVirtualCameraInstance.Follow = transform;
+            SetSpeedStateServerRpc(1200);
+
         }
     }
 
     void Update()
     {
         GetComponentInChildren<Camera>().enabled = IsOwner;
-
-
     }
     private void FixedUpdate()
     {
         if (IsOwner)
         {
+            CreateAimTargetPos();
+            RotatePlayerWithMousePos();
             CrouchAndSprint();
             Move();
         }
@@ -54,9 +60,23 @@ public class PlayerController : NetworkBehaviour
             float horizontal = Input.GetAxis("Horizontal");
             float vertical = Input.GetAxis("Vertical");
             Vector3 move = new Vector3(horizontal, 0, vertical);
-            transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * NetworkManager.Singleton.LocalTime.TimeAsFloat / 500f);
+            transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.fixedDeltaTime / 500f);
     }
-    
+    void RotatePlayerWithMousePos()
+    {
+        //float angle = Mathf.Atan2(Input.mousePosition.y, Input.mousePosition.x) * Mathf.Rad2Deg;
+        //transform.rotation = Quaternion.Euler(new Vector3(0, -angle, 0));
+
+    }
+    void CreateAimTargetPos()
+    {
+        Camera camera = GetComponentInChildren<Camera>();
+        Ray myMouseRay=camera.ScreenPointToRay(Input.mousePosition);
+        Vector3 mouseDirFixed =new Vector3 (myMouseRay.direction.x, myMouseRay.direction.y+.5f, myMouseRay.direction.z);
+        Vector3 mousePos =(transform.position + mouseDirFixed).normalized * offset;
+        targetPos.position = mousePos;
+    }
+
     public void CrouchAndSprint()
     {
         if (Input.GetKey(KeyCode.LeftControl))
