@@ -20,6 +20,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     [SerializeField] private NetworkVariable<int> damage = new NetworkVariable<int>();
     [SerializeField] private NetworkVariable<int> armor = new NetworkVariable<int>();
     [SerializeField] private NetworkVariable<float> speed = new NetworkVariable<float>();
+    [SerializeField] private float playerLevel = 1;
 
     [Header("Current Gamelogic")]
     public NetworkVariable<zoneColors> zoneAsigned=new NetworkVariable<zoneColors>();
@@ -41,7 +42,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         if (IsOwner)
         {
             OnSpawnPlayer += InitializateStats;
-            IDamageable iDamageable = GetComponent<IDamageable>();
+            iDamageable = GetComponent<IDamageable>();
         }
 
     }

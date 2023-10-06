@@ -24,12 +24,15 @@ public class PlayerController : NetworkBehaviour
     public float mouseSensitivity = 100f;
     public float offset = 20.0f;
     public Transform targetPos;
+    public Transform headAim;
 
     [Header("Player Movement")]
+    public float rotationFactor;
     bool jump = false;
     bool isSprinting = false;
     bool isCrouching = false;
     float xRotation = 0f;
+    float yRotation = 0f;
 
     void Start()
     {  
@@ -60,6 +63,8 @@ public class PlayerController : NetworkBehaviour
             float horizontal = Input.GetAxis("Horizontal");
             float vertical = Input.GetAxis("Vertical");
             Vector3 move = new Vector3(horizontal, 0, vertical);
+            yRotation+= horizontal* rotationFactor * Time.deltaTime;
+            transform.rotation = Quaternion.Euler(new Vector3(0, yRotation, 0));
             transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.fixedDeltaTime / 500f);
     }
     void RotatePlayerWithMousePos()
@@ -71,10 +76,13 @@ public class PlayerController : NetworkBehaviour
     void CreateAimTargetPos()
     {
         Camera camera = GetComponentInChildren<Camera>();
-        Ray myMouseRay=camera.ScreenPointToRay(Input.mousePosition);
-        Vector3 mouseDirFixed =new Vector3 (myMouseRay.direction.x, myMouseRay.direction.y+.5f, myMouseRay.direction.z);
-        Vector3 mousePos =(transform.position + mouseDirFixed).normalized * offset;
-        targetPos.position = mousePos;
+        
+        if (Physics.Raycast(camera.transform.position,camera.transform.forward, out RaycastHit hit,100))
+        {
+            targetPos.position = hit.point;
+            headAim.position=hit.point;
+        }
+
     }
 
     public void CrouchAndSprint()
