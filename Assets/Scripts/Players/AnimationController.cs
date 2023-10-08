@@ -53,7 +53,7 @@ public class AnimationController : NetworkBehaviour
 
         float x = Input.GetAxis("Horizontal");
         float y = Input.GetAxis("Vertical");
-        SetMoveAnimationStateServerRpc(x, y);
+        SetMoveAnimationState(x, y);
 
     }
 
@@ -86,36 +86,36 @@ public class AnimationController : NetworkBehaviour
         if(networkIsCrouching.Value&&networkIsCrouching.Value)
         {
             SetSlidingTimer(Time.deltaTime);
-            SetIsSprintingServerRpc(true);
-            SetIsCrouchingServerRpc(true);
+            SetIsSprinting(true);
+            SetIsCrouching(true);
 
             if (networkSlidingTimer.Value>= slidingTimer)
             {
-                SetIsCrouchingServerRpc(false);
+                SetIsCrouching(false);
                 SetSlidingTimer(0);
             }
             return;
         }
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            SetIsSprintingServerRpc(true);
+            SetIsSprinting(true);
 
             if (Input.GetKeyDown(KeyCode.LeftAlt))
             {
                 //slide
-                SetIsCrouchingServerRpc(true);
+                SetIsCrouching(true);
             }
             return;
         }
         if (Input.GetKey(KeyCode.LeftAlt))
         {
-            SetIsCrouchingServerRpc(true);
+            SetIsCrouching(true);
 
             return;
         }
 
-        SetIsCrouchingServerRpc(false);
-        SetIsSprintingServerRpc(false);
+        SetIsCrouching(false);
+        SetIsSprinting(false);
 
     }
     void AimAnimation() {
@@ -132,7 +132,7 @@ public class AnimationController : NetworkBehaviour
             aimAnimation = Mathf.Clamp(aimAnimation, 0, 1);
 
             float LerpedAnim = Mathf.Clamp(Mathf.Lerp(0, 1, aimAnimation), 0, 1);
-            SetAimAnimationStateServerRpc(LerpedAnim);
+            SetAimAnimationState(LerpedAnim);
 
         
 
@@ -179,8 +179,7 @@ public class AnimationController : NetworkBehaviour
     #region ServerRPCs
 
     //movement
-    [ServerRpc]
-    public void SetMoveAnimationStateServerRpc(float x, float y)
+    public void SetMoveAnimationState(float x, float y)
     {
         if (IsServer)
         {
@@ -195,8 +194,7 @@ public class AnimationController : NetworkBehaviour
         }
     }
     //aim
-    [ServerRpc]
-    public void SetAimAnimationStateServerRpc(float t)
+    public void SetAimAnimationState(float t)
     {
         if (IsServer)
         {
@@ -209,15 +207,9 @@ public class AnimationController : NetworkBehaviour
             SetAimAnimationClientServerRpc(networkAimAnimation.Value);
         }
     }
-    //Crouch
-    [ServerRpc]
-    public void SetCrouchAnimatorServerRpc()
-    {
 
-        networkAnimator.Animator.SetBool("Crouch", networkIsCrouching.Value);
-    }
-    [ServerRpc]
-    public void SetIsCrouchingServerRpc(bool value)
+    
+    public void SetIsCrouching(bool value)
     {
         if (IsServer)
         {
@@ -229,10 +221,9 @@ public class AnimationController : NetworkBehaviour
         }
     }
 
-    //Sprint
 
-    [ServerRpc]
-    public void SetIsSprintingServerRpc(bool value)
+    //Sprint
+    public void SetIsSprinting(bool value)
     {
         if (IsServer)
         {
@@ -240,9 +231,21 @@ public class AnimationController : NetworkBehaviour
         }
         else
         {
-            SetIsSprintingServerRpc(value);
+            SetIsSprintingClientServerRpc(value);
         }
     }
+
+
+    //Crouch
+    [ServerRpc]
+    public void SetCrouchAnimatorServerRpc()
+    {
+
+        networkAnimator.Animator.SetBool("Crouch", networkIsCrouching.Value);
+    }
+
+
+
 
 
     #endregion

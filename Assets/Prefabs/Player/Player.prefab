@@ -1462,7 +1462,7 @@ GameObject:
   - component: {fileID: -7418596798578313428}
   - component: {fileID: 7439418814137783279}
   - component: {fileID: 3321755905379635384}
-  - component: {fileID: 8052199587199106847}
+  - component: {fileID: 6391168286155965897}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1589,6 +1589,12 @@ MonoBehaviour:
   targetPos: {fileID: 5843899536742480740}
   headAim: {fileID: 5843899536742480740}
   rotationFactor: 25
+  RotationSmoothTime: 0.1
+  _rotationVelocity: 0
+  slidingTime: 0.5
+  slidingSpeed: 3
+  sprintFactor: 2.5
+  crouchFactor: 0.5
 --- !u!114 &6344872551529989650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1634,6 +1640,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bac07cb0564f2f4db420693dfe5d6bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerControls: {fileID: -944628639613478452, guid: 4419d82f33d36e848b3ed5af4c8da37e,
+    type: 3}
   canvasPrefab: {fileID: 8162482687542033262, guid: e6c7e567d2fe1af4d80e0498f02c7605,
     type: 3}
   cameraPrefab: {fileID: 2763996978624655819, guid: 70976f809ab9bac479ca9692002cd81f,
@@ -1668,6 +1676,9 @@ MonoBehaviour:
     m_InternalValue: 0
   networkIsCrouching:
     m_InternalValue: 0
+  networkSlidingTimer:
+    m_InternalValue: 0
+  slidingTimer: 0.5
 --- !u!143 &-7918970974976374508
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1782,7 +1793,7 @@ MonoBehaviour:
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
---- !u!114 &8052199587199106847
+--- !u!114 &6391168286155965897
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

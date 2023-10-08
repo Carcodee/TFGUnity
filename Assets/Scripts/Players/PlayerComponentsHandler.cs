@@ -8,13 +8,14 @@ using UnityEngine.UI;
 using UnityEngine.Windows;
 using StarterAssets;
 using UnityEngine.InputSystem;
+using Unity.VisualScripting;
 
 public class PlayerComponentsHandler : NetworkBehaviour
 {
     private PlayerInput _playerInput;
 
     private StarterAssetsInputs _input;
-
+    public InputActionAsset playerControls;
 
     [Header("Player Components")]
     public Canvas canvasPrefab;
@@ -27,13 +28,7 @@ public class PlayerComponentsHandler : NetworkBehaviour
     [Header("UI")]
     public TextMeshProUGUI playerNameText;
     float timer = 0;
-    void Start()
-    {
-        if (IsOwner)
-        {
-            InstanciateComponents();
-        }
-    }
+
     [Header("Cinemachine Camera config")]
     public Transform cinemachineCameraTarget;
     private float _cinemachineTargetYaw;
@@ -48,8 +43,20 @@ public class PlayerComponentsHandler : NetworkBehaviour
     public bool LockCameraPosition = false;
 
     private bool IsCurrentDeviceMouse=true;
-    private const float _threshold = 0.1f;
+    private const float _threshold = 0;
 
+    void Start()
+    {
+        if (IsOwner)
+        {
+            InstanciateComponents();
+        }
+        else
+        {
+            Destroy(GetComponent<PlayerInput>());
+            Destroy(GetComponent<StarterAssetsInputs>());
+        }
+    }
     void Update()
     {
         if (IsOwner)
@@ -73,8 +80,9 @@ public class PlayerComponentsHandler : NetworkBehaviour
 
     void InstanciateComponents()
     {
-        _input = GetComponent<StarterAssetsInputs>();
         _playerInput = GetComponent<PlayerInput>();
+        _input = GetComponent<StarterAssetsInputs>();
+        
         _cinemachineTargetYaw = cinemachineCameraTarget.transform.rotation.eulerAngles.y;
         GameObject camera = Instantiate(cameraPrefab);
         cinemachineVirtualCameraInstance = camera.GetComponentInChildren<CinemachineVirtualCamera>();
@@ -91,7 +99,7 @@ public class PlayerComponentsHandler : NetworkBehaviour
         {
             //Don't multiply mouse input by Time.deltaTime;
             float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
-
+            
             _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
             _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
         }Debug.Log(_input.look.x);
