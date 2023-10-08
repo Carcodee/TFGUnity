@@ -1583,6 +1583,7 @@ MonoBehaviour:
     m_InternalValue: 0
   cameraPrefab: {fileID: 2763996978624655819, guid: 70976f809ab9bac479ca9692002cd81f,
     type: 3}
+  cinemachineCameraTarget: {fileID: 2578975527992398695}
   mouseSensitivity: 100
   offset: 5
   targetPos: {fileID: 5843899536742480740}
@@ -1617,6 +1618,7 @@ MonoBehaviour:
     m_InternalValue: 0
   speed:
     m_InternalValue: 0
+  playerLevel: 1
   zoneAsigned:
     m_InternalValue: 0
   playerObj: {fileID: 0}

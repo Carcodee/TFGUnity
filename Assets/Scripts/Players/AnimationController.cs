@@ -14,7 +14,9 @@ public class AnimationController : NetworkBehaviour
 
     public NetworkVariable<bool> networkIsSprinting = new NetworkVariable<bool>();
     public NetworkVariable<bool> networkIsCrouching = new NetworkVariable<bool>();
+    public NetworkVariable<float> networkSlidingTimer = new NetworkVariable<float>();
 
+    public float slidingTimer=1f;
     void Start()
     {
 
@@ -81,22 +83,37 @@ public class AnimationController : NetworkBehaviour
     }
     public void CrouchAndSprint()
     {
-        if (Input.GetKey(KeyCode.LeftControl))
+        if(networkIsCrouching.Value&&networkIsCrouching.Value)
         {
+            SetSlidingTimer(Time.deltaTime);
+            SetIsSprintingServerRpc(true);
             SetIsCrouchingServerRpc(true);
 
+            if (networkSlidingTimer.Value>= slidingTimer)
+            {
+                SetIsCrouchingServerRpc(false);
+                SetSlidingTimer(0);
+            }
             return;
         }
         if (Input.GetKey(KeyCode.LeftShift))
         {
             SetIsSprintingServerRpc(true);
-            if (Input.GetKey(KeyCode.LeftControl))
+
+            if (Input.GetKeyDown(KeyCode.LeftAlt))
             {
                 //slide
                 SetIsCrouchingServerRpc(true);
             }
             return;
         }
+        if (Input.GetKey(KeyCode.LeftAlt))
+        {
+            SetIsCrouchingServerRpc(true);
+
+            return;
+        }
+
         SetIsCrouchingServerRpc(false);
         SetIsSprintingServerRpc(false);
 
@@ -139,7 +156,26 @@ public class AnimationController : NetworkBehaviour
 
     }
 
+    //Sliding
+    public void SetSlidingTimer(float timeStep)
+    {
+        if (IsServer)
+        {
+            if (networkSlidingTimer.Value > slidingTimer)
+            {
+                networkSlidingTimer.Value = timeStep;
+            }
+            else
+            {
+                networkSlidingTimer.Value += timeStep;
+            }
+        }
+        else
+        {
+            SetSlidingTimerServerRpc(timeStep);
+        }
 
+    }
     #region ServerRPCs
 
     //movement
@@ -265,6 +301,20 @@ public class AnimationController : NetworkBehaviour
         networkIsSprinting.Value = value;
 
     }
+    //Sliding
+    [ServerRpc]
+    public void SetSlidingTimerServerRpc(float value)
+    {
+        if (networkSlidingTimer.Value > slidingTimer)
+        {
+            networkSlidingTimer.Value = value;
+        }
+        else
+        {
+            networkSlidingTimer.Value += value;
+        }
+    }
+
     #endregion
 
 }

@@ -6,6 +6,7 @@ using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -17,7 +18,7 @@ public class PlayerController : NetworkBehaviour
 
     [Header("Player Components")]
     public GameObject cameraPrefab;
-
+    public Transform cinemachineCameraTarget;
 
 
     [Header("TargetConfigs")]
@@ -27,10 +28,25 @@ public class PlayerController : NetworkBehaviour
     public Transform headAim;
 
     [Header("Player Movement")]
+    Vector3 move;
+
     public float rotationFactor;
+    public float RotationSmoothTime = 0.1f;
+    public float _rotationVelocity ;
+    public float slidingTime = 0.5f;
+    public float slidingSpeed = 3f;
+    public float sprintFactor = 2.5f;
+    public float crouchFactor = 0.5f;
+
+    private float slidingTimer = 0f;
+
+    [Header("Player Actions")]
+
     bool jump = false;
     bool isSprinting = false;
     bool isCrouching = false;
+    bool isSliding = false;
+
     float xRotation = 0f;
     float yRotation = 0f;
 
@@ -53,24 +69,31 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
             CreateAimTargetPos();
-            RotatePlayerWithMousePos();
             CrouchAndSprint();
             Move();
+            RotatePlayer();
+
         }
     }
     void Move()
     {
             float horizontal = Input.GetAxis("Horizontal");
             float vertical = Input.GetAxis("Vertical");
-            Vector3 move = new Vector3(horizontal, 0, vertical);
-            yRotation+= horizontal* rotationFactor * Time.deltaTime;
-            transform.rotation = Quaternion.Euler(new Vector3(0, yRotation, 0));
+            move = new Vector3(horizontal, 0, vertical);
+            //yRotation+= horizontal* rotationFactor * Time.deltaTime;
+            //transform.rotation = Quaternion.Euler(new Vector3(0, yRotation, 0));
             transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.fixedDeltaTime / 500f);
     }
-    void RotatePlayerWithMousePos()
+    void RotatePlayer()
     {
-        //float angle = Mathf.Atan2(Input.mousePosition.y, Input.mousePosition.x) * Mathf.Rad2Deg;
-        //transform.rotation = Quaternion.Euler(new Vector3(0, -angle, 0));
+        Vector3 playerMovement=new Vector3(move.x,0,move.z).normalized;
+
+        if (playerMovement.z > 0)
+        {
+            float targetAngle = Mathf.Atan2(playerMovement.x, playerMovement.z) * Mathf.Rad2Deg +cinemachineCameraTarget.rotation.eulerAngles.y;
+            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _rotationVelocity, RotationSmoothTime);
+            transform.rotation = Quaternion.Euler(0f, rotation, 0f);
+        }
 
     }
     void CreateAimTargetPos()
@@ -87,24 +110,34 @@ public class PlayerController : NetworkBehaviour
 
     public void CrouchAndSprint()
     {
-        if (Input.GetKey(KeyCode.LeftControl))
+        if (isSliding)
         {
-            isCrouching = true;
-            SetSprintFactor(0.5f);
+            slidingTimer += Time.fixedDeltaTime;
+            if (slidingTimer > slidingTime)
+            {
+                isSliding = false;
+                slidingTimer = 0;
+            }
             return;
         }
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            SetSprintFactor(1.5f);
+            SetSprintFactor(sprintFactor);
             isSprinting = true;
-            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl))
+            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.LeftAlt))
             {
-                isCrouching = true;
+                isSliding = true;
+                SetSprintFactor(slidingSpeed);
                 return;
             }
             return;
         }
-        
+        if (Input.GetKey(KeyCode.LeftAlt))
+        {
+            isCrouching = true;
+            SetSprintFactor(crouchFactor);
+            return;
+        }
 
         SetSprintFactor(1f);
         isCrouching = false;
