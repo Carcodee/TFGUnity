@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using TMPro;
+using Unity.Collections;
 using Unity.Netcode;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class GameController : NetworkBehaviour
@@ -12,8 +14,9 @@ public class GameController : NetworkBehaviour
     public bool started;
     public NetworkVariable<float> netTimeToStart = new NetworkVariable<float>();
     public float waitingTime;
+    public List<Transform> players=new List<Transform>();
 
-    [Header("Zones")]
+        [Header("Zones")]
     public Transform[] spawnPoints;
     public Transform zoneInstances;
     public PlayerZoneController zoneControllerPrefab;
@@ -47,20 +50,10 @@ public class GameController : NetworkBehaviour
 
         NetworkManager.Singleton.OnClientConnectedCallback += (clientId) =>
         {
-            //if (IsServer)
-            //{
-            //    numberOfPlayers.Value++;
-            //    numberOfPlayersAlive.Value++;
-            //    mapLogic.Value.SetMap(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 0, 5);
-            //    Debug.Log("Called on server");
-            //    for (ulong i = 0; i < (ulong)NetworkManager.Singleton.ConnectedClients.Count; i++)
-            //    {
 
-            //        NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerStatsController>().zoneAsigned.Value = (zoneColors)i;
-            //    }
-            //}
             if (IsClient && IsOwner)
             {
+
                 OnPlayerEnterServerRpc();
                 SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 3, 5);
                 SetNumberOfPlayerListServerRpc(clientId);
@@ -70,18 +63,10 @@ public class GameController : NetworkBehaviour
 
         NetworkManager.Singleton.OnClientDisconnectCallback += (clientId) =>
         {
-            //if (IsServer)
-            //{
-            //    numberOfPlayers.Value--;
-            //    numberOfPlayersAlive.Value--;
-            //    mapLogic.Value.SetMap(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 0, 5);
-            //    for (int i = 0; i < NetworkManager.Singleton.ConnectedClients.Count; i++)
-            //    {
-            //        NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerStatsController>().zoneAsigned.Value = (zoneColors)i;
-            //    }
-            //}
+
             if (IsClient && IsOwner)
             {
+
                 OnPlayerOutServerRpc();
                 SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 3, 5);
                 SetNumberOfPlayerListServerRpc(clientId);
@@ -122,7 +107,16 @@ public class GameController : NetworkBehaviour
                 playerZoneController.enemiesSpawnRate = mapLogic.Value.enemiesSpawnRate;
                 if (IsOwner) playerZoneController.SetZone(i);
                 zoneControllers.Add(playerZoneController);
-            }
+                if (IsServer)
+                {
+                    zoneControllers[i].playerAssigned = NetworkManager.Singleton.ConnectedClients[(ulong)i].PlayerObject.GetComponent<Transform>();
+                }
+                else if(IsClient&&IsOwner)
+                {
+                //TODO: fix this
+                    GetPlayersServerRpc(i);
+                }
+        }
             started = true;
         
 
@@ -149,6 +143,7 @@ public class GameController : NetworkBehaviour
 
     }
 
+
     #region ServerRpc
     [ServerRpc]
     public void SetTimeToStartServerRpc(float time)
@@ -156,8 +151,11 @@ public class GameController : NetworkBehaviour
         netTimeToStart.Value += time;
     }
 
-    
-
+    [ServerRpc]
+    public void GetPlayersServerRpc(int index)
+    {
+        zoneControllers[index].playerAssigned = NetworkManager.Singleton.ConnectedClients[(ulong)index].PlayerObject.GetComponent<Transform>();
+    }
 
     [ServerRpc]
     public void SetMapLogicClientServerRpc(int numberOfPlayers,int numberOfPlayersAlive,float zoneRadiusExpandSpeed,int totalTime,float enemiesSpawnRate,float zoneRadius)

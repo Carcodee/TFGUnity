@@ -6762,7 +6762,8 @@ MonoBehaviour:
   started: 0
   netTimeToStart:
     m_InternalValue: 0
-  waitingTime: 35
+  waitingTime: 25
+  players: []
   spawnPoints:
   - {fileID: 150467890}
   - {fileID: 1417644823}

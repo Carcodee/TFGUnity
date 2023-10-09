@@ -8,6 +8,8 @@ public class PlayerZoneController : NetworkBehaviour
 
     public NetworkVariable<zoneColors> zoneAsigned = new NetworkVariable<zoneColors>();
     public float enemiesSpawnRate;
+    public Transform [] spawnPoints;
+    public Transform playerAssigned;
     bool isBattleRoyale;
 
 
@@ -31,6 +33,10 @@ public class PlayerZoneController : NetworkBehaviour
         {
             SetZoneServerRpc(val);
         }
+    }
+    public void SpawnEnemies()
+    {
+
     }
     [ServerRpc]
     public void SetZoneServerRpc(int val)
