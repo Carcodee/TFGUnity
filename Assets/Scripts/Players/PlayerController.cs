@@ -18,6 +18,7 @@ public class PlayerController : NetworkBehaviour
 
     [Header("Player Components")]
     public GameObject cameraPrefab;
+    public BulletController bulletPrefab;
     public Transform cinemachineCameraTarget;
 
 
@@ -26,6 +27,7 @@ public class PlayerController : NetworkBehaviour
     public float offset = 20.0f;
     public Transform targetPos;
     public Transform headAim;
+    public Transform spawnBulletPoint;
 
     [Header("Player Movement")]
     Vector3 move;
@@ -55,7 +57,7 @@ public class PlayerController : NetworkBehaviour
 
         if (IsOwner)
         {
-            SetSpeedStateServerRpc(1200);
+            SetSpeedStateServerRpc(10);
 
         }
     }
@@ -72,8 +74,10 @@ public class PlayerController : NetworkBehaviour
             CrouchAndSprint();
             Move();
             RotatePlayer();
+            Shoot();
 
         }
+
     }
     void Move()
     {
@@ -82,13 +86,13 @@ public class PlayerController : NetworkBehaviour
             move = new Vector3(horizontal, 0, vertical);
             //yRotation+= horizontal* rotationFactor * Time.deltaTime;
             //transform.rotation = Quaternion.Euler(new Vector3(0, yRotation, 0));
-            transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.fixedDeltaTime / 500f);
+            transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.fixedDeltaTime);
     }
     void RotatePlayer()
     {
         Vector3 playerMovement=new Vector3(move.x,0,move.z).normalized;
 
-        if (playerMovement.z > 0)
+        if (playerMovement!=Vector3.zero)
         {
             float targetAngle = Mathf.Atan2(playerMovement.x, playerMovement.z) * Mathf.Rad2Deg +cinemachineCameraTarget.rotation.eulerAngles.y;
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _rotationVelocity, RotationSmoothTime);
@@ -96,6 +100,40 @@ public class PlayerController : NetworkBehaviour
         }
 
     }
+    public void Shoot()
+    {
+        if (IsServer)
+        {
+            Camera camera = GetComponentInChildren<Camera>();
+
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit, 10000))
+                {
+                    Vector3 direction = spawnBulletPoint.position - hit.point;
+                    BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
+                    bullet.Direction = direction;
+
+                }
+                else
+                {
+                    Vector3 direction = spawnBulletPoint.position - camera.transform.forward * 10000;
+                    BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
+                    bullet.Direction = direction;
+                }
+
+            }
+        }
+        else
+        {
+            //fix this
+            ShootServerRpc();
+        }
+        
+
+    }
+
+
     void CreateAimTargetPos()
     {
         Camera camera = GetComponentInChildren<Camera>();
@@ -158,6 +196,31 @@ public class PlayerController : NetworkBehaviour
     }
 
     #region ServerRpc
+
+    [ServerRpc]
+    public void ShootServerRpc()
+    {
+        Camera camera = GetComponentInChildren<Camera>();
+
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit, 10000))
+            {
+                Vector3 direction = spawnBulletPoint.position - hit.point;
+                BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
+                bullet.Direction = direction;
+
+            }
+            else
+            {
+                Vector3 direction = spawnBulletPoint.position - camera.transform.forward * 10000;
+                BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
+                bullet.Direction = direction;
+            }
+
+        }
+    }
+
     [ServerRpc]
     public void SetSpeedStateServerRpc(float speed)
     {

@@ -82,7 +82,6 @@ public class GameController : NetworkBehaviour
     void Update()
     {
         
-            Debug.Log(netTimeToStart.Value);
             if (IsServer && !started)
             {
                 netTimeToStart.Value += Time.deltaTime;

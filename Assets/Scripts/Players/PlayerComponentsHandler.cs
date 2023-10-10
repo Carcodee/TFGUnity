@@ -102,7 +102,7 @@ public class PlayerComponentsHandler : NetworkBehaviour
             
             _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
             _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
-        }Debug.Log(_input.look.x);
+        }
         // clamp our rotations so our values are limited 360 degrees
 
         _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
