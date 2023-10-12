@@ -1466,7 +1466,7 @@ GameObject:
   - component: {fileID: 6391168286155965897}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1587,6 +1587,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: -1591147314410710446, guid: c21ebc95755fece489b05e14b245910b,
     type: 3}
   cinemachineCameraTarget: {fileID: 2578975527992398695}
+  cameraRef: {fileID: 7287120717324667788}
   mouseSensitivity: 100
   offset: 5
   targetPos: {fileID: 5843899536742480740}

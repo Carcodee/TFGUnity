@@ -37,7 +37,6 @@ public class EnemyBase : NetworkBehaviour,IDamageable
         speed = template.speed;
         attackSpeed = template.attackSpeed;
         onKilledExp = template.onKilledExp;
-
     }
     public void TakeDamage(int damage)
     {

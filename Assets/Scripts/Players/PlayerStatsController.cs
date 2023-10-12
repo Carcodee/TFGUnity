@@ -113,6 +113,10 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     {
         return speed.Value;
     }
+    public int GetDamageDone()
+    {
+        return damage.Value;
+    }
     #region ServerRpc
 
     //template selected

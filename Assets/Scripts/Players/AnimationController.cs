@@ -26,10 +26,6 @@ public class AnimationController : NetworkBehaviour
     void Update()
     {
 
-
-    }
-    private void FixedUpdate()
-    {
         if (IsOwner)
         {
             MovementAnimation();
@@ -39,6 +35,10 @@ public class AnimationController : NetworkBehaviour
             SetSprintAnim();
 
         }
+    }
+    private void FixedUpdate()
+    {
+  
     }
 
     void GetReferences()

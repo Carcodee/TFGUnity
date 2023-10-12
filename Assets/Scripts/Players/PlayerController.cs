@@ -20,7 +20,7 @@ public class PlayerController : NetworkBehaviour
     public GameObject cameraPrefab;
     public BulletController bulletPrefab;
     public Transform cinemachineCameraTarget;
-
+    [SerializeField]private Camera cameraRef;
 
     [Header("TargetConfigs")]
     public float mouseSensitivity = 100f;
@@ -58,16 +58,13 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
             SetSpeedStateServerRpc(10);
-
         }
+
     }
 
     void Update()
     {
         GetComponentInChildren<Camera>().enabled = IsOwner;
-    }
-    private void FixedUpdate()
-    {
         if (IsOwner)
         {
             CreateAimTargetPos();
@@ -75,26 +72,42 @@ public class PlayerController : NetworkBehaviour
             Move();
             RotatePlayer();
             Shoot();
+        }
+    }
+    private void FixedUpdate()
+    {
 
+
+    }
+    private void LateUpdate()
+    {
+        if (IsOwner)
+        {
+            transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.deltaTime);
         }
 
     }
+
+
     void Move()
     {
             float horizontal = Input.GetAxis("Horizontal");
             float vertical = Input.GetAxis("Vertical");
             move = new Vector3(horizontal, 0, vertical);
-            //yRotation+= horizontal* rotationFactor * Time.deltaTime;
-            //transform.rotation = Quaternion.Euler(new Vector3(0, yRotation, 0));
-            transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.fixedDeltaTime);
     }
+
+
     void RotatePlayer()
     {
         Vector3 playerMovement=new Vector3(move.x,0,move.z).normalized;
+        if (playerMovement.z < 0)
+        {
+            return;
+        }
 
         if (playerMovement!=Vector3.zero)
         {
-            float targetAngle = Mathf.Atan2(playerMovement.x, playerMovement.z) * Mathf.Rad2Deg +cinemachineCameraTarget.rotation.eulerAngles.y;
+            float targetAngle = Mathf.Atan2(playerMovement.x, playerMovement.z) * Mathf.Rad2Deg + cinemachineCameraTarget.rotation.eulerAngles.y;
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _rotationVelocity, RotationSmoothTime);
             transform.rotation = Quaternion.Euler(0f, rotation, 0f);
         }
@@ -102,47 +115,50 @@ public class PlayerController : NetworkBehaviour
     }
     public void Shoot()
     {
-        if (IsServer)
-        {
-            Camera camera = GetComponentInChildren<Camera>();
 
-            if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKey(KeyCode.Mouse0))
+        {
+            if (IsServer)
             {
-                if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit, 10000))
+
+                if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, 10000))
                 {
                     Vector3 direction = spawnBulletPoint.position - hit.point;
                     BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
-                    bullet.Direction = direction;
+                    bullet.Direction = direction.normalized;
+                    bullet.damage = GetComponent<PlayerStatsController>().GetDamageDone();
+                    bullet.GetComponent<NetworkObject>().Spawn();
 
                 }
                 else
                 {
-                    Vector3 direction = spawnBulletPoint.position - camera.transform.forward * 10000;
+                    Vector3 direction = spawnBulletPoint.position - cameraRef.transform.forward * 10000;
                     BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
-                    bullet.Direction = direction;
+                    bullet.Direction = direction.normalized;
+                    bullet.damage = GetComponent<PlayerStatsController>().GetDamageDone();
+                    bullet.GetComponent<NetworkObject>().Spawn();
+
                 }
 
+
+            }
+            else
+            {
+                ShootServerRpc();
             }
         }
-        else
-        {
-            //fix this
-            ShootServerRpc();
-        }
-        
-
     }
 
 
     void CreateAimTargetPos()
     {
-        Camera camera = GetComponentInChildren<Camera>();
         
-        if (Physics.Raycast(camera.transform.position,camera.transform.forward, out RaycastHit hit,100))
+        if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit,100))
         {
             targetPos.position = hit.point;
             headAim.position=hit.point;
         }
+     
 
     }
 
@@ -200,25 +216,25 @@ public class PlayerController : NetworkBehaviour
     [ServerRpc]
     public void ShootServerRpc()
     {
-        Camera camera = GetComponentInChildren<Camera>();
 
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit, 10000))
+            if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, 10000))
             {
                 Vector3 direction = spawnBulletPoint.position - hit.point;
                 BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
-                bullet.Direction = direction;
-
+                bullet.Direction = direction.normalized;
+                bullet.damage = GetComponent<PlayerStatsController>().GetDamageDone();
+                bullet.GetComponent<NetworkObject>().Spawn();
             }
             else
             {
-                Vector3 direction = spawnBulletPoint.position - camera.transform.forward * 10000;
+                Vector3 direction = spawnBulletPoint.position - cameraRef.transform.forward * 10000;
                 BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
-                bullet.Direction = direction;
+                bullet.Direction = direction.normalized;
+                bullet.damage = GetComponent<PlayerStatsController>().GetDamageDone();
+                bullet.GetComponent<NetworkObject>().Spawn();
             }
 
-        }
+        
     }
 
     [ServerRpc]

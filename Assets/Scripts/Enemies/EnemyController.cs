@@ -7,17 +7,21 @@ using UnityEngine.InputSystem.LowLevel;
 
 public class EnemyController : NetworkBehaviour
 {
-    EnemyBase enemyBase;
-    EnemyState state;
+    [Header("Internal References")]
+    private EnemyBase enemyBase;
+    private EnemyState state;
+    private NavMeshAgent navMeshAgent;
 
-    NavMeshAgent navMeshAgent;
-    Transform target;
+    [Header("Refs")]
+    public Transform target;
 
     void Start()
     {
-        enemyBase = GetComponent<EnemyBase>();
-        navMeshAgent = GetComponent<NavMeshAgent>();
-
+        if (IsOwner)
+        {
+            enemyBase = GetComponent<EnemyBase>();
+            navMeshAgent = GetComponent<NavMeshAgent>();
+        }
     }
 
     void Update()
@@ -39,6 +43,7 @@ public class EnemyController : NetworkBehaviour
             case EnemyState.Idle:
                 break;
             case EnemyState.Chase:
+                navMeshAgent.SetDestination(target.position);
                 break;
             case EnemyState.Attack:
                 break;
@@ -47,7 +52,10 @@ public class EnemyController : NetworkBehaviour
         }
     }
 
-
+    private void OnCollisionEnter(Collision collision)
+    {
+        
+    }
     public enum EnemyState
     {
         Idle,

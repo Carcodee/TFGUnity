@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 8096821595281301510}
   - component: {fileID: 6210475588466749682}
   - component: {fileID: 6683876718323371711}
+  - component: {fileID: -7286464218585178589}
   m_Layer: 0
   m_Name: EnemyBase
   m_TagString: Untagged
@@ -183,6 +184,19 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &-7286464218585178589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6699574326653459533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90567a32acedf16498a44d9ab892f27e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
 --- !u!1 &6746501673761908776
 GameObject:
   m_ObjectHideFlags: 0
