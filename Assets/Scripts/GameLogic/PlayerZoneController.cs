@@ -10,7 +10,7 @@ public class PlayerZoneController : NetworkBehaviour
     public NetworkVariable<zoneColors> zoneAsigned = new NetworkVariable<zoneColors>();
     public float enemiesSpawnRate;
     public Transform [] spawnPoints;
-    public Transform playerAssigned;
+    //public Transform playerAssigned;
     public Transform playerSpawn;
     public Transform enemyContainer;
 
@@ -35,14 +35,14 @@ public class PlayerZoneController : NetworkBehaviour
         if (!IsOwner) return;
         if(!isBattleRoyale)
         {
-            internalSpawnTimer += Time.deltaTime;
-            if (internalSpawnTimer >= enemiesSpawnRate) 
-            {
-                SpawnEnemies();
-                enemiesSpawned++;
-                internalSpawnTimer = 0;
-                return;
-            }
+            //internalSpawnTimer += Time.deltaTime;
+            //if (internalSpawnTimer >= enemiesSpawnRate) 
+            //{
+            //    SpawnEnemies();
+            //    enemiesSpawned++;
+            //    internalSpawnTimer = 0;
+            //    return;
+            //}
 
         }
     }
@@ -65,7 +65,7 @@ public class PlayerZoneController : NetworkBehaviour
         if (IsServer)
         {
             EnemyController enemy = Instantiate(enemyPrefab, spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Length)].position, Quaternion.identity, enemyContainer);
-            enemy.target = playerAssigned;
+            //enemy.target = playerAssigned;
             enemies.Add(enemy);
 
             enemies[enemiesSpawned].GetComponent<NetworkObject>().Spawn();
@@ -87,7 +87,7 @@ public class PlayerZoneController : NetworkBehaviour
     public void SpawnEnemyServerRpc(int index)
     {
         EnemyController enemy = Instantiate(enemyPrefab, spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Length)].position, Quaternion.identity, enemyContainer);
-        enemy.target = playerAssigned;
+        //enemy.target = playerAssigned;
         enemies.Add(enemy);
         enemies[index].GetComponent<NetworkObject>().Spawn();
 
@@ -98,7 +98,7 @@ public class PlayerZoneController : NetworkBehaviour
     [ClientRpc]
     public void SetPlayerOnClientRpc(int index)
     {
-        enemies[index].target = playerAssigned; 
+        //enemies[index].target = playerAssigned; 
     }
     #endregion
 }

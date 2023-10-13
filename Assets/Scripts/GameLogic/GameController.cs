@@ -147,7 +147,7 @@ public class GameController : NetworkBehaviour
             playerZoneController.enemiesSpawnRate = mapLogic.Value.enemiesSpawnRate;
             playerZoneController.SetZone(index);
             zoneControllers.Add(playerZoneController);
-            zoneControllers[index].playerAssigned = players[index];
+            //zoneControllers[index].playerAssigned = players[index];
             zoneControllers[index].isBattleRoyale = false;
             zoneControllers[index].GetComponent<NetworkObject>().Spawn();
             SetPlayerOnClientRpc(index);
@@ -215,7 +215,7 @@ public class GameController : NetworkBehaviour
         playerZoneController.enemiesSpawnRate = mapLogic.Value.enemiesSpawnRate;
         playerZoneController.SetZone(index);
         zoneControllers.Add(playerZoneController);
-        zoneControllers[index].playerAssigned = players[index];
+        //zoneControllers[index].playerAssigned = players[index];
         zoneControllers[index].isBattleRoyale = false;
         zoneControllers[index].GetComponent<NetworkObject>().Spawn();
         
@@ -232,7 +232,7 @@ public class GameController : NetworkBehaviour
     [ClientRpc]
     public void SetPlayerOnClientRpc(int index)
     {
-        zoneControllers[index].playerAssigned = players[index];
+        //zoneControllers[index].playerAssigned = players[index];
         Debug.Log("Assigned On Client");
 
     }

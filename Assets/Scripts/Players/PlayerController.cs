@@ -57,7 +57,7 @@ public class PlayerController : NetworkBehaviour
 
         if (IsOwner)
         {
-            SetSpeedStateServerRpc(10);
+            SetSpeedStateServerRpc(5);
         }
 
     }
