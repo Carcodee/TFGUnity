@@ -10,10 +10,9 @@ public class PlayerZoneController : NetworkBehaviour
     public NetworkVariable<zoneColors> zoneAsigned = new NetworkVariable<zoneColors>();
     public float enemiesSpawnRate;
     public Transform spawnCoinPoint;
-    //public Transform playerAssigned;
     public Transform playerSpawn;
     public Transform enemyContainer;
-
+    public CoinBehaivor currentCoin;
 
     [Header("Ref")]
     public EnemyController enemyPrefab;
@@ -44,7 +43,7 @@ public class PlayerZoneController : NetworkBehaviour
     {
         if (IsServer)
         {
-            zoneColors zone = (zoneColors)val;
+            zoneAsigned.Value = (zoneColors)val;
         }
         else
         {
@@ -56,7 +55,7 @@ public class PlayerZoneController : NetworkBehaviour
     [ServerRpc]
     public void SetZoneServerRpc(int val)
     {
-        zoneColors zone = (zoneColors)val;
+        zoneAsigned.Value = (zoneColors)val;
     }
 
 

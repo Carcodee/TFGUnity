@@ -24,7 +24,8 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
 
     [Header("Current Gamelogic")]
     public NetworkVariable<zoneColors> zoneAsigned=new NetworkVariable<zoneColors>();
-
+    public Transform coinPosition;
+    public PlayerZoneController playerZoneController;
 
     [Header("Interfaces")]
     private IDamageable iDamageable;
