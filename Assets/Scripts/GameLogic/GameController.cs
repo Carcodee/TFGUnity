@@ -10,14 +10,19 @@ using UnityEngine;
 
 public class GameController : NetworkBehaviour
 {
+
     public static GameController instance;
     public NetworkVariable<int> numberOfPlayers=new NetworkVariable<int>();
     public NetworkVariable<int> numberOfPlayersAlive=new NetworkVariable<int>();
     public NetworkVariable<MapLogic> mapLogic = new NetworkVariable<MapLogic>();
+    
     public bool started;
     public NetworkVariable<float> netTimeToStart = new NetworkVariable<float>();
     public float waitingTime;
     public List<Transform> players=new List<Transform>();
+
+    [Header("References")]
+    [SerializeField] private CoinBehaivor coinPrefab;
 
     [Header("Zones")]
     public Transform[] spawnPoints;
@@ -158,6 +163,19 @@ public class GameController : NetworkBehaviour
         }
     }
 
+
+    public void SpawnCoins()
+    {
+        if (IsServer)
+        {
+            for (int i = 0; i < numberOfPlayers.Value; i++)
+            {
+
+            }
+        }
+
+    }
+
     #region ServerRpc
     [ServerRpc]
     public void SetTimeToStartServerRpc(float time)
@@ -177,7 +195,7 @@ public class GameController : NetworkBehaviour
     public void SetNumberOfPlayerListServerRpc(ulong clientId) {
         for (int i = 0; i < NetworkManager.Singleton.ConnectedClients.Count; i++)
         {
-            NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerStatsController>().zoneAsigned.Value = (zoneColors)i;
+            //NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerStatsController>().zoneAsigned.Value = (zoneColors)i;
 
         }
     }

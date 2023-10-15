@@ -42,7 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5994110147903122993}
   m_Layer: 0
-  m_Name: EnemySpawnZone 2
+  m_Name: CoinSpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -57,7 +57,7 @@ Transform:
   m_GameObject: {fileID: 2357298764044130965}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.92, y: 0.42, z: 4.03}
+  m_LocalPosition: {x: -0.08, y: 0.42, z: 4.03}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -228,37 +228,6 @@ MonoBehaviour:
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: c254058a80c77204a8ed696163e53a05, type: 2}
   m_BuildHeightMesh: 0
---- !u!1 &4475186442516603772
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2985843449833028086}
-  m_Layer: 0
-  m_Name: EnemySpawnZone 1
-  m_TagString: Untagged
-  m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2985843449833028086
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4475186442516603772}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.48, y: 0.42, z: 4.03}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1772209327493407483}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5224624622788081182
 GameObject:
   m_ObjectHideFlags: 0
@@ -376,7 +345,6 @@ Transform:
   m_Children:
   - {fileID: 8888545810222562194}
   - {fileID: 3530540716118891802}
-  - {fileID: 2985843449833028086}
   - {fileID: 5994110147903122993}
   - {fileID: 7735340861229419908}
   - {fileID: 8058938334431397786}
@@ -418,9 +386,7 @@ MonoBehaviour:
   zoneAsigned:
     m_InternalValue: 0
   enemiesSpawnRate: 0
-  spawnPoints:
-  - {fileID: 2985843449833028086}
-  - {fileID: 5994110147903122993}
+  spawnCoinPoint: {fileID: 5994110147903122993}
   playerSpawn: {fileID: 7735340861229419908}
   enemyContainer: {fileID: 63362459376522987}
   enemyPrefab: {fileID: -7286464218585178589, guid: 9eef8b47375a87d4cb9187087cb69e53,

@@ -6764,6 +6764,8 @@ MonoBehaviour:
     m_InternalValue: 0
   waitingTime: 25
   players: []
+  coinPrefab: {fileID: 331007805235256181, guid: 8d81f148e89dcad4bbd1e53767679d49,
+    type: 3}
   spawnPoints:
   - {fileID: 150467890}
   - {fileID: 1417644823}

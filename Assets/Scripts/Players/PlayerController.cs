@@ -120,31 +120,40 @@ public class PlayerController : NetworkBehaviour
         {
             if (IsServer)
             {
+                Vector3 direction;
 
                 if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, 10000))
                 {
-                    Vector3 direction = spawnBulletPoint.position - hit.point;
-                    BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
-                    bullet.Direction = direction.normalized;
-                    bullet.damage = GetComponent<PlayerStatsController>().GetDamageDone();
-                    bullet.GetComponent<NetworkObject>().Spawn();
+                    direction = spawnBulletPoint.position - hit.point;
+  
 
                 }
                 else
                 {
-                    Vector3 direction = spawnBulletPoint.position - cameraRef.transform.forward * 10000;
-                    BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
-                    bullet.Direction = direction.normalized;
-                    bullet.damage = GetComponent<PlayerStatsController>().GetDamageDone();
-                    bullet.GetComponent<NetworkObject>().Spawn();
-
+                     direction = spawnBulletPoint.position - cameraRef.transform.forward * 10000;
                 }
+
+                BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
+                bullet.Direction = direction.normalized;
+                bullet.damage = GetComponent<PlayerStatsController>().GetDamageDone();
+                bullet.GetComponent<NetworkObject>().Spawn();
 
 
             }
             else
             {
-                ShootServerRpc();
+                Vector3 direction;
+
+                if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, 10000))
+                {
+                    direction = spawnBulletPoint.position - hit.point;
+
+                }
+                else
+                {
+                    direction = spawnBulletPoint.position - cameraRef.transform.forward * 10000;
+                }
+                ShootServerRpc(direction, GetComponent<PlayerStatsController>().GetDamageDone());
             }
         }
     }
@@ -214,27 +223,12 @@ public class PlayerController : NetworkBehaviour
     #region ServerRpc
 
     [ServerRpc]
-    public void ShootServerRpc()
+    public void ShootServerRpc(Vector3 dir, int damage)
     {
-
-            if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, 10000))
-            {
-                Vector3 direction = spawnBulletPoint.position - hit.point;
-                BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
-                bullet.Direction = direction.normalized;
-                bullet.damage = GetComponent<PlayerStatsController>().GetDamageDone();
-                bullet.GetComponent<NetworkObject>().Spawn();
-            }
-            else
-            {
-                Vector3 direction = spawnBulletPoint.position - cameraRef.transform.forward * 10000;
-                BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
-                bullet.Direction = direction.normalized;
-                bullet.damage = GetComponent<PlayerStatsController>().GetDamageDone();
-                bullet.GetComponent<NetworkObject>().Spawn();
-            }
-
-        
+             BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
+             bullet.Direction = dir.normalized;
+             bullet.damage = damage;
+             bullet.GetComponent<NetworkObject>().Spawn();
     }
 
     [ServerRpc]

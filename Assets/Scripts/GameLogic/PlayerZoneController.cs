@@ -9,7 +9,7 @@ public class PlayerZoneController : NetworkBehaviour
     [Header("Zone variables")]
     public NetworkVariable<zoneColors> zoneAsigned = new NetworkVariable<zoneColors>();
     public float enemiesSpawnRate;
-    public Transform [] spawnPoints;
+    public Transform spawnCoinPoint;
     //public Transform playerAssigned;
     public Transform playerSpawn;
     public Transform enemyContainer;
@@ -17,7 +17,7 @@ public class PlayerZoneController : NetworkBehaviour
 
     [Header("Ref")]
     public EnemyController enemyPrefab;
-
+    
     public bool isBattleRoyale;
 
     [Header("Privates")]
@@ -35,14 +35,7 @@ public class PlayerZoneController : NetworkBehaviour
         if (!IsOwner) return;
         if(!isBattleRoyale)
         {
-            //internalSpawnTimer += Time.deltaTime;
-            //if (internalSpawnTimer >= enemiesSpawnRate) 
-            //{
-            //    SpawnEnemies();
-            //    enemiesSpawned++;
-            //    internalSpawnTimer = 0;
-            //    return;
-            //}
+
 
         }
     }
@@ -59,39 +52,13 @@ public class PlayerZoneController : NetworkBehaviour
         }
     }
 
-    public void SpawnEnemies()
-    {
-       
-        if (IsServer)
-        {
-            EnemyController enemy = Instantiate(enemyPrefab, spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Length)].position, Quaternion.identity, enemyContainer);
-            //enemy.target = playerAssigned;
-            enemies.Add(enemy);
-
-            enemies[enemiesSpawned].GetComponent<NetworkObject>().Spawn();
-        }
-        else
-        {
-            //Target is only set it on the server, To fix this we need to set the target on the client and then send it to the server
-            SpawnEnemyServerRpc(enemiesSpawned);
-        }
-
-    }
 
     [ServerRpc]
     public void SetZoneServerRpc(int val)
     {
         zoneColors zone = (zoneColors)val;
     }
-    [ServerRpc]
-    public void SpawnEnemyServerRpc(int index)
-    {
-        EnemyController enemy = Instantiate(enemyPrefab, spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Length)].position, Quaternion.identity, enemyContainer);
-        //enemy.target = playerAssigned;
-        enemies.Add(enemy);
-        enemies[index].GetComponent<NetworkObject>().Spawn();
 
-    }
 
     #region clientRpc
 
