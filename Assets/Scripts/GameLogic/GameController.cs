@@ -126,6 +126,7 @@ public class GameController : NetworkBehaviour
                 }
                 if (IsServer) SetPlayerPosClientRpc(zoneControllers[i].playerSpawn.position, i);
             }
+            if (IsServer) SpawnCoins();
             started = true;
     }
 
@@ -139,6 +140,7 @@ public class GameController : NetworkBehaviour
         {
             zoneColors[i] = (zoneColors)i;
         }
+       
     }
 
 
@@ -150,15 +152,12 @@ public class GameController : NetworkBehaviour
         {
             PlayerZoneController playerZoneController = Instantiate(zoneControllerPrefab, spawnPoints[index].position, Quaternion.identity, zoneInstances);
             playerZoneController.enemiesSpawnRate = mapLogic.Value.enemiesSpawnRate;
-            zoneControllers.Add(playerZoneController);
-            zoneControllers[index].isBattleRoyale = false;
-            zoneControllers[index].GetComponent<NetworkObject>().Spawn();
-            zoneControllers[index].SetZone(index);
-            SetPlayerOnClientRpc(index);
-            players[index].GetComponent<PlayerStatsController>().playerZoneController = zoneControllers[index];
-            SpawnCoins();
-            players[index].GetComponent<PlayerStatsController>().coinPosition = zoneControllers[index].spawnCoinPoint;
 
+            playerZoneController.isBattleRoyale = false;
+            playerZoneController.GetComponent<NetworkObject>().Spawn();
+            playerZoneController.SetZone(index);
+            AddZoneControllerClientRpc(playerZoneController.GetComponent<NetworkObject>().NetworkObjectId);
+            SetZoneToPlayerClientRpc(index);
         }
         else
         {
@@ -169,26 +168,30 @@ public class GameController : NetworkBehaviour
 
     public void SpawnCoins()
     {
-        if (IsServer)
-        {
             int coinSpawned = 0;
-            while (coinSpawned>= numberOfPlayers.Value)
+            int coinIndex = 0;
+            while (coinSpawned <  numberOfPlayers.Value)
             {
-               CoinBehaivor myCoin = Instantiate(coinPrefab, zoneControllers[coinSpawned].spawnCoinPoint.position, Quaternion.identity);
-                if (players[coinSpawned].GetComponent<PlayerStatsController>().zoneAsigned.Value != zoneControllers[coinSpawned].zoneAsigned.Value && zoneControllers[coinSpawned].currentCoin==null)
+                if(coinIndex > numberOfPlayers.Value-1 || coinSpawned>numberOfPlayers.Value-1)break;
+                if (coinSpawned != (int)zoneControllers[coinIndex].zoneAsigned.Value && zoneControllers[coinIndex].currentCoin==null)
                 {
+                    CoinBehaivor myCoin = Instantiate(coinPrefab, zoneControllers[coinSpawned].spawnCoinPoint.position, Quaternion.identity);
+
                     myCoin.GetComponent<NetworkObject>().Spawn();
                     //this represent who owns the coin
                     myCoin.networkPlayerID.Value = players[coinSpawned].GetComponent<PlayerStatsController>().OwnerClientId;
                     //this represent the zone where the coin is
-                    zoneControllers[coinSpawned].currentCoin = myCoin;
-                    myCoin.transform.position = zoneControllers[coinSpawned].spawnCoinPoint.position;
+                    myCoin.transform.position = zoneControllers[coinIndex].spawnCoinPoint.position;
+                    SetCoinsOnClientRpc(coinSpawned, coinIndex, myCoin.GetComponent<NetworkObject>().NetworkObjectId);
+
                     coinSpawned++;
+
+                    coinIndex = 0;
+                    continue;
                 }
 
+                coinIndex++;
             }
-            
-        }
 
     }
 
@@ -263,13 +266,6 @@ public class GameController : NetworkBehaviour
     {
         players[playerIndex].position = pos;
     }
-    [ClientRpc]
-    public void SetPlayerOnClientRpc(int index)
-    {
-        //zoneControllers[index].playerAssigned = players[index];
-        Debug.Log("Assigned On Client");
-
-    }
 
     [ClientRpc]
     public void AddPlayerToListClientRpc()
@@ -282,6 +278,27 @@ public class GameController : NetworkBehaviour
             players.Add(index.transform);
             Debug.Log("Connected Client");
         }
+    }
+
+    //Set coins on the player
+    [ClientRpc]
+    public void SetCoinsOnClientRpc(int coinIndex, int coinPos, ulong networkID)
+    {
+        //set the coin on the client side   
+        zoneControllers[coinPos].currentCoin = NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkID].GetComponent<CoinBehaivor>();
+        players[coinIndex].GetComponent<PlayerStatsController>().coinPosition = zoneControllers[coinPos].spawnCoinPoint;
+    }
+    //set the zone controller on the client
+    [ClientRpc]
+    public void AddZoneControllerClientRpc(ulong networkObjectId)
+    {
+        zoneControllers.Add(NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkObjectId].GetComponent<PlayerZoneController>());
+    }
+
+    [ClientRpc]
+    public void SetZoneToPlayerClientRpc(int index)
+    {
+        players[index].GetComponent<PlayerStatsController>().playerZoneController = zoneControllers[index];
     }
     #endregion
 }

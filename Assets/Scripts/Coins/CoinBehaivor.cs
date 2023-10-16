@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class CoinBehaivor : NetworkBehaviour
@@ -14,12 +15,12 @@ public class CoinBehaivor : NetworkBehaviour
 
     void Start()
     {
-        
+
     }
 
     void Update()
     {
-        
+
     }
 
     private void OnTriggerEnter(Collider other)
@@ -28,13 +29,21 @@ public class CoinBehaivor : NetworkBehaviour
         {
             if (other.TryGetComponent(out PlayerStatsController playerRef))
             {
-                if (playerRef.OwnerClientId==networkPlayerID.Value)
+                if (playerRef.OwnerClientId == networkPlayerID.Value)
                 {
                     //something happens
-                    Debug.Log("coin collected by player " + networkPlayerID.Value);
+                    TakeCoinClientRpc(playerRef.OwnerClientId);
                 }
 
             }
         }
     }
+
+    #region client
+    [ClientRpc]
+    public void TakeCoinClientRpc(ulong playerID)
+    {
+        Debug.Log("coin collected by player " + playerID);
+    }
+    #endregion
 }

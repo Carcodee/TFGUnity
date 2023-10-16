@@ -57,7 +57,7 @@ Transform:
   m_GameObject: {fileID: 2357298764044130965}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.08, y: 0.42, z: 4.03}
+  m_LocalPosition: {x: -0.08, y: 2.27, z: 4.03}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -93,7 +93,7 @@ Transform:
   m_GameObject: {fileID: 4106644759599710681}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.41, z: 0}
   m_LocalScale: {x: 10, y: 1, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -164,7 +164,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -389,6 +389,7 @@ MonoBehaviour:
   spawnCoinPoint: {fileID: 5994110147903122993}
   playerSpawn: {fileID: 7735340861229419908}
   enemyContainer: {fileID: 63362459376522987}
+  currentCoin: {fileID: 0}
   enemyPrefab: {fileID: -7286464218585178589, guid: 9eef8b47375a87d4cb9187087cb69e53,
     type: 3}
   isBattleRoyale: 0

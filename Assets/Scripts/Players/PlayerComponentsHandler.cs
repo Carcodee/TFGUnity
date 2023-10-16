@@ -45,17 +45,22 @@ public class PlayerComponentsHandler : NetworkBehaviour
     private bool IsCurrentDeviceMouse=true;
     private const float _threshold = 0;
 
+    private void Awake()
+    {
+        if (IsOwner)
+        {
+        }
+    }
     void Start()
     {
         if (IsOwner)
         {
             InstanciateComponents();
+
+            // Attach input events
+            _playerInput.onActionTriggered += HandleAction;
         }
-        else
-        {
-            Destroy(GetComponent<PlayerInput>());
-            Destroy(GetComponent<StarterAssetsInputs>());
-        }
+
     }
     void Update()
     {
@@ -73,16 +78,26 @@ public class PlayerComponentsHandler : NetworkBehaviour
     {
         if (IsOwner)
         {
-            CameraRotation();
+            CameraRotation(_input.look);
         }
     }
-
+    private void HandleAction(InputAction.CallbackContext context)
+    {
+        if (context.action.name == "ExactNameOfYourLookAction") // Replace with your action's name
+        {
+            CameraRotation(_input.look);
+        }
+        // Handle other actions as needed
+    }
 
     void InstanciateComponents()
     {
-        _playerInput = GetComponent<PlayerInput>();
-        _input = GetComponent<StarterAssetsInputs>();
-        
+        //_playerInput = GetComponent<PlayerInput>();
+        //_input = GetComponent<StarterAssetsInputs>();
+        _input = transform.AddComponent<StarterAssetsInputs>();
+        _playerInput = transform.AddComponent<PlayerInput>();
+        _playerInput.GetComponent<PlayerInput>().actions = playerControls;
+
         _cinemachineTargetYaw = cinemachineCameraTarget.transform.rotation.eulerAngles.y;
         GameObject camera = Instantiate(cameraPrefab);
         cinemachineVirtualCameraInstance = camera.GetComponentInChildren<CinemachineVirtualCamera>();
@@ -90,18 +105,19 @@ public class PlayerComponentsHandler : NetworkBehaviour
         Canvas canvas = Instantiate(canvasPrefab,transform);
         canvas.GetComponentInChildren<Button>().onClick.AddListener(transform.GetComponent<PlayerStatsController>().OnSpawnPlayer);
         playerNameText = canvas.GetComponentInChildren<TextMeshProUGUI>();
+
     }
 
-    private void CameraRotation()
+    private void CameraRotation(Vector3 look)
     {
         // if there is an input and camera position is not fixed
-        if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+        if (look.sqrMagnitude >= _threshold && !LockCameraPosition)
         {
             //Don't multiply mouse input by Time.deltaTime;
             float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
             
-            _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
-            _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
+            _cinemachineTargetYaw += look.x * deltaTimeMultiplier;
+            _cinemachineTargetPitch += look.y * deltaTimeMultiplier;
         }
         // clamp our rotations so our values are limited 360 degrees
 
