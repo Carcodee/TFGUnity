@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -6,7 +7,6 @@ using UnityEngine;
 
 public class CoinBehaivor : NetworkBehaviour
 {
-
     public NetworkVariable<ulong> networkPlayerID = new NetworkVariable<ulong>();
 
     zoneColors zone;
@@ -25,15 +25,16 @@ public class CoinBehaivor : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (IsServer)
-        {
-            if (other.TryGetComponent(out PlayerStatsController playerRef))
+            if (IsServer)
             {
-                if (playerRef.OwnerClientId == networkPlayerID.Value)
+                if (other.TryGetComponent(out PlayerStatsController playerRef))
                 {
-                    //something happens
-                    TakeCoinClientRpc(playerRef.OwnerClientId);
-                }
+                    if (playerRef.OwnerClientId == networkPlayerID.Value)
+                    {
+                        //something happens
+                        playerRef.LevelUp();
+                        //TakeCoinClientRpc(playerRef.GetComponent<NetworkObject>().NetworkObjectId);
+                    }
 
             }
         }
@@ -43,7 +44,10 @@ public class CoinBehaivor : NetworkBehaviour
     [ClientRpc]
     public void TakeCoinClientRpc(ulong playerID)
     {
-        Debug.Log("coin collected by player " + playerID);
+        if (IsOwner)
+        {
+            //NetworkManager.Singleton.SpawnManager.SpawnedObjects[playerID].GetComponent<PlayerStatsController>().LevelUpServerRpc();
+        }
     }
     #endregion
 }

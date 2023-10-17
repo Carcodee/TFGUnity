@@ -12,16 +12,16 @@ using Unity.VisualScripting;
 
 public class PlayerComponentsHandler : NetworkBehaviour
 {
-    private PlayerInput _playerInput;
+    public PlayerInput playerInput;
 
-    private StarterAssetsInputs _input;
+    public StarterAssetsInputs input;
     public InputActionAsset playerControls;
 
     [Header("Player Components")]
     public Canvas canvasPrefab;
     public GameObject cameraPrefab;
     public GameObject cameraZoomPrefab;
-
+    private Rigidbody rb;
 
     [Header("Ref")]
     private CinemachineVirtualCamera cinemachineVirtualCameraInstance;
@@ -45,20 +45,23 @@ public class PlayerComponentsHandler : NetworkBehaviour
     private bool IsCurrentDeviceMouse=true;
     private const float _threshold = 0;
 
-    private void Awake()
-    {
-        if (IsOwner)
-        {
-        }
-    }
-    void Start()
+    public override void OnNetworkSpawn()
     {
         if (IsOwner)
         {
             InstanciateComponents();
 
+        }
+
+    }
+
+    void Start()
+    {
+        if (IsOwner)
+        {
+    
             // Attach input events
-            _playerInput.onActionTriggered += HandleAction;
+            playerInput.onActionTriggered += HandleAction;
         }
 
     }
@@ -78,14 +81,14 @@ public class PlayerComponentsHandler : NetworkBehaviour
     {
         if (IsOwner)
         {
-            CameraRotation(_input.look);
+            CameraRotation(input.look);
         }
     }
     private void HandleAction(InputAction.CallbackContext context)
     {
         if (context.action.name == "ExactNameOfYourLookAction") // Replace with your action's name
         {
-            CameraRotation(_input.look);
+            CameraRotation(input.look);
         }
         // Handle other actions as needed
     }
@@ -94,9 +97,13 @@ public class PlayerComponentsHandler : NetworkBehaviour
     {
         //_playerInput = GetComponent<PlayerInput>();
         //_input = GetComponent<StarterAssetsInputs>();
-        _input = transform.AddComponent<StarterAssetsInputs>();
-        _playerInput = transform.AddComponent<PlayerInput>();
-        _playerInput.GetComponent<PlayerInput>().actions = playerControls;
+        input = transform.GetComponent<StarterAssetsInputs>();
+        playerInput.enabled = true;
+        if (playerInput.actions != playerControls)
+        {
+            playerInput.actions = playerControls;
+        }
+
 
         _cinemachineTargetYaw = cinemachineCameraTarget.transform.rotation.eulerAngles.y;
         GameObject camera = Instantiate(cameraPrefab);
@@ -106,6 +113,8 @@ public class PlayerComponentsHandler : NetworkBehaviour
         canvas.GetComponentInChildren<Button>().onClick.AddListener(transform.GetComponent<PlayerStatsController>().OnSpawnPlayer);
         playerNameText = canvas.GetComponentInChildren<TextMeshProUGUI>();
 
+        rb= GetComponent<Rigidbody>();
+        rb.isKinematic = true;
     }
 
     private void CameraRotation(Vector3 look)

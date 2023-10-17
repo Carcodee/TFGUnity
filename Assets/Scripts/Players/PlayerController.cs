@@ -219,7 +219,6 @@ public class PlayerController : NetworkBehaviour
             SetSprintFactorServerRpc(val);
         }
     }
-
     #region ServerRpc
 
     [ServerRpc]

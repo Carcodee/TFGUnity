@@ -7,6 +7,7 @@ using UnityEngine;
 public class AnimationController : NetworkBehaviour
 {
     NetworkAnimator networkAnimator;
+    
     float aimAnimation;
     public NetworkVariable<float> networkAimAnimation = new NetworkVariable<float>();
     public NetworkVariable<float> networkXMovement = new NetworkVariable<float>();
@@ -28,12 +29,16 @@ public class AnimationController : NetworkBehaviour
 
         if (IsOwner)
         {
+            //normal animator
+
+        }
+        else
+        {
             MovementAnimation();
             AimAnimation();
             CrouchAndSprint();
             CrouchAnim();
             SetSprintAnim();
-
         }
     }
     private void FixedUpdate()

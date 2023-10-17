@@ -118,6 +118,7 @@ public class GameController : NetworkBehaviour
     {
             for (int i = 0; i < numberOfPlayers.Value; i++)
             {
+
                 if (IsOwner)
                 {
 

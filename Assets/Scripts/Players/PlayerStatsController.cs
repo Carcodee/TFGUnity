@@ -20,7 +20,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     [SerializeField] private NetworkVariable<int> damage = new NetworkVariable<int>();
     [SerializeField] private NetworkVariable<int> armor = new NetworkVariable<int>();
     [SerializeField] private NetworkVariable<float> speed = new NetworkVariable<float>();
-    [SerializeField] private float playerLevel = 1;
+    [SerializeField] private NetworkVariable<int> playerLevel = new NetworkVariable<int>();
 
     [Header("Current Gamelogic")]
     public NetworkVariable<zoneColors> zoneAsigned=new NetworkVariable<zoneColors>();
@@ -70,6 +70,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         SetDamageServerRpc(statsTemplates[statsTemplateSelected.Value].damage);
         SetArmorServerRpc(statsTemplates[statsTemplateSelected.Value].armor);
         SetSpeedServerRpc(statsTemplates[statsTemplateSelected.Value].speed);
+        SetLevelServerRpc();
 
         //Stats on controller player
         Debug.Log("Before setting speed: " + speed.Value);
@@ -118,6 +119,10 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     {
         return damage.Value;
     }
+    public void LevelUp()
+    {
+        playerLevel.Value++;
+    }
     #region ServerRpc
 
     //template selected
@@ -157,6 +162,13 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     {
         speed.Value = speedPoint;
     }
+    //Level--------
+    [ServerRpc]
+    public void SetLevelServerRpc()
+    {
+        playerLevel.Value=1;
+    }
+
 
 
     [ServerRpc]
@@ -177,5 +189,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     {
         zoneAsigned.Value = zone;
     }
+
+
     #endregion
 }
