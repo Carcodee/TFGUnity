@@ -1451,8 +1451,8 @@ GameObject:
   m_Component:
   - component: {fileID: 372611058870039632}
   - component: {fileID: 645085415590272702}
-  - component: {fileID: -7641705093438705100}
   - component: {fileID: -7601623672609881486}
+  - component: {fileID: 546101927678350962}
   - component: {fileID: -7316872353769422435}
   - component: {fileID: 7329186199153258139}
   - component: {fileID: 6344872551529989650}
@@ -1509,20 +1509,6 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &-7641705093438705100
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3940185642830209463}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TransitionStateInfoList: []
-  m_Animator: {fileID: 5319185021556315752}
 --- !u!114 &-7601623672609881486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1553,6 +1539,20 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &546101927678350962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3940185642830209463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e487e2e48c133124ea2e3497eedad86a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 5319185021556315752}
 --- !u!114 &-7316872353769422435
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1629,7 +1629,8 @@ MonoBehaviour:
     m_InternalValue: 0
   speed:
     m_InternalValue: 0
-  playerLevel: 1
+  playerLevel:
+    m_InternalValue: 0
   zoneAsigned:
     m_InternalValue: 0
   coinPosition: {fileID: 0}

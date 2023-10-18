@@ -6,9 +6,8 @@ using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
-public class PlayerController : NetworkBehaviour
+public class PlayerController : NetworkBehaviour,IMovable
 {
     [Header("Player Stats")]
     public NetworkVariable<float> networkSpeed = new NetworkVariable<float>();
@@ -31,6 +30,7 @@ public class PlayerController : NetworkBehaviour
 
     [Header("Player Movement")]
     Vector3 move;
+    public static PlayerMovementStates playerMovementStates;
 
     public float rotationFactor;
     public float RotationSmoothTime = 0.1f;
@@ -52,11 +52,15 @@ public class PlayerController : NetworkBehaviour
     float xRotation = 0f;
     float yRotation = 0f;
 
+    [Header("Interfaces")]
+    private IMovable _iMovable;
+
     void Start()
     {  
 
         if (IsOwner)
         {
+            _iMovable = GetComponent<IMovable>();
             SetSpeedStateServerRpc(5);
         }
 
@@ -88,6 +92,45 @@ public class PlayerController : NetworkBehaviour
 
     }
 
+    public void OnMovementStateChanged(PlayerMovementStates newMovementState)
+    {
+        playerMovementStates = newMovementState;
+        switch (playerMovementStates)
+        {
+            case PlayerMovementStates.runnning:
+                transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.deltaTime);
+                break;
+            case PlayerMovementStates.sprinting:
+                isSprinting = true;
+                SetSprintFactor(sprintFactor);
+                transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.deltaTime);
+
+                break;
+            case PlayerMovementStates.crouching:
+                isCrouching = true;
+                SetSprintFactor(crouchFactor);
+                transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.deltaTime);
+
+                break;
+            case PlayerMovementStates.sliding:
+                isSprinting = true;
+                isSliding = true;
+                slidingTimer += Time.fixedDeltaTime;
+                if (slidingTimer > slidingTime)
+                {
+                    isSliding = false;
+                    slidingTimer = 0;
+                }
+                SetSprintFactor(slidingSpeed);
+                transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.deltaTime);
+                break;
+            case PlayerMovementStates.jumping:
+                break;
+            default:
+                break;
+        }
+    }
+
 
     void Move()
     {
@@ -100,12 +143,12 @@ public class PlayerController : NetworkBehaviour
     void RotatePlayer()
     {
         Vector3 playerMovement=new Vector3(move.x,0,move.z).normalized;
-        if (playerMovement.z < 0)
+        if (playerMovement.z < 0|| playerMovement.x > 0 || playerMovement.x < 0)
         {
             return;
         }
 
-        if (playerMovement!=Vector3.zero)
+        if (playerMovement.z >0)
         {
             float targetAngle = Mathf.Atan2(playerMovement.x, playerMovement.z) * Mathf.Rad2Deg + cinemachineCameraTarget.rotation.eulerAngles.y;
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _rotationVelocity, RotationSmoothTime);
@@ -198,6 +241,7 @@ public class PlayerController : NetworkBehaviour
         if (Input.GetKey(KeyCode.LeftAlt))
         {
             isCrouching = true;
+            isSprinting = false;
             SetSprintFactor(crouchFactor);
             return;
         }
@@ -260,4 +304,15 @@ public class PlayerController : NetworkBehaviour
 
     #endregion
 
+}
+
+public enum PlayerMovementStates
+{
+    idle,
+    runnning,
+    sprinting,
+    crouching,
+    sliding,
+    aiming,
+    jumping
 }
