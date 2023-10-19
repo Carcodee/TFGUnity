@@ -1714,6 +1714,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8714474986189543617}
     m_Modifications:
+    - target: {fileID: 3456353865996401603, guid: e65e41a12d30a1641a011b18dd803928,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4007610542999489136, guid: e65e41a12d30a1641a011b18dd803928,
         type: 3}
       propertyPath: m_Name
@@ -1778,6 +1783,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6636211247124511707, guid: e65e41a12d30a1641a011b18dd803928,
+        type: 3}
+      propertyPath: angRadiansEnd
+      value: 9.361946
       objectReference: {fileID: 0}
     - target: {fileID: 6636211247124511707, guid: e65e41a12d30a1641a011b18dd803928,
         type: 3}

@@ -87,6 +87,7 @@ public class PlayerController : NetworkBehaviour,IMovable
     {
         if (IsOwner)
         {
+
             transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.deltaTime);
         }
 
@@ -143,17 +144,21 @@ public class PlayerController : NetworkBehaviour,IMovable
     void RotatePlayer()
     {
         Vector3 playerMovement=new Vector3(move.x,0,move.z).normalized;
-        if (playerMovement.z < 0|| playerMovement.x > 0 || playerMovement.x < 0)
+        if (playerMovement.z < 0)
         {
             return;
         }
-
-        if (playerMovement.z >0)
+        if (playerMovement.x!=0)
         {
-            float targetAngle = Mathf.Atan2(playerMovement.x, playerMovement.z) * Mathf.Rad2Deg + cinemachineCameraTarget.rotation.eulerAngles.y;
+            transform.LookAt(headAim.transform.position, transform.up);
+            transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+            return;
+        }
+
+        float targetAngle = Mathf.Atan2(playerMovement.x, playerMovement.z) * Mathf.Rad2Deg + cinemachineCameraTarget.rotation.eulerAngles.y;
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _rotationVelocity, RotationSmoothTime);
             transform.rotation = Quaternion.Euler(0f, rotation, 0f);
-        }
+        
 
     }
     public void Shoot()
@@ -164,7 +169,7 @@ public class PlayerController : NetworkBehaviour,IMovable
             if (IsServer)
             {
                 Vector3 direction;
-
+                //todo: fix this when player target a bullet ratates around because it not ignoring the bullet layer
                 if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, 10000))
                 {
                     direction = spawnBulletPoint.position - hit.point;
@@ -201,16 +206,24 @@ public class PlayerController : NetworkBehaviour,IMovable
         }
     }
 
+    
 
     void CreateAimTargetPos()
     {
         
-        if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit,100))
+        if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit,10000))
         {
             targetPos.position = hit.point;
             headAim.position=hit.point;
         }
-     
+        else
+        {
+            Vector3 direction = cameraRef.transform.forward * 100;
+            targetPos.position = direction;
+            headAim.position = direction;
+
+        }
+        
 
     }
 
