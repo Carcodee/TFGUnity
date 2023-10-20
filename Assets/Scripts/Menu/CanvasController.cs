@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class CanvasController : MonoBehaviour
@@ -21,8 +23,6 @@ public class CanvasController : MonoBehaviour
     public TextMeshProUGUI exp;
 
 
-
-
     [Header("Shapes")]
     public Shapes.Line hpBar;
     public Shapes.Disc playerExp;
@@ -36,18 +36,72 @@ public class CanvasController : MonoBehaviour
     [Header("Panels")]
     public GameObject statsPanel;
 
+    [Header("Ref")]
+    public PlayerStatsController playerAssigned;
 
     void Start()
     {
-        
+        GetComponents();
     }
 
     void Update()
     {
-        
+        DisplayLevel();
+        DisplayBullets();
+        SetTimer();
+        DisplayPlayersConnected();
     }
-    public void Initializate()
+
+    private void GetComponents()
+    {
+        canvas = GetComponent<Canvas>();
+        playerAssigned = GetComponentInParent<PlayerStatsController>();
+    }
+    private void SetTimer()
+    {
+        //waiting time
+        if (!GameController.instance.started)
+        {
+            timeLeft.text = "Time to start: " + (GameController.instance.waitingTime - GameController.instance.netTimeToStart.Value).ToString("0.0");
+            return;
+        }
+        //farm time
+        if (GameController.instance.started&& !GameController.instance.mapLogic.Value.isBattleRoyale)
+        {
+            float temp =  GameController.instance.mapLogic.Value.totalTime - GameController.instance.farmStageTimer;
+            timeLeft.text = "Farm time: " + temp.ToString("0.0");
+        }
+        //battle royale time
+        else if(GameController.instance.started && GameController.instance.mapLogic.Value.isBattleRoyale)
+        {
+            timeLeft.text = "Battle Royale stage";
+        }
+
+    }
+    private void DisplayPlayersConnected()
+    {
+        if (!GameController.instance.started)
+        {
+            playersConnected.text = "Players Connected: " + GameController.instance.numberOfPlayers.Value.ToString();
+        }
+        else
+        {
+            playersConnected.text = "Players Alive: " + GameController.instance.numberOfPlayersAlive.Value.ToString();
+        }
+    }
+    private void DisplayBullets()
+    {
+        bullets.text = "30/270";
+
+    }
+    private void DisplayHP()
     {
 
+
+    }
+    private void DisplayLevel()
+    {
+
+        level.text ="Current Level: " +playerAssigned.GetLevel().ToString();
     }
 }

@@ -1599,6 +1599,9 @@ MonoBehaviour:
   slidingSpeed: 3
   sprintFactor: 2.5
   crouchFactor: 0.5
+  ground:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!114 &6344872551529989650
 MonoBehaviour:
   m_ObjectHideFlags: 0

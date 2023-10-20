@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 using UnityEngine.UIElements;
 
 public class PlayerController : NetworkBehaviour,IMovable
@@ -28,8 +29,9 @@ public class PlayerController : NetworkBehaviour,IMovable
     public Transform headAim;
     public Transform spawnBulletPoint;
 
+
     [Header("Player Movement")]
-    Vector3 move;
+    [SerializeField]private Vector3 move;
     public static PlayerMovementStates playerMovementStates;
 
     public float rotationFactor;
@@ -41,7 +43,12 @@ public class PlayerController : NetworkBehaviour,IMovable
     public float crouchFactor = 0.5f;
 
     private float slidingTimer = 0f;
-
+    
+    [Header("Camera Direction")]
+    private int distanceFactor = 100;
+    Vector3 cameraDirection;
+    Vector3 groundPivot;
+    public LayerMask ground;
     [Header("Player Actions")]
 
     bool jump = false;
@@ -60,6 +67,7 @@ public class PlayerController : NetworkBehaviour,IMovable
 
         if (IsOwner)
         {
+            
             _iMovable = GetComponent<IMovable>();
             SetSpeedStateServerRpc(5);
         }
@@ -74,7 +82,6 @@ public class PlayerController : NetworkBehaviour,IMovable
             CreateAimTargetPos();
             CrouchAndSprint();
             Move();
-            RotatePlayer();
             Shoot();
         }
     }
@@ -87,8 +94,10 @@ public class PlayerController : NetworkBehaviour,IMovable
     {
         if (IsOwner)
         {
-
+            RotatePlayer();
+            //ask weston about this
             transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.deltaTime);
+
         }
 
     }
@@ -148,18 +157,27 @@ public class PlayerController : NetworkBehaviour,IMovable
         {
             return;
         }
-        if (playerMovement.x!=0)
-        {
-            transform.LookAt(headAim.transform.position, transform.up);
-            transform.position = new Vector3(transform.position.x, 0, transform.position.z);
-            return;
-        }
 
         float targetAngle = Mathf.Atan2(playerMovement.x, playerMovement.z) * Mathf.Rad2Deg + cinemachineCameraTarget.rotation.eulerAngles.y;
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _rotationVelocity, RotationSmoothTime);
             transform.rotation = Quaternion.Euler(0f, rotation, 0f);
-        
 
+        Vector3 targetDirection = Quaternion.Euler(0.0f, rotation, 0.0f) * Vector3.forward;
+
+    }
+
+    Vector3 GetGroundPosFromPoint(Vector3 pos)
+    {
+        
+        Ray ray = new Ray(pos, Vector3.down);
+        if (Physics.Raycast(ray, out RaycastHit hit, distanceFactor,ground))
+        {
+            return hit.point;
+        }
+        else
+        {
+           return new Vector3(pos.x, 0, pos.z);
+        }
     }
     public void Shoot()
     {
@@ -170,7 +188,7 @@ public class PlayerController : NetworkBehaviour,IMovable
             {
                 Vector3 direction;
                 //todo: fix this when player target a bullet ratates around because it not ignoring the bullet layer
-                if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, 10000))
+                if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, distanceFactor))
                 {
                     direction = spawnBulletPoint.position - hit.point;
   
@@ -178,7 +196,7 @@ public class PlayerController : NetworkBehaviour,IMovable
                 }
                 else
                 {
-                     direction = spawnBulletPoint.position - cameraRef.transform.forward * 10000;
+                     direction = spawnBulletPoint.position - cameraRef.transform.forward * distanceFactor;
                 }
 
                 BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
@@ -192,14 +210,14 @@ public class PlayerController : NetworkBehaviour,IMovable
             {
                 Vector3 direction;
 
-                if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, 10000))
+                if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, distanceFactor))
                 {
                     direction = spawnBulletPoint.position - hit.point;
 
                 }
                 else
                 {
-                    direction = spawnBulletPoint.position - cameraRef.transform.forward * 10000;
+                    direction = spawnBulletPoint.position - cameraRef.transform.forward * distanceFactor;
                 }
                 ShootServerRpc(direction, GetComponent<PlayerStatsController>().GetDamageDone());
             }
@@ -211,16 +229,17 @@ public class PlayerController : NetworkBehaviour,IMovable
     void CreateAimTargetPos()
     {
         
-        if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit,10000))
+        if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, distanceFactor))
         {
             targetPos.position = hit.point;
             headAim.position=hit.point;
         }
         else
         {
-            Vector3 direction = cameraRef.transform.forward * 100;
-            targetPos.position = direction;
-            headAim.position = direction;
+
+            cameraDirection = cameraRef.transform.forward * distanceFactor;
+            targetPos.position = cameraDirection;
+            headAim.position = cameraDirection;
 
         }
         

@@ -12,14 +12,19 @@ public class GameController : NetworkBehaviour
 {
 
     public static GameController instance;
-    public NetworkVariable<int> numberOfPlayers=new NetworkVariable<int>();
-    public NetworkVariable<int> numberOfPlayersAlive=new NetworkVariable<int>();
-    public NetworkVariable<MapLogic> mapLogic = new NetworkVariable<MapLogic>();
-    
+
+
+    [Header("Lobby")]
     public bool started;
     public NetworkVariable<float> netTimeToStart = new NetworkVariable<float>();
     public float waitingTime;
+
+    [Header("MapLogic")]
+    public float farmStageTimer;
     public List<Transform> players=new List<Transform>();
+    public NetworkVariable<MapLogic> mapLogic = new NetworkVariable<MapLogic>();
+    public NetworkVariable<int> numberOfPlayers = new NetworkVariable<int>();
+    public NetworkVariable<int> numberOfPlayersAlive = new NetworkVariable<int>();
 
     [Header("References")]
     [SerializeField] private CoinBehaivor coinPrefab;
@@ -75,7 +80,10 @@ public class GameController : NetworkBehaviour
         NetworkManager.Singleton.OnClientDisconnectCallback += (clientId) =>
         {
 
-
+            if (IsServer)
+            {
+                AddPlayerToListClientRpc();
+            }
 
             if (IsClient && IsOwner)
             {
@@ -94,20 +102,8 @@ public class GameController : NetworkBehaviour
 
     void Update()
     {
-        
-            if (IsServer && !started)
-            {
-                netTimeToStart.Value += Time.deltaTime;
 
-            }
-            else if (IsClient && !started&&IsOwner)
-            {
-                SetTimeToStartServerRpc(Time.deltaTime);
-            }
-            if (netTimeToStart.Value > waitingTime && !started)
-            {
-                StartGame();
-            }
+        UpdateTime();
 
     }
 
@@ -130,6 +126,7 @@ public class GameController : NetworkBehaviour
             if (IsServer) SpawnCoins();
             started = true;
     }
+
 
     /// <summary>
     /// Set Each player a zone
@@ -154,7 +151,7 @@ public class GameController : NetworkBehaviour
             PlayerZoneController playerZoneController = Instantiate(zoneControllerPrefab, spawnPoints[index].position, Quaternion.identity, zoneInstances);
             playerZoneController.enemiesSpawnRate = mapLogic.Value.enemiesSpawnRate;
 
-            playerZoneController.isBattleRoyale = false;
+            playerZoneController.isBattleRoyale = mapLogic.Value.isBattleRoyale;
             playerZoneController.GetComponent<NetworkObject>().Spawn();
             playerZoneController.SetZone(index);
             AddZoneControllerClientRpc(playerZoneController.GetComponent<NetworkObject>().NetworkObjectId);
@@ -196,14 +193,57 @@ public class GameController : NetworkBehaviour
 
     }
 
+    private void UpdateTime()
+    {
+        if (IsServer && !started)
+        {
+            netTimeToStart.Value += Time.deltaTime;
+
+        }
+        else if (IsClient && !started && IsOwner)
+        {
+            SetTimeToStartServerRpc(Time.deltaTime);
+        }
+        if (netTimeToStart.Value > waitingTime && !started)
+        {
+            StartGame();
+        }
+        if (IsOwner)
+        {
+            Debug.Log(mapLogic.Value.isBattleRoyale);
+        }
+
+        if (started && !mapLogic.Value.isBattleRoyale)
+        {
+            farmStageTimer += Time.deltaTime;
+       
+            if (farmStageTimer >= mapLogic.Value.totalTime)
+            {
+                if (IsServer)
+                {
+                    mapLogic.Value.isBattleRoyale = true;
+                    SendMapBattleRoyaleValueClientRpc(true);
+                }
+            }
+        }
+
+    }
     #region ServerRpc
     [ServerRpc]
     public void SetTimeToStartServerRpc(float time)
     {
         netTimeToStart.Value += time;
     }
-
-
+    [ServerRpc]
+    public void ReduceTotalTimeServerRpc(float val)
+    {
+        mapLogic.Value.totalTime -= val;
+    }
+    [ServerRpc]
+    public void SetBattleRoyaleServerRpc(bool val)
+    {
+        if (IsOwner) mapLogic.Value.isBattleRoyale = val;
+    }
     [ServerRpc]
     public void SetMapLogicClientServerRpc(int numberOfPlayers,int numberOfPlayersAlive,float zoneRadiusExpandSpeed,int totalTime,float enemiesSpawnRate,float zoneRadius)
     {
@@ -266,6 +306,11 @@ public class GameController : NetworkBehaviour
     public void SetPlayerPosClientRpc(Vector3 pos, int playerIndex)
     {
         players[playerIndex].position = pos;
+    }
+    [ClientRpc]
+    public void SendMapBattleRoyaleValueClientRpc(bool val)
+    {
+        mapLogic.Value.isBattleRoyale = val;
     }
 
     [ClientRpc]

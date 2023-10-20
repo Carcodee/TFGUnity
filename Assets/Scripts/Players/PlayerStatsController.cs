@@ -119,6 +119,10 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     {
         return damage.Value;
     }
+    public int GetLevel()
+    {
+        return playerLevel.Value;
+    }
     public void LevelUp()
     {
         playerLevel.Value++;
