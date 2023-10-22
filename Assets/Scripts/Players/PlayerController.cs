@@ -95,7 +95,7 @@ public class PlayerController : NetworkBehaviour,IMovable
         if (IsOwner)
         {
             RotatePlayer();
-            //ask weston about this
+
             transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.deltaTime);
 
         }
@@ -153,17 +153,18 @@ public class PlayerController : NetworkBehaviour,IMovable
     void RotatePlayer()
     {
         Vector3 playerMovement=new Vector3(move.x,0,move.z).normalized;
+        float mouseX = Input.GetAxisRaw("Mouse X");
+
         if (playerMovement.z < 0)
         {
+
             return;
         }
 
-        float targetAngle = Mathf.Atan2(playerMovement.x, playerMovement.z) * Mathf.Rad2Deg + cinemachineCameraTarget.rotation.eulerAngles.y;
+            float targetAngle = (Mathf.Atan2(0, playerMovement.z) * Mathf.Rad2Deg) + cinemachineCameraTarget.rotation.eulerAngles.y;
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _rotationVelocity, RotationSmoothTime);
             transform.rotation = Quaternion.Euler(0f, rotation, 0f);
-
-        Vector3 targetDirection = Quaternion.Euler(0.0f, rotation, 0.0f) * Vector3.forward;
-
+        //transform.Rotate(Vector3.up * mouseX);
     }
 
     Vector3 GetGroundPosFromPoint(Vector3 pos)

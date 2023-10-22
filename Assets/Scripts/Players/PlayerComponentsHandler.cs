@@ -120,7 +120,7 @@ public class PlayerComponentsHandler : NetworkBehaviour
     private void CameraRotation(Vector3 look)
     {
         // if there is an input and camera position is not fixed
-        if (look.sqrMagnitude >= _threshold && !LockCameraPosition)
+        if (look.sqrMagnitude >= _threshold )
         {
             //Don't multiply mouse input by Time.deltaTime;
             float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
