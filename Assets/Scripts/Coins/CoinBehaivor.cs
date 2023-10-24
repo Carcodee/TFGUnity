@@ -8,9 +8,9 @@ using UnityEngine;
 public class CoinBehaivor : NetworkBehaviour
 {
     public NetworkVariable<ulong> networkPlayerID = new NetworkVariable<ulong>();
+    public NetworkVariable <int> zoneAssigned;
 
-    zoneColors zone;
-
+    public static Action<CoinBehaivor> OnCoinCollected;
 
 
     void Start()
@@ -25,29 +25,25 @@ public class CoinBehaivor : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-            if (IsServer)
+        if (!IsServer) return;
+        if (other.TryGetComponent(out PlayerStatsController playerRef))
+        {
+            if (playerRef.OwnerClientId == networkPlayerID.Value)
             {
-                if (other.TryGetComponent(out PlayerStatsController playerRef))
-                {
-                    if (playerRef.OwnerClientId == networkPlayerID.Value)
-                    {
-                        //something happens
-                        playerRef.LevelUp();
-                        //TakeCoinClientRpc(playerRef.GetComponent<NetworkObject>().NetworkObjectId);
-                    }
+
+                //something happens
+                playerRef.LevelUp();
+
+                CoinCollectedClientRpc();
 
             }
+
         }
     }
 
-    #region client
     [ClientRpc]
-    public void TakeCoinClientRpc(ulong playerID)
+    public void CoinCollectedClientRpc()
     {
-        if (IsOwner)
-        {
-            //NetworkManager.Singleton.SpawnManager.SpawnedObjects[playerID].GetComponent<PlayerStatsController>().LevelUpServerRpc();
-        }
+        OnCoinCollected?.Invoke(gameObject.GetComponent<CoinBehaivor>());
     }
-    #endregion
 }
