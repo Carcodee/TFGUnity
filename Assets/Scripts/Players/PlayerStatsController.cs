@@ -2,7 +2,9 @@ using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -19,8 +21,10 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     [SerializeField] private NetworkVariable<int> stamina = new NetworkVariable<int>();
     [SerializeField] private NetworkVariable<int> damage = new NetworkVariable<int>();
     [SerializeField] private NetworkVariable<int> armor = new NetworkVariable<int>();
-    [SerializeField] private NetworkVariable<float> speed = new NetworkVariable<float>();
+    [SerializeField] private NetworkVariable<int> speed = new NetworkVariable<int>();
     [SerializeField] private NetworkVariable<int> playerLevel = new NetworkVariable<int>();
+    [SerializeField] private NetworkVariable<int> avaliblePoints = new NetworkVariable<int>();
+    public string[] statHolder;
 
     [Header("Current Gamelogic")]
     public NetworkVariable<zoneColors> zoneAsigned=new NetworkVariable<zoneColors>();
@@ -32,7 +36,6 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
 
     [Header("NetCode")]
     public NetworkObject playerObj;
-    //public NetworkVariable<float> netHaste = new NetworkVariable<float>();
 
     private void Awake()
     {
@@ -52,7 +55,18 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     {
 
     }
+    public void FillStatHolder()
+    {
+        //change this to the heap memory
+        statHolder = new string[6];
+        statHolder[0] = nameof(haste);
+        statHolder[1] = nameof(health);
+        statHolder[2] = nameof(stamina);
+        statHolder[3] = nameof(damage);
+        statHolder[4] = nameof(armor);
+        statHolder[5] = nameof(speed);
 
+    }
 
     void InitializateStats()
     {
@@ -70,13 +84,14 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         SetDamageServerRpc(statsTemplates[statsTemplateSelected.Value].damage);
         SetArmorServerRpc(statsTemplates[statsTemplateSelected.Value].armor);
         SetSpeedServerRpc(statsTemplates[statsTemplateSelected.Value].speed);
-        SetLevelServerRpc();
+        SetLevelServerRpc(1);
+        SetAvaliblePoints(0);
 
         //Stats on controller player
         Debug.Log("Before setting speed: " + speed.Value);
         transform.GetComponent<PlayerController>().SetSpeedStateServerRpc(statsTemplates[statsTemplateSelected.Value].speed);
         Debug.Log("After setting speed: " + speed.Value);
-
+        FillStatHolder();
     }
 
     public void SetStats()
@@ -123,9 +138,38 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     {
         return playerLevel.Value;
     }
+    public int GetHealth()
+    {
+        return health.Value;
+    }
+    public int GetArmor()
+    {
+        return armor.Value;
+    }
+    public int GetHaste()
+    {
+        return haste.Value;
+    }
+    public int GetStamina()
+    {
+        return stamina.Value;
+    }
+    public int GetAvaliblePoints()
+    {
+        return avaliblePoints.Value;
+    }
+
     public void LevelUp()
     {
         playerLevel.Value++;
+    }
+    public void AddAvaliblePoint()
+    {
+        avaliblePoints.Value++;
+    }
+    public void RemoveAvaliblePoint()
+    {
+        avaliblePoints.Value--;
     }
     #region ServerRpc
 
@@ -162,15 +206,20 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         stamina.Value = staminaPoint;
     }
     [ServerRpc]
-    private void SetSpeedServerRpc(float speedPoint)
+    private void SetSpeedServerRpc(int speedPoint)
     {
         speed.Value = speedPoint;
     }
     //Level--------
     [ServerRpc]
-    public void SetLevelServerRpc()
+    public void SetLevelServerRpc(int val)
     {
-        playerLevel.Value=1;
+        playerLevel.Value= val;
+    }
+    //AvaliblePoints
+    public void SetAvaliblePoints(int val)
+    {
+        avaliblePoints.Value=val;
     }
 
 

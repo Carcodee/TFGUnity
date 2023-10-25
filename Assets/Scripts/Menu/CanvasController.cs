@@ -34,7 +34,7 @@ public class CanvasController : MonoBehaviour
 
 
     [Header("Panels")]
-    public GameObject statsPanel;
+    public StatsPanelController panel;
 
     [Header("Ref")]
     public PlayerStatsController playerAssigned;

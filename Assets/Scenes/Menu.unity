@@ -7015,6 +7015,8 @@ MonoBehaviour:
     m_InternalValue: 0
   numberOfPlayersAlive:
     m_InternalValue: 0
+  randomPoint:
+    m_InternalValue: {x: 0, y: 0, z: 0}
   coinPrefab: {fileID: 331007805235256181, guid: 8d81f148e89dcad4bbd1e53767679d49,
     type: 3}
   spawnPoints:
