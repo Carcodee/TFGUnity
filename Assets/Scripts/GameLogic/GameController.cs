@@ -235,11 +235,6 @@ public class GameController : NetworkBehaviour
         {
             StartGame();
         }
-        if (IsOwner)
-        {
-            Debug.Log(mapLogic.Value.isBattleRoyale);
-        }
-
         if (started && !mapLogic.Value.isBattleRoyale)
         {
             farmStageTimer += Time.deltaTime;

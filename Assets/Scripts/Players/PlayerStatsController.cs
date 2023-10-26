@@ -25,6 +25,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     [SerializeField] private NetworkVariable<int> playerLevel = new NetworkVariable<int>();
     [SerializeField] private NetworkVariable<int> avaliblePoints = new NetworkVariable<int>();
     public string[] statHolder;
+    public int[] statHolderValues;
 
     [Header("Current Gamelogic")]
     public NetworkVariable<zoneColors> zoneAsigned=new NetworkVariable<zoneColors>();
@@ -37,17 +38,23 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     [Header("NetCode")]
     public NetworkObject playerObj;
 
-    private void Awake()
-    {
-     
-    }
-    void Start()
+    public override void OnNetworkSpawn()
     {
         if (IsOwner)
         {
             OnSpawnPlayer += InitializateStats;
             iDamageable = GetComponent<IDamageable>();
+            InitializateStats();
         }
+    }
+
+    private void Awake()
+    {
+
+    }
+    void Start()
+    {
+
 
     }
 
@@ -65,6 +72,14 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         statHolder[3] = nameof(damage);
         statHolder[4] = nameof(armor);
         statHolder[5] = nameof(speed);
+
+        statHolderValues = new int[6];
+        statHolderValues[0] = haste.Value;
+        statHolderValues[1] = health.Value;
+        statHolderValues[2] = stamina.Value;
+        statHolderValues[3] = damage.Value;
+        statHolderValues[4] = armor.Value;
+        statHolderValues[5] = speed.Value;
 
     }
 
@@ -85,7 +100,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         SetArmorServerRpc(statsTemplates[statsTemplateSelected.Value].armor);
         SetSpeedServerRpc(statsTemplates[statsTemplateSelected.Value].speed);
         SetLevelServerRpc(1);
-        SetAvaliblePoints(0);
+        SetAvaliblePointsServerRpc(3);
 
         //Stats on controller player
         Debug.Log("Before setting speed: " + speed.Value);
@@ -217,11 +232,16 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         playerLevel.Value= val;
     }
     //AvaliblePoints
-    public void SetAvaliblePoints(int val)
+    [ServerRpc]
+    public void SetAvaliblePointsServerRpc(int val)
     {
         avaliblePoints.Value=val;
     }
-
+    [ServerRpc]
+    public void AddValueFromButtonServerRpc(int index)
+    {
+        damage.Value++;
+    }
 
 
     [ServerRpc]

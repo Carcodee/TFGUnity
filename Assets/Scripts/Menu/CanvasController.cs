@@ -10,7 +10,6 @@ using UnityEngine.UI;
 public class CanvasController : MonoBehaviour
 {
     Canvas canvas;
-
     [Header("Game")]
     public TextMeshProUGUI timeLeft;
     public TextMeshProUGUI playersAlive;
@@ -32,9 +31,6 @@ public class CanvasController : MonoBehaviour
     [Header("Buttons")]
     public Button openStatsButton;
 
-
-    [Header("Panels")]
-    public StatsPanelController panel;
 
     [Header("Ref")]
     public PlayerStatsController playerAssigned;

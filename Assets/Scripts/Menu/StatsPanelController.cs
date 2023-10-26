@@ -1,13 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class StatsPanelController : MonoBehaviour
 {
+
     [Header("References")]
-    PlayerStatsController playerStatsController;
+    [SerializeField]private PlayerStatsController playerStatsController;
 
     [Header("Stats")]
     public TextMeshProUGUI hasteStat;
@@ -21,30 +24,58 @@ public class StatsPanelController : MonoBehaviour
     public TextMeshProUGUI level;
     public TextMeshProUGUI avaliblePointsText;
 
+    [Header("Buttons")]
+    public Button[] buttons;
+
     [Header("Sesion Variables")]
-    int avaliblePoints;
-    int sesionPoints;   
+    [SerializeField]private int avaliblePoints;
+    [SerializeField]private int sesionPoints;
+
+    private void OnEnable()
+    {
+
+    }
 
     void Start()
     {
-        playerStatsController=GetComponent<PlayerStatsController>();
-    }
 
+        playerStatsController=GetComponentInParent<PlayerStatsController>();
+        AddListenersToButtons();
+    }
+    
     void Update() 
     {
-        
+        OpenPanel();
     }
+
+
+    public void AddListenersToButtons()
+    {
+        buttons[0].onClick.RemoveAllListeners();
+        buttons[0].onClick.AddListener(() => AddPoint("damage"));
+        Debug.Log("Add Listeners");
+    }
+
     public void AddPoint(string statName)
     {
-        if (avaliblePoints <= 0) return;
-        avaliblePoints--;
+
+        if (avaliblePoints <= 0)
+        {
+            Debug.Log("Not points");
+            return;
+        }
         for (int i = 0; i < playerStatsController.statHolder.Length; i++)
         {
-            if (playerStatsController.statHolder[i]==statName)
+            if (playerStatsController.statHolder[i] == statName)
             {
+                playerStatsController.AddValueFromButtonServerRpc(i);
+                avaliblePoints--;
+                Debug.Log("Add Value From Button");
+                return;
                 //add add stat
             }
         }
+        Debug.Log("Not finded");
 
     }
     public void RemovePoint(string statName)
@@ -61,8 +92,11 @@ public class StatsPanelController : MonoBehaviour
         }
 
     }
+
     public void OpenPanel()
     {
+        //WROOOOOOOOOOng
+        // to do this is being called all time so it will never change.
         avaliblePoints = playerStatsController.GetAvaliblePoints();
         avaliblePointsText.text = "Avalible Points: " + avaliblePoints.ToString();
         level.text ="Level: " + playerStatsController.GetLevel().ToString();

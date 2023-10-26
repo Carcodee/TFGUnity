@@ -108,6 +108,7 @@ public class PlayerComponentsHandler : NetworkBehaviour
         canvas.GetComponentInChildren<Button>().onClick.AddListener(transform.GetComponent<PlayerStatsController>().OnSpawnPlayer);
         playerNameText = canvas.GetComponentInChildren<TextMeshProUGUI>();
 
+
         rb= GetComponent<Rigidbody>();
         rb.isKinematic = true;
     }
