@@ -8,31 +8,38 @@ using UnityEngine.UI;
 
 public class StatsPanelController : MonoBehaviour
 {
+    UnityAction OnPannelOpen;
 
     [Header("References")]
     [SerializeField]private PlayerStatsController playerStatsController;
 
     [Header("Stats")]
-    public TextMeshProUGUI hasteStat;
-    public TextMeshProUGUI healthStat;
-    public TextMeshProUGUI staminaStat;
-    public TextMeshProUGUI damageStat;
-    public TextMeshProUGUI armorStat;
-    public TextMeshProUGUI speedStat;
+    public TextMeshProUGUI [] statValues;
+
 
     [Header("HeadStats")]
     public TextMeshProUGUI level;
     public TextMeshProUGUI avaliblePointsText;
 
     [Header("Buttons")]
-    public Button[] buttons;
-
+    public Button[] addButtons;
+    public Button[] removeButtons;
+    public Button openPannel;
+    
     [Header("Sesion Variables")]
+
     [SerializeField]private int avaliblePoints;
     [SerializeField]private int sesionPoints;
 
+
+    [Header("Animation")]
+    public float animationTime;
+    public float animationSpeed;
+    public float animationFunction;
+
     private void OnEnable()
     {
+        OnPannelOpen+=OpenPanel;
 
     }
 
@@ -45,15 +52,35 @@ public class StatsPanelController : MonoBehaviour
     
     void Update() 
     {
-        OpenPanel();
     }
 
+    public void AnimatePanel()
+    {
 
+    }
     public void AddListenersToButtons()
     {
-        buttons[0].onClick.RemoveAllListeners();
-        buttons[0].onClick.AddListener(() => AddPoint("damage"));
-        Debug.Log("Add Listeners");
+        for (int i = 0; i < addButtons.Length; i++)
+        {
+            PointButtonFunction(addButtons[i], "+", playerStatsController.statHolderNames[i]);
+            PointButtonFunction(removeButtons[i], "-", playerStatsController.statHolderNames[i]);
+        }
+        openPannel.onClick.RemoveAllListeners();
+        openPannel.onClick.AddListener(OnPannelOpen);
+    }
+
+    public void PointButtonFunction(Button button, string operation, string stat)
+    {
+        if (button == null) return;
+        button.onClick.RemoveAllListeners();
+        if (operation=="+")
+        {
+            button.onClick.AddListener(() => AddPoint(stat));
+        }
+        else if(operation=="-")
+        {
+            button.onClick.AddListener(() => RemovePoint(stat));
+        }
     }
 
     public void AddPoint(string statName)
@@ -64,12 +91,14 @@ public class StatsPanelController : MonoBehaviour
             Debug.Log("Not points");
             return;
         }
-        for (int i = 0; i < playerStatsController.statHolder.Length; i++)
+        for (int i = 0; i < playerStatsController.statHolderNames.Length; i++)
         {
-            if (playerStatsController.statHolder[i] == statName)
+            if (playerStatsController.statHolderNames[i] == statName)
             {
-                playerStatsController.AddValueFromButtonServerRpc(i);
+                playerStatsController.AddValueFromButton(i);
                 avaliblePoints--;
+                playerStatsController.OnStatsChanged?.Invoke();
+                UpdateStats();
                 Debug.Log("Add Value From Button");
                 return;
                 //add add stat
@@ -83,9 +112,9 @@ public class StatsPanelController : MonoBehaviour
        
         if (avaliblePoints >= sesionPoints) return;
         avaliblePoints++;
-        for (int i = 0; i < playerStatsController.statHolder.Length; i++)
+        for (int i = 0; i < playerStatsController.statHolderNames.Length; i++)
         {
-            if (playerStatsController.statHolder[i] == statName)
+            if (playerStatsController.statHolderNames[i] == statName)
             {
                 //sustract stat
             }
@@ -101,9 +130,24 @@ public class StatsPanelController : MonoBehaviour
         avaliblePointsText.text = "Avalible Points: " + avaliblePoints.ToString();
         level.text ="Level: " + playerStatsController.GetLevel().ToString();
         sesionPoints = playerStatsController.GetAvaliblePoints();
+        for (int i = 0; i < statValues.Length; i++)
+        {
+            statValues[i].text = playerStatsController.statHolder[i].ToString();
+        }
+
+    }
+    public void ClosePanel()
+    {
+        avaliblePoints = 0;
+        sesionPoints = 0;
     }
     public void UpdateStats()
     {
-
+        avaliblePointsText.text = "Avalible Points: " + avaliblePoints.ToString();
+        level.text = "Level: " + playerStatsController.GetLevel().ToString();
+        for (int i = 0; i < statValues.Length; i++)
+        {
+            statValues[i].text = playerStatsController.statHolder[i].ToString();
+        }
     }
 }

@@ -21,7 +21,6 @@ public class BulletController : NetworkBehaviour
     void Update()
     {
 
-            Debug.Log("Bullet Fired");
 
             rb.velocity = -Direction * speed;
         

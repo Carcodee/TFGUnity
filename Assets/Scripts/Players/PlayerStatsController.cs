@@ -11,6 +11,8 @@ using UnityEngine.Events;
 public class PlayerStatsController : NetworkBehaviour, IDamageable
 {
     public UnityAction OnSpawnPlayer;
+    public UnityAction OnStatsChanged;
+
     [Header("References")]
     public StatsTemplate[] statsTemplates;
     public NetworkVariable <int> statsTemplateSelected;
@@ -22,10 +24,11 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     [SerializeField] private NetworkVariable<int> damage = new NetworkVariable<int>();
     [SerializeField] private NetworkVariable<int> armor = new NetworkVariable<int>();
     [SerializeField] private NetworkVariable<int> speed = new NetworkVariable<int>();
+
     [SerializeField] private NetworkVariable<int> playerLevel = new NetworkVariable<int>();
     [SerializeField] private NetworkVariable<int> avaliblePoints = new NetworkVariable<int>();
-    public string[] statHolder;
-    public int[] statHolderValues;
+    public string[] statHolderNames;
+    public int[] statHolder;
 
     [Header("Current Gamelogic")]
     public NetworkVariable<zoneColors> zoneAsigned=new NetworkVariable<zoneColors>();
@@ -42,12 +45,19 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     {
         if (IsOwner)
         {
+            base.OnNetworkSpawn();
             OnSpawnPlayer += InitializateStats;
+            OnStatsChanged += UpdateStats;
             iDamageable = GetComponent<IDamageable>();
             InitializateStats();
         }
     }
+    public override void OnNetworkDespawn()
+    {
+        OnSpawnPlayer -= InitializateStats;
+        OnStatsChanged -= UpdateStats;
 
+    }
     private void Awake()
     {
 
@@ -62,24 +72,38 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     {
 
     }
-    public void FillStatHolder()
+    public void FillStatNameHolder()
     {
-        //change this to the heap memory
-        statHolder = new string[6];
-        statHolder[0] = nameof(haste);
-        statHolder[1] = nameof(health);
-        statHolder[2] = nameof(stamina);
-        statHolder[3] = nameof(damage);
-        statHolder[4] = nameof(armor);
-        statHolder[5] = nameof(speed);
+        statHolderNames = new string[6];
+        statHolderNames[0] =nameof (haste);
+        statHolderNames[1] = nameof(health);
+        statHolderNames[2] = nameof(stamina);
+        statHolderNames[3] = nameof(damage);
+        statHolderNames[4] = nameof(armor);
+        statHolderNames[5] = nameof(speed);
 
-        statHolderValues = new int[6];
-        statHolderValues[0] = haste.Value;
-        statHolderValues[1] = health.Value;
-        statHolderValues[2] = stamina.Value;
-        statHolderValues[3] = damage.Value;
-        statHolderValues[4] = armor.Value;
-        statHolderValues[5] = speed.Value;
+
+
+    }
+    public void FillArrayHolder()
+    {
+        statHolder= new int[6];
+        statHolder[0]=haste.Value;
+        statHolder[1] = health.Value;
+        statHolder[2] = stamina.Value;
+        statHolder[3]= damage.Value;
+        statHolder[4] = armor.Value;
+        statHolder[5]= speed.Value;
+    }
+
+    void UpdateStats()
+    {
+        SetHasteServerRpc(statHolder[0]);
+        SetHealthServerRpc(statHolder[1]);
+        SetStaminaServerRpc(statHolder[2]);
+        SetDamageServerRpc(statHolder[3]);
+        SetArmorServerRpc(statHolder[4]);
+        SetSpeedServerRpc(statHolder[5]);
 
     }
 
@@ -101,12 +125,12 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         SetSpeedServerRpc(statsTemplates[statsTemplateSelected.Value].speed);
         SetLevelServerRpc(1);
         SetAvaliblePointsServerRpc(3);
-
+        FillArrayHolder();
         //Stats on controller player
         Debug.Log("Before setting speed: " + speed.Value);
         transform.GetComponent<PlayerController>().SetSpeedStateServerRpc(statsTemplates[statsTemplateSelected.Value].speed);
         Debug.Log("After setting speed: " + speed.Value);
-        FillStatHolder();
+        FillStatNameHolder();
     }
 
     public void SetStats()
@@ -139,7 +163,10 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
             Destroy(gameObject);
         }
     }
-
+    public void AddValueFromButton(int index)
+    {
+        statHolder[index]++;
+    }
 
     public float GetSpeed()
     {
@@ -237,11 +264,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     {
         avaliblePoints.Value=val;
     }
-    [ServerRpc]
-    public void AddValueFromButtonServerRpc(int index)
-    {
-        damage.Value++;
-    }
+
 
 
     [ServerRpc]
@@ -262,6 +285,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     {
         zoneAsigned.Value = zone;
     }
+
 
 
     #endregion

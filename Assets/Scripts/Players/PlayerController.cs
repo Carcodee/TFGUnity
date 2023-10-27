@@ -11,9 +11,9 @@ using UnityEngine.UIElements;
 public class PlayerController : NetworkBehaviour,IMovable
 {
     [Header("Player Stats")]
-    public NetworkVariable<float> networkSpeed = new NetworkVariable<float>();
     public float speedHolder;
     public NetworkVariable<float> netSprintFactor = new NetworkVariable<float>();
+    public NetworkVariable<float> networkSpeed = new NetworkVariable<float>();
 
 
     [Header("Player Components")]
@@ -28,6 +28,10 @@ public class PlayerController : NetworkBehaviour,IMovable
     public Transform targetPos;
     public Transform headAim;
     public Transform spawnBulletPoint;
+
+    [Header("Shoot")]
+    public float shootRate = 0.1f;
+    public float shootTimer = 0f;
 
 
     [Header("Player Movement")]
@@ -153,7 +157,6 @@ public class PlayerController : NetworkBehaviour,IMovable
     void RotatePlayer()
     {
         Vector3 playerMovement=new Vector3(move.x,0,move.z).normalized;
-        float mouseX = Input.GetAxisRaw("Mouse X");
 
         if (playerMovement.z < 0)
         {
@@ -164,7 +167,6 @@ public class PlayerController : NetworkBehaviour,IMovable
             float targetAngle = (Mathf.Atan2(0, playerMovement.z) * Mathf.Rad2Deg) + cinemachineCameraTarget.rotation.eulerAngles.y;
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _rotationVelocity, RotationSmoothTime);
             transform.rotation = Quaternion.Euler(0f, rotation, 0f);
-        //transform.Rotate(Vector3.up * mouseX);
     }
 
     Vector3 GetGroundPosFromPoint(Vector3 pos)
@@ -182,8 +184,8 @@ public class PlayerController : NetworkBehaviour,IMovable
     }
     public void Shoot()
     {
-
-        if (Input.GetKey(KeyCode.Mouse0))
+        shootTimer += Time.deltaTime;
+        if (Input.GetKey(KeyCode.Mouse0)&& shootTimer > shootRate)
         {
             if (IsServer)
             {
@@ -199,7 +201,7 @@ public class PlayerController : NetworkBehaviour,IMovable
                 {
                      direction = spawnBulletPoint.position - cameraRef.transform.forward * distanceFactor;
                 }
-
+                
                 BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
                 bullet.Direction = direction.normalized;
                 bullet.damage = GetComponent<PlayerStatsController>().GetDamageDone();
@@ -222,6 +224,7 @@ public class PlayerController : NetworkBehaviour,IMovable
                 }
                 ShootServerRpc(direction, GetComponent<PlayerStatsController>().GetDamageDone());
             }
+            shootTimer=0;
         }
     }
 
