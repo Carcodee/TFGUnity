@@ -11,7 +11,7 @@ public class CoinBehaivor : NetworkBehaviour
     public NetworkVariable <int> zoneAssigned;
 
     public static Action<CoinBehaivor> OnCoinCollected;
-
+    public GameObject coinEffectPrefab;
 
     void Start()
     {
@@ -25,18 +25,20 @@ public class CoinBehaivor : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!IsServer) return;
-        if (other.TryGetComponent(out PlayerStatsController playerRef))
+        if (IsServer)
         {
-            if (playerRef.OwnerClientId == networkPlayerID.Value)
+            if (other.TryGetComponent(out PlayerStatsController playerRef))
             {
-
-                //something happens
-                playerRef.LevelUp();
-
-                CoinCollectedClientRpc();
-
+                if (playerRef.OwnerClientId == networkPlayerID.Value)
+                {
+                    //something happens
+                    playerRef.LevelUp();
+                    CoinCollectedClientRpc();
+                }
             }
+        }
+        else
+        {
 
         }
     }
@@ -44,6 +46,7 @@ public class CoinBehaivor : NetworkBehaviour
     [ClientRpc]
     public void CoinCollectedClientRpc()
     {
+        Instantiate(coinEffectPrefab, transform.position, Quaternion.identity);
         OnCoinCollected?.Invoke(gameObject.GetComponent<CoinBehaivor>());
     }
 }
