@@ -14,6 +14,7 @@ public class StatsPanelController : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private PlayerStatsController playerStatsController;
+    public GameObject [] statsObjects;
 
     [Header("Stats")]
     public TextMeshProUGUI[] statValues;
@@ -42,10 +43,17 @@ public class StatsPanelController : MonoBehaviour
     public Vector3 endPos;
     public Vector3 startPos;
 
+    [Header("Selector")]
+    public GameObject selector;
+    public GameObject buttonSelector;
+    public int selectorIndex=0;
+    public int buttonSelectorIndex=1;
+
     private void OnEnable()
     {
         OnPannelOpen += OpenPanel;
         OnPannelClosed += ClosePanel;
+
         
     }
     private void OnDisable()
@@ -56,7 +64,9 @@ public class StatsPanelController : MonoBehaviour
 
     void Start()
     {
-        isPanelOpen=false;
+        selectorIndex = 0;
+        buttonSelectorIndex = 1;
+        isPanelOpen =false;
         playerStatsController = GetComponentInParent<PlayerStatsController>();
         AddListenersToButtons();
         endPos= targetPos.localPosition;
@@ -71,6 +81,7 @@ public class StatsPanelController : MonoBehaviour
             HandlePanel();
         }
         AnimatePanel();
+        HandleSelector();
     }
     public void HandlePanel()
     {
@@ -83,6 +94,46 @@ public class StatsPanelController : MonoBehaviour
             OnPannelClosed?.Invoke();
         }
     }
+    public void HandleSelector()
+    {
+        if (isPanelOpen)
+        {
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                buttonSelector.transform.position = removeButtons[selectorIndex].transform.position;
+                buttonSelectorIndex = 0;
+            }
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                buttonSelector.transform.position = addButtons[selectorIndex].transform.position;
+                buttonSelectorIndex = 1;
+
+            }
+
+            if (Input.GetKeyDown(KeyCode.DownArrow) && selectorIndex < statsObjects.Length - 1)
+            {
+                selectorIndex++;
+            }
+            if (Input.GetKeyDown(KeyCode.UpArrow) && selectorIndex > 0)
+            {
+                selectorIndex--;
+            }
+
+            selector.transform.position = statsObjects[selectorIndex].transform.position;
+
+            if (Input.GetKeyDown(KeyCode.Return) && buttonSelectorIndex == 0)
+            {
+                removeButtons[selectorIndex].onClick.Invoke();
+            }
+            if (Input.GetKeyDown(KeyCode.Return) && buttonSelectorIndex == 1)
+            {
+                addButtons[selectorIndex].onClick.Invoke();
+            }
+
+        }
+
+    }
+
     public void AnimatePanel()
     {
         if (isPanelOpen && animationTime<1)

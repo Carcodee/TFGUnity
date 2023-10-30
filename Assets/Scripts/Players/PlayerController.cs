@@ -11,9 +11,9 @@ using UnityEngine.UIElements;
 public class PlayerController : NetworkBehaviour,IMovable
 {
     [Header("Player Stats")]
+    public PlayerStatsController playerStats;
     public float speedHolder;
     public NetworkVariable<float> netSprintFactor = new NetworkVariable<float>();
-    public NetworkVariable<float> networkSpeed = new NetworkVariable<float>();
 
 
     [Header("Player Components")]
@@ -73,6 +73,7 @@ public class PlayerController : NetworkBehaviour,IMovable
         {
             
             _iMovable = GetComponent<IMovable>();
+            playerStats=GetComponent<PlayerStatsController>();  
             SetSpeedStateServerRpc(5);
         }
 
@@ -100,7 +101,7 @@ public class PlayerController : NetworkBehaviour,IMovable
         {
             RotatePlayer();
 
-            transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.deltaTime);
+            transform.Translate(move * playerStats.GetSpeed() * netSprintFactor.Value * Time.deltaTime);
 
         }
 
@@ -112,18 +113,18 @@ public class PlayerController : NetworkBehaviour,IMovable
         switch (playerMovementStates)
         {
             case PlayerMovementStates.runnning:
-                transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.deltaTime);
+                transform.Translate(move * playerStats.GetSpeed() * netSprintFactor.Value * Time.deltaTime);
                 break;
             case PlayerMovementStates.sprinting:
                 isSprinting = true;
                 SetSprintFactor(sprintFactor);
-                transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.deltaTime);
+                transform.Translate(move * playerStats.GetSpeed() * netSprintFactor.Value * Time.deltaTime);
 
                 break;
             case PlayerMovementStates.crouching:
                 isCrouching = true;
                 SetSprintFactor(crouchFactor);
-                transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.deltaTime);
+                transform.Translate(move * playerStats.GetSpeed() * netSprintFactor.Value * Time.deltaTime);
 
                 break;
             case PlayerMovementStates.sliding:
@@ -136,7 +137,7 @@ public class PlayerController : NetworkBehaviour,IMovable
                     slidingTimer = 0;
                 }
                 SetSprintFactor(slidingSpeed);
-                transform.Translate(move * networkSpeed.Value * netSprintFactor.Value * Time.deltaTime);
+                transform.Translate(move * playerStats.GetSpeed() * netSprintFactor.Value * Time.deltaTime);
                 break;
             case PlayerMovementStates.jumping:
                 break;
@@ -316,7 +317,6 @@ public class PlayerController : NetworkBehaviour,IMovable
 
         if (IsServer)
         {
-            networkSpeed.Value = speed;
         }
         else
         {
@@ -329,7 +329,6 @@ public class PlayerController : NetworkBehaviour,IMovable
     [ServerRpc]
     void SetSpeedClientServerRpc(float speed)
     {
-        networkSpeed.Value = speed;
     }
 
     [ServerRpc]
