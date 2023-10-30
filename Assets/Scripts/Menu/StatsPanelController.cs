@@ -2,19 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class StatsPanelController : MonoBehaviour
 {
-    UnityAction OnPannelOpen;
+    public UnityAction OnPannelOpen;
+    public UnityAction OnPannelClosed;
 
     [Header("References")]
-    [SerializeField]private PlayerStatsController playerStatsController;
+    [SerializeField] private PlayerStatsController playerStatsController;
 
     [Header("Stats")]
-    public TextMeshProUGUI [] statValues;
+    public TextMeshProUGUI[] statValues;
 
 
     [Header("HeadStats")]
@@ -25,38 +27,76 @@ public class StatsPanelController : MonoBehaviour
     public Button[] addButtons;
     public Button[] removeButtons;
     public Button openPannel;
-    
+
     [Header("Sesion Variables")]
 
-    [SerializeField]private int avaliblePoints;
-    [SerializeField]private int sesionPoints;
-
+    [SerializeField] private int avaliblePoints;
+    [SerializeField] private int sesionPoints;
+    public bool isPanelOpen { get;private set;}
 
     [Header("Animation")]
     public float animationTime;
     public float animationSpeed;
-    public float animationFunction;
+    public float animationFunction => 1 - Mathf.Pow(1 - animationTime, 3);
+    public Transform targetPos;
+    public Vector3 endPos;
+    public Vector3 startPos;
 
     private void OnEnable()
     {
-        OnPannelOpen+=OpenPanel;
-
+        OnPannelOpen += OpenPanel;
+        OnPannelClosed += ClosePanel;
+        
+    }
+    private void OnDisable()
+    {
+        OnPannelOpen -= OpenPanel;
+        OnPannelClosed -= ClosePanel;
     }
 
     void Start()
     {
-
-        playerStatsController=GetComponentInParent<PlayerStatsController>();
+        isPanelOpen=false;
+        playerStatsController = GetComponentInParent<PlayerStatsController>();
         AddListenersToButtons();
-    }
-    
-    void Update() 
-    {
+        endPos= targetPos.localPosition;
+        startPos= transform.localPosition;
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            isPanelOpen = !isPanelOpen;
+            HandlePanel();
+        }
+        AnimatePanel();
+    }
+    public void HandlePanel()
+    {
+        if (isPanelOpen)
+        {
+            OnPannelOpen?.Invoke();
+        }
+        else
+        {
+            OnPannelClosed?.Invoke();
+        }
+    }
     public void AnimatePanel()
     {
+        if (isPanelOpen && animationTime<1)
+        {
+            animationTime+=Time.deltaTime*animationSpeed;
+            Mathf.Clamp(animationTime, 0, 1);
+        }
+        if (!isPanelOpen&&animationTime>0)
+        {
+            animationTime-=Time.deltaTime*animationSpeed;
+            Mathf.Clamp(animationTime, 0, 1);
+        }
 
+        transform.localPosition=Vector3.Lerp(startPos, new Vector3(-endPos.x, transform.localPosition.y, 0), animationFunction);
     }
     public void AddListenersToButtons()
     {
@@ -73,11 +113,11 @@ public class StatsPanelController : MonoBehaviour
     {
         if (button == null) return;
         button.onClick.RemoveAllListeners();
-        if (operation=="+")
+        if (operation == "+")
         {
             button.onClick.AddListener(() => AddPoint(stat));
         }
-        else if(operation=="-")
+        else if (operation == "-")
         {
             button.onClick.AddListener(() => RemovePoint(stat));
         }
@@ -109,7 +149,7 @@ public class StatsPanelController : MonoBehaviour
     }
     public void RemovePoint(string statName)
     {
-       
+
         if (avaliblePoints >= sesionPoints) return;
         avaliblePoints++;
         for (int i = 0; i < playerStatsController.statHolderNames.Length; i++)
@@ -124,11 +164,10 @@ public class StatsPanelController : MonoBehaviour
 
     public void OpenPanel()
     {
-        //WROOOOOOOOOOng
-        // to do this is being called all time so it will never change.
+
         avaliblePoints = playerStatsController.GetAvaliblePoints();
         avaliblePointsText.text = "Avalible Points: " + avaliblePoints.ToString();
-        level.text ="Level: " + playerStatsController.GetLevel().ToString();
+        level.text = "Level: " + playerStatsController.GetLevel().ToString();
         sesionPoints = playerStatsController.GetAvaliblePoints();
         for (int i = 0; i < statValues.Length; i++)
         {
@@ -151,3 +190,4 @@ public class StatsPanelController : MonoBehaviour
         }
     }
 }
+

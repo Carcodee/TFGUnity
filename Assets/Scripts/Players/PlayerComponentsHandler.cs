@@ -27,6 +27,7 @@ public class PlayerComponentsHandler : NetworkBehaviour
     private CinemachineVirtualCamera cinemachineVirtualCameraInstance;
     [Header("UI")]
     public TextMeshProUGUI playerNameText;
+    public StatsPanelController statsPanelController;
     float timer = 0;
 
     [Header("Cinemachine Camera config")]
@@ -50,26 +51,38 @@ public class PlayerComponentsHandler : NetworkBehaviour
         if (IsOwner)
         {
             InstanciateComponents();
-
-        }
-
-    }
-
-    void Start()
-    {
-        if (IsOwner)
-        {
-    
             // Attach input events
             playerInput.onActionTriggered += HandleAction;
         }
+
+    }
+    private void Awake()
+    {
+        if (IsOwner)
+        {
+  
+        }
+    }
+    void Start()
+    {
+
 
     }
     void Update()
     {
         if (IsOwner)
         {
- 
+            IsCurrentDeviceMouse = !statsPanelController.isPanelOpen;
+            if (IsCurrentDeviceMouse)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
         }
     }
     private void LateUpdate()
@@ -77,6 +90,7 @@ public class PlayerComponentsHandler : NetworkBehaviour
         if (IsOwner)
         {
             CameraRotation(input.look);
+
         }
     }
     private void HandleAction(InputAction.CallbackContext context)
@@ -87,6 +101,8 @@ public class PlayerComponentsHandler : NetworkBehaviour
         }
         // Handle other actions as needed
     }
+
+
 
     void InstanciateComponents()
     {
@@ -99,7 +115,6 @@ public class PlayerComponentsHandler : NetworkBehaviour
             playerInput.actions = playerControls;
         }
 
-
         _cinemachineTargetYaw = cinemachineCameraTarget.transform.rotation.eulerAngles.y;
         GameObject camera = Instantiate(cameraPrefab);
         cinemachineVirtualCameraInstance = camera.GetComponentInChildren<CinemachineVirtualCamera>();
@@ -107,9 +122,10 @@ public class PlayerComponentsHandler : NetworkBehaviour
         Canvas canvas = Instantiate(canvasPrefab,transform);
         canvas.GetComponentInChildren<Button>().onClick.AddListener(transform.GetComponent<PlayerStatsController>().OnSpawnPlayer);
         playerNameText = canvas.GetComponentInChildren<TextMeshProUGUI>();
+        statsPanelController = GetComponentInChildren<StatsPanelController>();
 
 
-        rb= GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
         rb.isKinematic = true;
     }
 

@@ -58,6 +58,14 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         OnStatsChanged -= UpdateStats;
 
     }
+    private void OnEnable()
+    {
+        
+    }
+    private void OnDisable()
+    {
+        
+    }
     private void Awake()
     {
 
