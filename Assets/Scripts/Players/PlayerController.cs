@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Netcode.Components;
+using Unity.Networking.Transport.Error;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.UIElements;
@@ -54,7 +56,6 @@ public class PlayerController : NetworkBehaviour,IMovable
     Vector3 groundPivot;
     public LayerMask ground;
     [Header("Player Actions")]
-
     bool jump = false;
     bool isSprinting = false;
     bool isCrouching = false;
@@ -63,6 +64,9 @@ public class PlayerController : NetworkBehaviour,IMovable
     float xRotation = 0f;
     float yRotation = 0f;
 
+    public float reloadTime= 1f;
+    public float reloadCurrentTime = 0f;
+    public bool isReloading = false;
     [Header("Interfaces")]
     private IMovable _iMovable;
 
@@ -88,6 +92,7 @@ public class PlayerController : NetworkBehaviour,IMovable
             CrouchAndSprint();
             Move();
             Shoot();
+            Reloading();
         }
     }
     private void FixedUpdate()
@@ -183,11 +188,52 @@ public class PlayerController : NetworkBehaviour,IMovable
            return new Vector3(pos.x, 0, pos.z);
         }
     }
+    public void Reloading()
+    {
+        if (playerStats.totalAmmo<=0)
+        {
+            playerStats.totalAmmo = 0;
+            Debug.Log("Out of ammo find coins to fill your bullets");
+            return;
+        }
+        if (isReloading&&reloadCurrentTime<reloadTime)
+        {
+            reloadCurrentTime += Time.deltaTime;
+            if (reloadCurrentTime>reloadTime)
+            {
+                reloadCurrentTime = 0;
+                if (playerStats.totalAmmo <= playerStats.totalBullets)
+                {
+                    int tempBulletsToFill=playerStats.totalBullets- playerStats.currentBullets;
+                    playerStats.currentBullets += playerStats.totalAmmo;
+                    playerStats.totalAmmo -= tempBulletsToFill;
+                    isReloading = false;
+                }
+                else
+                {
+                    playerStats.totalAmmo -= playerStats.totalBullets - playerStats.currentBullets;
+                    playerStats.currentBullets += playerStats.totalBullets - playerStats.currentBullets;
+
+                    isReloading = false;
+
+                }
+                playerStats.currentBullets = Mathf.Clamp(playerStats.currentBullets, 0, playerStats.totalBullets);
+
+            }
+            return;
+        }
+        if ((Input.GetKeyDown(KeyCode.R)||playerStats.currentBullets<=0)&&(playerStats.currentBullets!=playerStats.totalBullets))
+        {
+            isReloading = true;
+            Debug.Log("Reloading");
+        }
+    }
     public void Shoot()
     {
         shootTimer += Time.deltaTime;
-        if (Input.GetKey(KeyCode.Mouse0)&& shootTimer > shootRate)
+        if (Input.GetKey(KeyCode.Mouse0)&& shootTimer > shootRate && playerStats.currentBullets>0 && !isReloading)
         {
+            playerStats.currentBullets--;
             if (IsServer)
             {
                 Vector3 direction;
@@ -349,5 +395,40 @@ public enum PlayerMovementStates
     crouching,
     sliding,
     aiming,
-    jumping
+    jumping,
+    reloading,
+    falling
+
+}
+
+public class AmmoBehaviour 
+{
+    int totalAmmo;
+    int currentBullets;
+    int totalBullets;
+    public AmmoBehaviour(int totalAmmo, int currentBullets, int totalBullets)
+    {
+        this.totalBullets = totalBullets;
+        this.totalAmmo = totalAmmo;
+        this.currentBullets = currentBullets;
+    }
+    public void AddAmmo(int ammo)
+    {
+        totalAmmo += ammo;
+    }
+    public void Reload()
+    {
+        if (totalAmmo<totalBullets)
+        {
+            currentBullets += totalAmmo;
+            currentBullets=Mathf.Clamp(currentBullets, 0, totalBullets);
+        }
+        else
+        {
+            currentBullets += totalBullets - currentBullets;
+
+        }
+        totalAmmo = totalBullets - currentBullets;
+
+    }
 }

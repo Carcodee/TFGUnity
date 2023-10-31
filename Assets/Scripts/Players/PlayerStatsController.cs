@@ -27,6 +27,10 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
 
     [SerializeField] private NetworkVariable<int> playerLevel = new NetworkVariable<int>();
     [SerializeField] private NetworkVariable<int> avaliblePoints = new NetworkVariable<int>();
+    public int totalAmmo;
+    public int totalBullets;
+    public int currentBullets;
+
     public string[] statHolderNames;
     public int[] statHolder;
 
@@ -134,6 +138,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         SetLevelServerRpc(1);
         SetAvaliblePointsServerRpc(3);
         FillArrayHolder();
+        currentBullets=totalBullets;
         //Stats on controller player
         Debug.Log("Before setting speed: " + speed.Value);
         transform.GetComponent<PlayerController>().SetSpeedStateServerRpc(statsTemplates[statsTemplateSelected.Value].speed);

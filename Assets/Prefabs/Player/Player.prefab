@@ -1576,8 +1576,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1138cd1f2ab782a45a71c9ebdc6b5078, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  networkSpeed:
-    m_InternalValue: 0
+  playerStats: {fileID: 0}
   speedHolder: 0
   netSprintFactor:
     m_InternalValue: 0
@@ -1592,6 +1591,9 @@ MonoBehaviour:
   targetPos: {fileID: 5843899536742480740}
   headAim: {fileID: 5843899536742480740}
   spawnBulletPoint: {fileID: 2006625581592264614}
+  shootRate: 0.1
+  shootTimer: 0
+  move: {x: 0, y: 0, z: 0}
   rotationFactor: 25
   RotationSmoothTime: 0.1
   _rotationVelocity: 0
@@ -1602,6 +1604,9 @@ MonoBehaviour:
   ground:
     serializedVersion: 2
     m_Bits: 256
+  reloadTime: 1
+  reloadCurrentTime: 0
+  isReloading: 0
 --- !u!114 &6344872551529989650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1633,6 +1638,13 @@ MonoBehaviour:
     m_InternalValue: 0
   playerLevel:
     m_InternalValue: 0
+  avaliblePoints:
+    m_InternalValue: 0
+  totalAmmo: 90
+  totalBullets: 30
+  currentBullets: 30
+  statHolderNames: []
+  statHolder: 
   zoneAsigned:
     m_InternalValue: 0
   coinPosition: {fileID: 0}
@@ -1661,6 +1673,7 @@ MonoBehaviour:
   cameraZoomPrefab: {fileID: 2763996978624655819, guid: afff5d7b3dc661d4eb1feea3be8b5858,
     type: 3}
   playerNameText: {fileID: 0}
+  statsPanelController: {fileID: 0}
   cinemachineCameraTarget: {fileID: 2578975527992398695}
   TopClamp: 70
   BottomClamp: -30

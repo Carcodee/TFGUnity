@@ -87,7 +87,7 @@ public class CanvasController : MonoBehaviour
     }
     private void DisplayBullets()
     {
-        bullets.text = "30/270";
+        bullets.text = playerAssigned.currentBullets + "/"+ playerAssigned.totalAmmo;
 
     }
     private void DisplayHP()
