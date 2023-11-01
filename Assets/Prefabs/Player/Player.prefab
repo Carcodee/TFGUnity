@@ -752,7 +752,7 @@ MonoBehaviour:
   m_BlendUpdateMethod: 1
   m_DefaultBlend:
     m_Style: 1
-    m_Time: 2
+    m_Time: 0.15
     m_CustomCurve:
       serializedVersion: 2
       m_Curve: []
@@ -1670,7 +1670,7 @@ MonoBehaviour:
     type: 3}
   cameraPrefab: {fileID: 2763996978624655819, guid: 70976f809ab9bac479ca9692002cd81f,
     type: 3}
-  cameraZoomPrefab: {fileID: 2763996978624655819, guid: afff5d7b3dc661d4eb1feea3be8b5858,
+  cameraZoomPrefab: {fileID: 2763996978624655819, guid: 71f46dd685b5bea43acdc3ab47188dd7,
     type: 3}
   playerNameText: {fileID: 0}
   statsPanelController: {fileID: 0}

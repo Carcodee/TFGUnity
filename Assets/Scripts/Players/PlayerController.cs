@@ -47,6 +47,7 @@ public class PlayerController : NetworkBehaviour,IMovable
     public float slidingSpeed = 3f;
     public float sprintFactor = 2.5f;
     public float crouchFactor = 0.5f;
+    public float AimingSpeedFactor = 0.5f;
 
     private float slidingTimer = 0f;
     
@@ -145,6 +146,12 @@ public class PlayerController : NetworkBehaviour,IMovable
                 transform.Translate(move * playerStats.GetSpeed() * netSprintFactor.Value * Time.deltaTime);
                 break;
             case PlayerMovementStates.jumping:
+                break;
+            case PlayerMovementStates.reloading:
+                break;
+            case PlayerMovementStates.Aiming:
+                break;
+            case PlayerMovementStates.falling:
                 break;
             default:
                 break;
@@ -397,6 +404,7 @@ public enum PlayerMovementStates
     aiming,
     jumping,
     reloading,
+    Aiming,
     falling
 
 }

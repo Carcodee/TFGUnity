@@ -33,6 +33,8 @@ public class CoinBehaivor : NetworkBehaviour
                 {
                     //something happens
                     playerRef.LevelUp();
+                    playerRef.RefillAmmo();
+
                     CoinCollectedClientRpc();
                 }
             }

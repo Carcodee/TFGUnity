@@ -5,7 +5,6 @@ using Unity.Netcode;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using UnityEngine.Windows;
 using StarterAssets;
 using UnityEngine.InputSystem;
 using Unity.VisualScripting;
@@ -25,6 +24,8 @@ public class PlayerComponentsHandler : NetworkBehaviour
 
     [Header("Ref")]
     private CinemachineVirtualCamera cinemachineVirtualCameraInstance;
+    private CinemachineVirtualCamera cinmachineCloseLookCameraIntance;
+
     [Header("UI")]
     public TextMeshProUGUI playerNameText;
     public StatsPanelController statsPanelController;
@@ -34,6 +35,7 @@ public class PlayerComponentsHandler : NetworkBehaviour
     public Transform cinemachineCameraTarget;
     private float _cinemachineTargetYaw;
     private float _cinemachineTargetPitch;
+
     [Tooltip("How far in degrees can you move the camera up")]
     public float TopClamp = 70.0f;
     [Tooltip("How far in degrees can you move the camera down")]
@@ -75,11 +77,14 @@ public class PlayerComponentsHandler : NetworkBehaviour
             IsCurrentDeviceMouse = !statsPanelController.isPanelOpen;
             if (IsCurrentDeviceMouse)
             {
+                //on game
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
+                TransitionCamera();
             }
             else
             {
+                //on panel
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
             }
@@ -116,9 +121,16 @@ public class PlayerComponentsHandler : NetworkBehaviour
         }
 
         _cinemachineTargetYaw = cinemachineCameraTarget.transform.rotation.eulerAngles.y;
+        //Normal camera
         GameObject camera = Instantiate(cameraPrefab);
         cinemachineVirtualCameraInstance = camera.GetComponentInChildren<CinemachineVirtualCamera>();
         cinemachineVirtualCameraInstance.Follow = cinemachineCameraTarget;
+        //zoom camera
+        GameObject cameraZoom = Instantiate(cameraZoomPrefab);
+        cinmachineCloseLookCameraIntance=cameraZoom.GetComponentInChildren<CinemachineVirtualCamera>();
+        cinmachineCloseLookCameraIntance.Follow = cinemachineCameraTarget;
+        
+        //Canvas
         Canvas canvas = Instantiate(canvasPrefab,transform);
         canvas.GetComponentInChildren<Button>().onClick.AddListener(transform.GetComponent<PlayerStatsController>().OnSpawnPlayer);
         playerNameText = canvas.GetComponentInChildren<TextMeshProUGUI>();
@@ -155,5 +167,17 @@ public class PlayerComponentsHandler : NetworkBehaviour
         if (lfAngle < -360f) lfAngle += 360f;
         if (lfAngle > 360f) lfAngle -= 360f;
         return Mathf.Clamp(lfAngle, lfMin, lfMax);
+    }
+    private void TransitionCamera()
+    {
+        if (Input.GetKey(KeyCode.Mouse1))
+        {
+            cinmachineCloseLookCameraIntance.Priority = 20;
+        }
+        else
+        {
+            cinmachineCloseLookCameraIntance.Priority = 5;
+
+        }
     }
 }

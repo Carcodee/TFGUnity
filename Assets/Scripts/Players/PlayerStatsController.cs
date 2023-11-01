@@ -154,7 +154,10 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         }
     }
 
-
+    public void RefillAmmo()
+    {
+        totalAmmo +=60;
+    }
     public void SetTemplate(int index)
     {
         if (IsServer)
