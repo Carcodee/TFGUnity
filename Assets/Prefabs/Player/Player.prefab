@@ -1601,12 +1601,17 @@ MonoBehaviour:
   slidingSpeed: 3
   sprintFactor: 2.5
   crouchFactor: 0.5
+  AimingSpeedFactor: 0.5
   ground:
     serializedVersion: 2
     m_Bits: 256
   reloadTime: 1
   reloadCurrentTime: 0
   isReloading: 0
+  _bodyVelocity: {x: 0, y: 0, z: 0}
+  JumpForce: 15
+  isGrounded: 0
+  gravityForce: -9.8
 --- !u!114 &6344872551529989650
 MonoBehaviour:
   m_ObjectHideFlags: 0

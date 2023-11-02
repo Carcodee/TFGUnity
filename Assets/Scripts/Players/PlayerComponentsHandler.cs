@@ -48,6 +48,8 @@ public class PlayerComponentsHandler : NetworkBehaviour
     private bool IsCurrentDeviceMouse=true;
     private const float _threshold = 0;
 
+
+
     public override void OnNetworkSpawn()
     {
         if (IsOwner)

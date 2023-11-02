@@ -68,6 +68,12 @@ public class PlayerController : NetworkBehaviour,IMovable
     public float reloadTime= 1f;
     public float reloadCurrentTime = 0f;
     public bool isReloading = false;
+    [Header("Jumping")]
+    [SerializeField] private Vector3 _bodyVelocity;
+    [SerializeField]private float JumpForce = 5f;
+    [SerializeField]private bool isGrounded;
+    [SerializeField]private float gravityForce = -9.8f;
+
     [Header("Interfaces")]
     private IMovable _iMovable;
 
@@ -94,11 +100,15 @@ public class PlayerController : NetworkBehaviour,IMovable
             Move();
             Shoot();
             Reloading();
+            if (Input.GetKeyDown(KeyCode.Space)&&isGrounded)
+            {
+                Jump();
+            }
         }
     }
     private void FixedUpdate()
     {
-
+        ApplyGravity();
 
     }
     private void LateUpdate()
@@ -106,8 +116,8 @@ public class PlayerController : NetworkBehaviour,IMovable
         if (IsOwner)
         {
             RotatePlayer();
-
             transform.Translate(move * playerStats.GetSpeed() * netSprintFactor.Value * Time.deltaTime);
+            ApplyJump();
 
         }
 
@@ -167,24 +177,52 @@ public class PlayerController : NetworkBehaviour,IMovable
     }
 
 
+    void Jump()
+    {
+        _bodyVelocity=new Vector3(0, JumpForce, 0) * Time.fixedDeltaTime;
+        isGrounded = false;
+    }
+
+
+    void ApplyGravity()
+    {
+        Vector3 position = transform.position;
+        Vector3 groundPos = GetGroundPosFromPoint(position);
+        if (position.y>0)
+        {
+            _bodyVelocity.y += gravityForce * Mathf.Pow(Time.fixedDeltaTime, 2);
+        }
+        else if (!isGrounded&& _bodyVelocity.y <=0 && position.y <= groundPos.y)
+        {
+            //en el suelo
+            position.y = 0;
+            transform.position= groundPos;
+            _bodyVelocity = Vector2.zero;
+            isGrounded = true;
+        }
+
+    }
+
+    void ApplyJump()
+    {
+        ApplyGravity();
+        transform.position += _bodyVelocity;
+    }
     void RotatePlayer()
     {
         Vector3 playerMovement=new Vector3(move.x,0,move.z).normalized;
 
         if (playerMovement.z < 0)
         {
-
             return;
         }
-
-            float targetAngle = (Mathf.Atan2(0, playerMovement.z) * Mathf.Rad2Deg) + cinemachineCameraTarget.rotation.eulerAngles.y;
-            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _rotationVelocity, RotationSmoothTime);
-            transform.rotation = Quaternion.Euler(0f, rotation, 0f);
+        float targetAngle = (Mathf.Atan2(0, playerMovement.z) * Mathf.Rad2Deg) + cinemachineCameraTarget.rotation.eulerAngles.y;
+        float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _rotationVelocity, RotationSmoothTime);
+        transform.rotation = Quaternion.Euler(0f, rotation, 0f);
     }
 
     Vector3 GetGroundPosFromPoint(Vector3 pos)
     {
-        
         Ray ray = new Ray(pos, Vector3.down);
         if (Physics.Raycast(ray, out RaycastHit hit, distanceFactor,ground))
         {
@@ -195,6 +233,7 @@ public class PlayerController : NetworkBehaviour,IMovable
            return new Vector3(pos.x, 0, pos.z);
         }
     }
+
     public void Reloading()
     {
         if (playerStats.totalAmmo<=0)
