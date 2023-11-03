@@ -15,7 +15,7 @@ public class PlayerController : NetworkBehaviour,IMovable
     [Header("Player Stats")]
     public PlayerStatsController playerStats;
     public float speedHolder;
-    public NetworkVariable<float> netSprintFactor = new NetworkVariable<float>();
+    public float speedFactor;
 
 
     [Header("Player Components")]
@@ -37,7 +37,7 @@ public class PlayerController : NetworkBehaviour,IMovable
 
 
     [Header("Player Movement")]
-    [SerializeField]private Vector3 move;
+    public Vector3 move;
     public static PlayerMovementStates playerMovementStates;
 
     public float rotationFactor;
@@ -97,7 +97,9 @@ public class PlayerController : NetworkBehaviour,IMovable
         {
             CreateAimTargetPos();
             CrouchAndSprint();
-            Move();
+            float x = Input.GetAxis("Horizontal");
+            float y= Input.GetAxis("Vertical");
+            Move(x,y);
             Shoot();
             Reloading();
             if (Input.GetKeyDown(KeyCode.Space)&&isGrounded)
@@ -116,11 +118,15 @@ public class PlayerController : NetworkBehaviour,IMovable
         if (IsOwner)
         {
             RotatePlayer();
-            transform.Translate(move * playerStats.GetSpeed() * netSprintFactor.Value * Time.deltaTime);
+            ApplyMovement(move);
             ApplyJump();
 
         }
 
+    }
+    public void ApplyMovement(Vector3 movement)
+    {
+        transform.Translate(movement * playerStats.GetSpeed() * speedFactor * Time.deltaTime);
     }
 
     public void OnMovementStateChanged(PlayerMovementStates newMovementState)
@@ -129,18 +135,18 @@ public class PlayerController : NetworkBehaviour,IMovable
         switch (playerMovementStates)
         {
             case PlayerMovementStates.runnning:
-                transform.Translate(move * playerStats.GetSpeed() * netSprintFactor.Value * Time.deltaTime);
+                transform.Translate(move * playerStats.GetSpeed() * speedFactor * Time.deltaTime);
                 break;
             case PlayerMovementStates.sprinting:
                 isSprinting = true;
                 SetSprintFactor(sprintFactor);
-                transform.Translate(move * playerStats.GetSpeed() * netSprintFactor.Value * Time.deltaTime);
+                transform.Translate(move * playerStats.GetSpeed() * speedFactor * Time.deltaTime);
 
                 break;
             case PlayerMovementStates.crouching:
                 isCrouching = true;
                 SetSprintFactor(crouchFactor);
-                transform.Translate(move * playerStats.GetSpeed() * netSprintFactor.Value * Time.deltaTime);
+                transform.Translate(move * playerStats.GetSpeed() * speedFactor * Time.deltaTime);
 
                 break;
             case PlayerMovementStates.sliding:
@@ -153,7 +159,7 @@ public class PlayerController : NetworkBehaviour,IMovable
                     slidingTimer = 0;
                 }
                 SetSprintFactor(slidingSpeed);
-                transform.Translate(move * playerStats.GetSpeed() * netSprintFactor.Value * Time.deltaTime);
+                transform.Translate(move * playerStats.GetSpeed() * speedFactor * Time.deltaTime);
                 break;
             case PlayerMovementStates.jumping:
                 break;
@@ -169,11 +175,9 @@ public class PlayerController : NetworkBehaviour,IMovable
     }
 
 
-    void Move()
+    public void Move(float x, float y)
     {
-            float horizontal = Input.GetAxis("Horizontal");
-            float vertical = Input.GetAxis("Vertical");
-            move = new Vector3(horizontal, 0, vertical);
+            move = new Vector3(x, 0, y);
     }
 
 
@@ -203,22 +207,22 @@ public class PlayerController : NetworkBehaviour,IMovable
 
     }
 
-    void ApplyJump()
+    public void ApplyJump()
     {
         ApplyGravity();
         transform.position += _bodyVelocity;
     }
-    void RotatePlayer()
+    public void RotatePlayer()
     {
-        Vector3 playerMovement=new Vector3(move.x,0,move.z).normalized;
+            Vector3 playerMovement=new Vector3(move.x,0,move.z).normalized;
 
-        if (playerMovement.z < 0)
-        {
-            return;
-        }
-        float targetAngle = (Mathf.Atan2(0, playerMovement.z) * Mathf.Rad2Deg) + cinemachineCameraTarget.rotation.eulerAngles.y;
-        float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _rotationVelocity, RotationSmoothTime);
-        transform.rotation = Quaternion.Euler(0f, rotation, 0f);
+            if (playerMovement.z < 0)
+            {
+                return;
+            }
+            float targetAngle = (Mathf.Atan2(0, playerMovement.z) * Mathf.Rad2Deg) + cinemachineCameraTarget.rotation.eulerAngles.y;
+            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _rotationVelocity, RotationSmoothTime);
+            transform.rotation = Quaternion.Euler(0f, rotation, 0f);
     }
 
     Vector3 GetGroundPosFromPoint(Vector3 pos)
@@ -383,14 +387,7 @@ public class PlayerController : NetworkBehaviour,IMovable
 
     public void SetSprintFactor(float val)
     {
-        if (IsServer)
-        {
-            netSprintFactor.Value = val;
-        }
-        else
-        {
-            SetSprintFactorServerRpc(val);
-        }
+        speedFactor= val;
     }
     #region ServerRpc
 
@@ -426,7 +423,6 @@ public class PlayerController : NetworkBehaviour,IMovable
     [ServerRpc]
     void SetSprintFactorServerRpc(float sprintFactor)
     {
-        netSprintFactor.Value = sprintFactor;
     }
 
     #endregion
