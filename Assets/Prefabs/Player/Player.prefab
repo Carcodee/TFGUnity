@@ -1455,6 +1455,7 @@ GameObject:
   - component: {fileID: -7316872353769422435}
   - component: {fileID: 7329186199153258139}
   - component: {fileID: 6344872551529989650}
+  - component: {fileID: 811542298380123267}
   - component: {fileID: 1071611250771317373}
   - component: {fileID: 3989233279740246775}
   - component: {fileID: -7918970974976374508}
@@ -1463,7 +1464,6 @@ GameObject:
   - component: {fileID: 7439418814137783279}
   - component: {fileID: 1977235701088479022}
   - component: {fileID: 6812764082803794279}
-  - component: {fileID: 811542298380123267}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1579,14 +1579,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerStats: {fileID: 0}
   speedHolder: 0
-  netSprintFactor:
-    m_InternalValue: 0
+  speedFactor: 0
   cameraPrefab: {fileID: 2763996978624655819, guid: 70976f809ab9bac479ca9692002cd81f,
     type: 3}
   bulletPrefab: {fileID: -1591147314410710446, guid: c21ebc95755fece489b05e14b245910b,
     type: 3}
   cinemachineCameraTarget: {fileID: 2578975527992398695}
   cameraRef: {fileID: 7287120717324667788}
+  stateMachineController: {fileID: 811542298380123267}
   mouseSensitivity: 100
   offset: 5
   targetPos: {fileID: 5843899536742480740}
@@ -1656,6 +1656,18 @@ MonoBehaviour:
   coinPosition: {fileID: 0}
   playerZoneController: {fileID: 0}
   playerObj: {fileID: 0}
+--- !u!114 &811542298380123267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3940185642830209463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14c33b695d4b7954cad08cb15d16e215, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1071611250771317373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1692,7 +1704,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3940185642830209463}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22bead7d9e4aa334baeee1bccc8a38e9, type: 3}
   m_Name: 
@@ -1849,25 +1861,6 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &811542298380123267
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3940185642830209463}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14c33b695d4b7954cad08cb15d16e215, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  states: []
-  movementState: {fileID: 0}
-  jumpState: {fileID: 0}
-  sprintState: {fileID: 0}
-  crouchState: {fileID: 0}
-  slidingState: {fileID: 0}
-  AimingState: {fileID: 0}
 --- !u!1 &3982745413872098417
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,12 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode.Components;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class MovementState : PlayerStateBase
 {
+    public MovementState(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
+    {
+        playerRef = stateMachineController.GetComponent<PlayerController>();
+        networkAnimator = stateMachineController.GetComponent<NetworkAnimator>();
+    }
 
-    
     public override void StateEnter()
     {
         base.StateEnter();
@@ -32,9 +37,18 @@ public class MovementState : PlayerStateBase
         this.networkAnimator.Animator.SetFloat("Y", this.playerRef.move.z);
         this.playerRef.Shoot();
         this.playerRef.Reloading();
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            stateMachineController.SetState("Sprint");
+        }
+        if (Input.GetKey(KeyCode.LeftAlt))
+        {
+            stateMachineController.SetState("Crouch");
+        }
     }
     public override void StatePhysicsUpdate()
     {
+
     }
     public override void StateLateUpdate()
     {

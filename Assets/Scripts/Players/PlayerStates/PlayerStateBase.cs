@@ -8,10 +8,15 @@ public class PlayerStateBase : StateMachineBase
 {
     public PlayerController playerRef;
     public NetworkAnimator networkAnimator;
+
+    public PlayerStateBase(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
+    {
+        playerRef = stateMachineController.GetComponent<PlayerController>();
+        networkAnimator = stateMachineController.GetComponent<NetworkAnimator>();
+    }
     public override void StateEnter()
     {
-        playerRef = GetComponent<PlayerController>();
-        networkAnimator = GetComponent<NetworkAnimator>();
+
         
     }
 
