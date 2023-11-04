@@ -163,6 +163,8 @@ public class PlayerController : NetworkBehaviour
             transform.position = groundPos;
             _bodyVelocity = Vector2.zero;
             isGrounded = true;
+            stateMachineController.SetState("Movement");
+
         }
 
     }

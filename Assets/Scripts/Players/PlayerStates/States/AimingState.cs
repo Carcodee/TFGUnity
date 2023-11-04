@@ -50,6 +50,7 @@ public class AimingState : PlayerStateBase
     public override void StateLateUpdate()
     {
         playerRef.ApplyMovement(playerRef.move);
+        playerRef.RotatePlayer();
     }
 
     public void AimAinimation()

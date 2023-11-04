@@ -45,6 +45,14 @@ public class MovementState : PlayerStateBase
         {
             stateMachineController.SetState("Crouch");
         }
+        if (Input.GetKey(KeyCode.Space))
+        {
+            stateMachineController.SetState("Jump");
+        }
+        if (Input.GetKey(KeyCode.Mouse1))
+        {
+            stateMachineController.SetState("Aiming");
+        }
     }
     public override void StatePhysicsUpdate()
     {

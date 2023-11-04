@@ -33,6 +33,8 @@ public class JumpState : PlayerStateBase
         {
             playerRef.Jump();
         }
+        this.playerRef.Shoot();
+        this.playerRef.Reloading();
     }
     public override void StatePhysicsUpdate()
     {
@@ -42,9 +44,7 @@ public class JumpState : PlayerStateBase
     {
         playerRef.ApplyMovement(moveDir);
         playerRef.ApplyJump();
-        if (playerRef.isGrounded)
-        {
-            stateMachineController.SetState("Movement");
-        }
+        playerRef.RotatePlayer();
     }
+
 }
