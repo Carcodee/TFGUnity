@@ -33,6 +33,8 @@ public class SprintState : PlayerStateBase
         StateInput();
         this.networkAnimator.Animator.SetFloat("X", this.playerRef.move.x);
         this.networkAnimator.Animator.SetFloat("Y", this.playerRef.move.z);
+        this.networkAnimator.Animator.SetFloat("Speed", this.playerRef.sprintFactor);
+
         this.networkAnimator.Animator.SetBool("Sprint", true);
         if (Input.GetKeyDown(KeyCode.LeftAlt))
         {

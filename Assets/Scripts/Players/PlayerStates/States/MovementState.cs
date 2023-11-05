@@ -35,6 +35,7 @@ public class MovementState : PlayerStateBase
         StateInput();
         this.networkAnimator.Animator.SetFloat("X", this.playerRef.move.x);
         this.networkAnimator.Animator.SetFloat("Y", this.playerRef.move.z);
+        this.networkAnimator.Animator.SetFloat("Speed",  this.playerRef.sprintFactor);
         this.playerRef.Shoot();
         this.playerRef.Reloading();
         if (Input.GetKey(KeyCode.LeftShift))

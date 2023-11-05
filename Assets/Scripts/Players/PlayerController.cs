@@ -93,23 +93,12 @@ public class PlayerController : NetworkBehaviour
         GetComponentInChildren<Camera>().enabled = IsOwner;
         if (IsOwner)
         {
-            //    CreateAimTargetPos();
-            //    CrouchAndSprint();
-            //    float x = Input.GetAxis("Horizontal");
-            //    float y = Input.GetAxis("Vertical");
-            //    Move(x, y);
-            //    Shoot();
-            //    Reloading();
-            //    if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-            //    {
-            //        Jump();
-            //    }
+ 
             stateMachineController.StateUpdate();
         }
 }
     private void FixedUpdate()
     {
-        //ApplyGravity();
         if (IsOwner)
         {
             stateMachineController.StatePhysicsUpdate();
@@ -121,11 +110,6 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
             stateMachineController.StateLateUpdate();
-
-            //RotatePlayer();
-            //ApplyMovement(move);
-            //ApplyJump();
-
         }
 
     }
@@ -281,6 +265,7 @@ public class PlayerController : NetworkBehaviour
                 {
                     direction = spawnBulletPoint.position - cameraRef.transform.forward * distanceFactor;
                 }
+
                 ShootServerRpc(direction, GetComponent<PlayerStatsController>().GetDamageDone());
             }
             shootTimer = 0;
