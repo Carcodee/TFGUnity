@@ -74,6 +74,7 @@ public class PlayerController : NetworkBehaviour
     [Header("Jumping")]
     [SerializeField] private float JumpForce = 5f;
     [SerializeField] public bool isGrounded;
+    [SerializeField] public Vector3 groundPos;
     [SerializeField] private float gravityForce = -9.8f;
     public Vector3 _bodyVelocity;
 
@@ -83,9 +84,9 @@ public class PlayerController : NetworkBehaviour
 
         if (IsOwner)
         {
-            playerStats = GetComponent<PlayerStatsController>();
             SetSpeedStateServerRpc(5);
             stateMachineController.Initializate();
+            playerStats = GetComponent<PlayerStatsController>();
         }
 
     }
@@ -117,7 +118,11 @@ public class PlayerController : NetworkBehaviour
     }
     public void ApplyMovement(Vector3 movement)
     {
-        transform.Translate(movement * playerStats.GetSpeed() * sprintFactor * Time.deltaTime);
+        Vector3 motion= movement * playerStats.GetSpeed() * sprintFactor * Time.deltaTime;
+        transform.Translate(motion);
+        
+
+
     }
 
 
@@ -137,15 +142,14 @@ public class PlayerController : NetworkBehaviour
     public void ApplyGravity()
     {
         Vector3 position = transform.position;
-        Vector3 groundPos = GetGroundPosFromPoint(position);
-        if (position.y > 0)
+        groundPos = GetGroundPosFromPoint(position);
+        if (position.y > groundPos.y)
         {
             _bodyVelocity.y += gravityForce * Mathf.Pow(Time.fixedDeltaTime, 2);
         }
         else if (!isGrounded && _bodyVelocity.y <= 0 && position.y <= groundPos.y)
         {
             //en el suelo
-            position.y = 0;
             transform.position = groundPos;
             _bodyVelocity = Vector2.zero;
             isGrounded = true;
@@ -173,16 +177,22 @@ public class PlayerController : NetworkBehaviour
         transform.rotation = Quaternion.Euler(0f, rotation, 0f);
     }
 
-    Vector3 GetGroundPosFromPoint(Vector3 pos)
+    public Vector3 GetGroundPosFromPoint(Vector3 pos)
     {
-        Ray ray = new Ray(pos, Vector3.down);
-        if (Physics.Raycast(ray, out RaycastHit hit, distanceFactor, ground))
+        
+        Ray ray = new Ray(pos, -transform.up);
+        Debug.DrawRay(pos, -transform.up * 100, Color.red);
+        if (Physics.Raycast(ray, out RaycastHit hit, 100, ground))
         {
+            Debug.Log("Ground");
+
             return hit.point;
         }
         else
         {
-            return new Vector3(pos.x, 0, pos.z);
+            Debug.Log("no ground");
+
+            return transform.position;
         }
     }
 
@@ -235,7 +245,6 @@ public class PlayerController : NetworkBehaviour
             if (IsServer)
             {
                 Vector3 direction;
-                //todo: fix this when player target a bullet ratates around because it not ignoring the bullet layer
                 if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, distanceFactor))
                 {
                     direction = spawnBulletPoint.position - hit.point;

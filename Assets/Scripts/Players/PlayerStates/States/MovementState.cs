@@ -56,17 +56,18 @@ public class MovementState : PlayerStateBase
             return;
         }
         if (Input.GetKeyDown(KeyCode.Mouse1))
-        {
+        { 
             stateMachineController.SetState("Aiming");
         }
     }
     public override void StatePhysicsUpdate()
     {
-
+        playerRef.groundPos=playerRef.GetGroundPosFromPoint(playerRef.transform.position);
+        playerRef.transform.position=new Vector3(playerRef.transform.position.x, playerRef.groundPos.y,playerRef.transform.position.z);
     }
     public override void StateLateUpdate()
     {
-        this.playerRef.ApplyMovement(this.playerRef.move);
         this.playerRef.RotatePlayer();
+        this.playerRef.ApplyMovement(this.playerRef.move);
     }
 }

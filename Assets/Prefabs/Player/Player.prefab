@@ -1452,15 +1452,15 @@ GameObject:
   - component: {fileID: 645085415590272702}
   - component: {fileID: -7601623672609881486}
   - component: {fileID: 546101927678350962}
-  - component: {fileID: -7316872353769422435}
+  - component: {fileID: -5980269342821305563}
   - component: {fileID: 7329186199153258139}
   - component: {fileID: 6344872551529989650}
   - component: {fileID: 811542298380123267}
   - component: {fileID: 1071611250771317373}
   - component: {fileID: 3989233279740246775}
   - component: {fileID: -7918970974976374508}
+  - component: {fileID: 6926549145681878991}
   - component: {fileID: 5319185021556315752}
-  - component: {fileID: -7418596798578313428}
   - component: {fileID: 7439418814137783279}
   - component: {fileID: 1977235701088479022}
   - component: {fileID: 6812764082803794279}
@@ -1553,7 +1553,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TransitionStateInfoList: []
   m_Animator: {fileID: 5319185021556315752}
---- !u!114 &-7316872353769422435
+--- !u!114 &-5980269342821305563
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1598,9 +1598,9 @@ MonoBehaviour:
   rotationFactor: 25
   RotationSmoothTime: 0.1
   _rotationVelocity: 0
-  slidingTime: 0.5
+  slidingTime: 1
   slidingSpeed: 3
-  sprintFactor: 2.5
+  sprintFactor: 2
   crouchFactor: 0.5
   AimingSpeedFactor: 0.5
   ground:
@@ -1609,10 +1609,10 @@ MonoBehaviour:
   reloadTime: 1
   reloadCurrentTime: 0
   isReloading: 0
-  _bodyVelocity: {x: 0, y: 0, z: 0}
-  JumpForce: 15
+  JumpForce: 8
   isGrounded: 0
   gravityForce: -9.8
+  _bodyVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &6344872551529989650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1668,6 +1668,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14c33b695d4b7954cad08cb15d16e215, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movementState:
+    stateName: 
+    stateMachineController: {fileID: 0}
+    playerRef: {fileID: 0}
+    networkAnimator: {fileID: 0}
 --- !u!114 &1071611250771317373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1742,28 +1747,7 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 3.14, z: 0}
---- !u!95 &5319185021556315752
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3940185642830209463}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: c23a579ba3e3a07469a60459b5e9d5cc, type: 2}
-  m_Controller: {fileID: 9100000, guid: 7c3edc27ed7a02c43a10e90dbef19fd7, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
---- !u!54 &-7418596798578313428
+--- !u!54 &6926549145681878991
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1785,11 +1769,32 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 32
+  m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!95 &5319185021556315752
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3940185642830209463}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: c23a579ba3e3a07469a60459b5e9d5cc, type: 2}
+  m_Controller: {fileID: 9100000, guid: 7c3edc27ed7a02c43a10e90dbef19fd7, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!65 &7439418814137783279
 BoxCollider:
   m_ObjectHideFlags: 0

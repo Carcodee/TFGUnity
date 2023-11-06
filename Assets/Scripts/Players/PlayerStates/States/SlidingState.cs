@@ -11,12 +11,12 @@ public class SlidingState : PlayerStateBase
         networkAnimator = stateMachineController.GetComponent<NetworkAnimator>();
     }
     public float slidingTimer;
-    public float slidingTime=.5f;
+    public float slidingTime=1.0f;
     private Vector3 moveDir;
     public override void StateEnter()
     {
         base.StateEnter();
-        playerRef.sprintFactor = 2.5f;
+        playerRef.sprintFactor = 2.0f;
         moveDir = playerRef.move;
 
     }
@@ -55,6 +55,7 @@ public class SlidingState : PlayerStateBase
     {
         playerRef.ApplyMovement(moveDir);   
         playerRef.ApplyGravity();
+        playerRef.RotatePlayer();
     }
 }
 

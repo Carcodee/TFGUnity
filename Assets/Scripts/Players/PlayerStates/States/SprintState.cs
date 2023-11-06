@@ -13,7 +13,7 @@ public class SprintState : PlayerStateBase
     public override void StateEnter()
     {
         base.StateEnter();
-        playerRef.sprintFactor = 2;
+        playerRef.sprintFactor = 1.5f;
     }
 
     public override void StateExit()
