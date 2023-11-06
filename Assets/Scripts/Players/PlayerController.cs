@@ -22,6 +22,7 @@ public class PlayerController : NetworkBehaviour
     public GameObject cameraPrefab;
     public BulletController bulletPrefab;
     public Transform cinemachineCameraTarget;
+
     [SerializeField] private Camera cameraRef;
     [SerializeField] private StateMachineController stateMachineController;
 
@@ -69,11 +70,12 @@ public class PlayerController : NetworkBehaviour
     public float reloadTime = 1f;
     public float reloadCurrentTime = 0f;
     public bool isReloading = false;
+
     [Header("Jumping")]
-    [SerializeField] private Vector3 _bodyVelocity;
     [SerializeField] private float JumpForce = 5f;
     [SerializeField] public bool isGrounded;
     [SerializeField] private float gravityForce = -9.8f;
+    public Vector3 _bodyVelocity;
 
 
     void Start()
@@ -274,7 +276,7 @@ public class PlayerController : NetworkBehaviour
 
 
 
-    void CreateAimTargetPos()
+    public void CreateAimTargetPos()
     {
 
         if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, distanceFactor))

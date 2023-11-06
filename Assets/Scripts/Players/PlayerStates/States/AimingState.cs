@@ -36,11 +36,17 @@ public class AimingState : PlayerStateBase
         this.networkAnimator.Animator.SetFloat("X", this.playerRef.move.x);
         this.networkAnimator.Animator.SetFloat("Y", this.playerRef.move.z);
         AimAinimation();
+        playerRef.CreateAimTargetPos();
         this.playerRef.Shoot();
         this.playerRef.Reloading();
         if (Input.GetKeyUp(KeyCode.Mouse1))
         {
             stateMachineController.SetState("Movement");
+        }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            stateMachineController.SetState("Jump");
+            return;
         }
 
     }

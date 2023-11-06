@@ -4,6 +4,7 @@ using Unity.Netcode.Components;
 using Unity.VisualScripting;
 using UnityEngine;
 
+[System.Serializable]
 public class MovementState : PlayerStateBase
 {
     public MovementState(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
@@ -16,6 +17,9 @@ public class MovementState : PlayerStateBase
     {
         base.StateEnter();
         this.playerRef.sprintFactor = 1;
+        networkAnimator.Animator.Play("Movement");
+
+
     }
 
     public override void StateExit()
@@ -38,19 +42,20 @@ public class MovementState : PlayerStateBase
         this.networkAnimator.Animator.SetFloat("Speed",  this.playerRef.sprintFactor);
         this.playerRef.Shoot();
         this.playerRef.Reloading();
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             stateMachineController.SetState("Sprint");
         }
-        if (Input.GetKey(KeyCode.LeftAlt))
+        if (Input.GetKeyDown(KeyCode.LeftAlt))
         {
             stateMachineController.SetState("Crouch");
         }
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             stateMachineController.SetState("Jump");
+            return;
         }
-        if (Input.GetKey(KeyCode.Mouse1))
+        if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             stateMachineController.SetState("Aiming");
         }

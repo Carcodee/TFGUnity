@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e89da8002ca6699448ae1b279badaf8c
+guid: 103a6e534c4695b468710b520a12a6f3
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -24,7 +24,7 @@ ModelImporter:
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 1
+    animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -33,11 +33,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Stafe L
+      name: Jump
       takeName: mixamo.com
       internalID: -203655887218126122
       firstFrame: 0
-      lastFrame: 34
+      lastFrame: 19
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
