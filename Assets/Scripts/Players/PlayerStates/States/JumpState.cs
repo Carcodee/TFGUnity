@@ -33,6 +33,7 @@ public class JumpState : PlayerStateBase
 
     public override void StateUpdate()
     {
+        //TODO: fix jump animation
         if (playerRef.isGrounded)
         {
             playerRef.Jump();
@@ -52,7 +53,7 @@ public class JumpState : PlayerStateBase
             networkAnimator.Animator.SetBool("Fall",true);
         }
         playerRef.ApplyMovement(moveDir);
-        playerRef.ApplyJump();
+        playerRef.ApplyGravity();
         playerRef.RotatePlayer();
     }
 

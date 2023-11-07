@@ -139,8 +139,8 @@ public class PlayerComponentsHandler : NetworkBehaviour
         statsPanelController = GetComponentInChildren<StatsPanelController>();
 
 
-        rb = GetComponent<Rigidbody>();
-        rb.isKinematic = true;
+        //rb = GetComponent<Rigidbody>();
+        //rb.isKinematic = true;
     }
 
     private void CameraRotation(Vector3 look)

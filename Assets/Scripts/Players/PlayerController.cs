@@ -22,6 +22,7 @@ public class PlayerController : NetworkBehaviour
     public GameObject cameraPrefab;
     public BulletController bulletPrefab;
     public Transform cinemachineCameraTarget;
+    public CharacterController characterController;
 
     [SerializeField] private Camera cameraRef;
     [SerializeField] private StateMachineController stateMachineController;
@@ -87,6 +88,7 @@ public class PlayerController : NetworkBehaviour
             SetSpeedStateServerRpc(5);
             stateMachineController.Initializate();
             playerStats = GetComponent<PlayerStatsController>();
+            characterController = GetComponent<CharacterController>();
         }
 
     }
@@ -119,9 +121,8 @@ public class PlayerController : NetworkBehaviour
     public void ApplyMovement(Vector3 movement)
     {
         Vector3 motion= movement * playerStats.GetSpeed() * sprintFactor * Time.deltaTime;
-        transform.Translate(motion);
-        
-
+        motion=transform.rotation * motion;
+        characterController.Move(motion + _bodyVelocity);
 
     }
 
@@ -147,10 +148,11 @@ public class PlayerController : NetworkBehaviour
         {
             _bodyVelocity.y += gravityForce * Mathf.Pow(Time.fixedDeltaTime, 2);
         }
-        else if (!isGrounded && _bodyVelocity.y <= 0 && position.y <= groundPos.y)
+        else if(!isGrounded && _bodyVelocity.y <= 0 && position.y <= groundPos.y)
         {
             //en el suelo
-            transform.position = groundPos;
+            //transform.position = groundPos;
+            Debug.Log("OnGround");
             _bodyVelocity = Vector2.zero;
             isGrounded = true;
             stateMachineController.SetState("Movement");
@@ -159,11 +161,6 @@ public class PlayerController : NetworkBehaviour
 
     }
 
-    public void ApplyJump()
-    {
-        ApplyGravity();
-        transform.position += _bodyVelocity;
-    }
     public void RotatePlayer()
     {
         Vector3 playerMovement = new Vector3(move.x, 0, move.z).normalized;
@@ -184,13 +181,10 @@ public class PlayerController : NetworkBehaviour
         Debug.DrawRay(pos, -transform.up * 100, Color.red);
         if (Physics.Raycast(ray, out RaycastHit hit, 100, ground))
         {
-            Debug.Log("Ground");
-
             return hit.point;
         }
         else
         {
-            Debug.Log("no ground");
 
             return transform.position;
         }

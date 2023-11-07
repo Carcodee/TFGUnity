@@ -62,8 +62,7 @@ public class MovementState : PlayerStateBase
     }
     public override void StatePhysicsUpdate()
     {
-        playerRef.groundPos=playerRef.GetGroundPosFromPoint(playerRef.transform.position);
-        playerRef.transform.position=new Vector3(playerRef.transform.position.x, playerRef.groundPos.y,playerRef.transform.position.z);
+
     }
     public override void StateLateUpdate()
     {

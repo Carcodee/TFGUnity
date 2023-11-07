@@ -1452,14 +1452,12 @@ GameObject:
   - component: {fileID: 645085415590272702}
   - component: {fileID: -7601623672609881486}
   - component: {fileID: 546101927678350962}
-  - component: {fileID: -5980269342821305563}
   - component: {fileID: 7329186199153258139}
   - component: {fileID: 6344872551529989650}
   - component: {fileID: 811542298380123267}
   - component: {fileID: 1071611250771317373}
   - component: {fileID: 3989233279740246775}
   - component: {fileID: -7918970974976374508}
-  - component: {fileID: 6926549145681878991}
   - component: {fileID: 5319185021556315752}
   - component: {fileID: 7439418814137783279}
   - component: {fileID: 1977235701088479022}
@@ -1553,18 +1551,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TransitionStateInfoList: []
   m_Animator: {fileID: 5319185021556315752}
---- !u!114 &-5980269342821305563
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3940185642830209463}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &7329186199153258139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1585,6 +1571,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: -1591147314410710446, guid: c21ebc95755fece489b05e14b245910b,
     type: 3}
   cinemachineCameraTarget: {fileID: 2578975527992398695}
+  characterController: {fileID: 0}
   cameraRef: {fileID: 7287120717324667788}
   stateMachineController: {fileID: 811542298380123267}
   mouseSensitivity: 100
@@ -1611,6 +1598,7 @@ MonoBehaviour:
   isReloading: 0
   JumpForce: 8
   isGrounded: 0
+  groundPos: {x: 0, y: 0, z: 0}
   gravityForce: -9.8
   _bodyVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &6344872551529989650
@@ -1738,42 +1726,15 @@ CharacterController:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
-  m_Height: 5.45
-  m_Radius: 1.01
+  m_Height: 2.14
+  m_Radius: 0.44
   m_SlopeLimit: 45
-  m_StepOffset: 1.14
+  m_StepOffset: 0
   m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 3.14, z: 0}
---- !u!54 &6926549145681878991
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3940185642830209463}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
+  m_MinMoveDistance: 0
+  m_Center: {x: 0, y: 0.86, z: 0}
 --- !u!95 &5319185021556315752
 Animator:
   serializedVersion: 5
@@ -1812,7 +1773,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1, y: 2.47, z: 0.85}
   m_Center: {x: 0, y: 1.31, z: 0}
