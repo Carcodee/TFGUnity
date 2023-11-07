@@ -59,6 +59,10 @@ public class MovementState : PlayerStateBase
         { 
             stateMachineController.SetState("Aiming");
         }
+        if (!playerRef.characterController.isGrounded)
+        {
+            stateMachineController.SetState("Falling");
+        }
     }
     public override void StatePhysicsUpdate()
     {
@@ -66,6 +70,7 @@ public class MovementState : PlayerStateBase
     }
     public override void StateLateUpdate()
     {
+
         this.playerRef.RotatePlayer();
         this.playerRef.ApplyMovement(this.playerRef.move);
     }

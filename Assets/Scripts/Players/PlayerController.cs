@@ -73,7 +73,7 @@ public class PlayerController : NetworkBehaviour
     public bool isReloading = false;
 
     [Header("Jumping")]
-    [SerializeField] private float JumpForce = 5f;
+    [SerializeField] private float jumpHeight = 5f;
     [SerializeField] public bool isGrounded;
     [SerializeField] public Vector3 groundPos;
     [SerializeField] private float gravityForce = -9.8f;
@@ -122,7 +122,7 @@ public class PlayerController : NetworkBehaviour
     {
         Vector3 motion= movement * playerStats.GetSpeed() * sprintFactor * Time.deltaTime;
         motion=transform.rotation * motion;
-        characterController.Move(motion + _bodyVelocity);
+        characterController.Move(motion );
 
     }
 
@@ -135,29 +135,37 @@ public class PlayerController : NetworkBehaviour
 
     public void Jump()
     {
-        _bodyVelocity = new Vector3(0, JumpForce, 0) * Time.fixedDeltaTime;
+        
+        _bodyVelocity.y = Mathf.Sqrt(2* gravityForce * jumpHeight);
         isGrounded = false;
     }
 
 
     public void ApplyGravity()
     {
-        Vector3 position = transform.position;
-        groundPos = GetGroundPosFromPoint(position);
-        if (position.y > groundPos.y)
-        {
-            _bodyVelocity.y += gravityForce * Mathf.Pow(Time.fixedDeltaTime, 2);
-        }
-        else if(!isGrounded && _bodyVelocity.y <= 0 && position.y <= groundPos.y)
-        {
-            //en el suelo
-            //transform.position = groundPos;
-            Debug.Log("OnGround");
-            _bodyVelocity = Vector2.zero;
-            isGrounded = true;
-            stateMachineController.SetState("Movement");
+        //Vector3 position = transform.position;
+        //groundPos = GetGroundPosFromPoint(position);
+        //if (position.y > groundPos.y)
+        //{
+        //    _bodyVelocity.y += gravityForce * Mathf.Pow(Time.fixedDeltaTime, 2);
+        //}
+        //else if(!isGrounded && _bodyVelocity.y <= 0 && position.y <= groundPos.y)
+        //{
+        //    //en el suelo
+        //    //transform.position = groundPos;
+        //    Debug.Log("OnGround");
+        //    _bodyVelocity = Vector2.zero;
+        //    isGrounded = true;
+        //    stateMachineController.SetState("Movement");
 
+        //}
+        _bodyVelocity.y -= gravityForce * Time.fixedDeltaTime;
+        characterController.Move(_bodyVelocity* Time.fixedDeltaTime);
+        if (characterController.isGrounded)
+        {
+            stateMachineController.SetState("Movement");
         }
+
 
     }
 

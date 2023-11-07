@@ -1596,10 +1596,10 @@ MonoBehaviour:
   reloadTime: 1
   reloadCurrentTime: 0
   isReloading: 0
-  JumpForce: 8
+  jumpHeight: 3
   isGrounded: 0
   groundPos: {x: 0, y: 0, z: 0}
-  gravityForce: -9.8
+  gravityForce: 25
   _bodyVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &6344872551529989650
 MonoBehaviour:
@@ -1734,7 +1734,7 @@ CharacterController:
   m_StepOffset: 0
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0
-  m_Center: {x: 0, y: 0.86, z: 0}
+  m_Center: {x: 0, y: 1.1, z: 0}
 --- !u!95 &5319185021556315752
 Animator:
   serializedVersion: 5
@@ -1747,7 +1747,7 @@ Animator:
   m_Avatar: {fileID: 9000000, guid: c23a579ba3e3a07469a60459b5e9d5cc, type: 2}
   m_Controller: {fileID: 9100000, guid: 7c3edc27ed7a02c43a10e90dbef19fd7, type: 2}
   m_CullingMode: 0
-  m_UpdateMode: 0
+  m_UpdateMode: 1
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0

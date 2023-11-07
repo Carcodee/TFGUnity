@@ -18,6 +18,7 @@ public class SlidingState : PlayerStateBase
         base.StateEnter();
         playerRef.sprintFactor = 2.0f;
         moveDir = playerRef.move;
+        this.networkAnimator.Animator.Play("Slide");
 
     }
 
@@ -38,12 +39,15 @@ public class SlidingState : PlayerStateBase
         StateInput();
         this.networkAnimator.Animator.SetFloat("X", moveDir.x);
         this.networkAnimator.Animator.SetFloat("Y", moveDir.z);
-        this.networkAnimator.Animator.Play("Slide");
         slidingTimer += Time.fixedDeltaTime;
         if (slidingTimer > slidingTime)
         {
             slidingTimer = 0;
             stateMachineController.SetState("Movement");
+        }
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            stateMachineController.SetState("Jump");
         }
     }
     public override void StateLateUpdate()

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using Unity.Netcode.Components;
 using UnityEngine;
 
-public class JumpState : PlayerStateBase
+public class FallingState : PlayerStateBase
 {
-    public JumpState(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
+    public FallingState(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
     {
         playerRef = stateMachineController.GetComponent<PlayerController>();
         networkAnimator = stateMachineController.GetComponent<NetworkAnimator>();
@@ -13,10 +13,10 @@ public class JumpState : PlayerStateBase
     Vector3 moveDir;
     public override void StateEnter()
     {
-        base.StateEnter();
+        networkAnimator.Animator.SetBool("Fall", true);
+        playerRef._bodyVelocity.y = 0;
         moveDir = playerRef.move;
-        playerRef.Jump();
-        networkAnimator.Animator.Play("Jump");
+
     }
 
     public override void StateExit()
@@ -33,8 +33,6 @@ public class JumpState : PlayerStateBase
 
     public override void StateUpdate()
     {
-        //TODO: fix jump animation
-
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             stateMachineController.SetState("Aiming");
@@ -46,13 +44,13 @@ public class JumpState : PlayerStateBase
     public override void StatePhysicsUpdate()
     {
         playerRef.ApplyGravity();
+        if (playerRef.characterController.isGrounded)
+        {
+            stateMachineController.SetState("Movement");
+        }
     }
     public override void StateLateUpdate()
     {
-        if (playerRef._bodyVelocity.y < 0)
-        {
-            stateMachineController.SetState("Falling");
-        }
         playerRef.ApplyMovement(moveDir);
         playerRef.RotatePlayer();
     }

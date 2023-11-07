@@ -16,6 +16,7 @@ public class StateMachineController : NetworkBehaviour
     public CrouchState crouchState;
     public SlidingState slidingState;
     public AimingState AimingState;
+    public FallingState FallingState;
 
 
 
@@ -28,14 +29,16 @@ public class StateMachineController : NetworkBehaviour
         crouchState = new CrouchState("Crouch", this);
         slidingState = new SlidingState("Sliding", this);
         AimingState = new AimingState("Aiming", this);
+        FallingState= new FallingState("Falling", this);
 
-        states=new StateMachineBase[6];
+        states =new StateMachineBase[7];
         states[0] = movementState;
         states[1]=jumpState;
         states[2]=sprintState;
         states[3]=crouchState;
         states[4]=slidingState;
         states[5]=AimingState;
+        states[6]=FallingState;
 
         for (int i = 0; i < states.Length; i++)
         {

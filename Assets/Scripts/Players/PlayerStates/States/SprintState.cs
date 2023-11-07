@@ -39,11 +39,18 @@ public class SprintState : PlayerStateBase
         if (Input.GetKeyDown(KeyCode.LeftAlt))
         {
             stateMachineController.SetState("Sliding");
+            return;
+        }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            stateMachineController.SetState("Jump");
+            return;
         }
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
             stateMachineController.SetState("Movement");
         }
+        
 
     }
     public override void StatePhysicsUpdate()
@@ -52,5 +59,7 @@ public class SprintState : PlayerStateBase
     public override void StateLateUpdate()
     {
         this.playerRef.ApplyMovement(this.playerRef.move);
+        this.playerRef.RotatePlayer();
+
     }
 }
