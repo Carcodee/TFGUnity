@@ -162,7 +162,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 3691029345200572531}
   Direction: {x: 0, y: 0, z: 0}
-  speed: 40
+  speed: 5
   damage: 0
   meshRenderer: {fileID: 8495489654226870564}
   colorLerpTimer: 0

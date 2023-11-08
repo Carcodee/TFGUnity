@@ -1581,6 +1581,7 @@ MonoBehaviour:
   spawnBulletPoint: {fileID: 2006625581592264614}
   shootRate: 0.1
   shootTimer: 0
+  shootRefraction: 0.2
   move: {x: 0, y: 0, z: 0}
   rotationFactor: 25
   RotationSmoothTime: 0.1
@@ -1600,6 +1601,7 @@ MonoBehaviour:
   isGrounded: 0
   groundPos: {x: 0, y: 0, z: 0}
   gravityForce: 25
+  gravityMultiplier: 1
   _bodyVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &6344872551529989650
 MonoBehaviour:

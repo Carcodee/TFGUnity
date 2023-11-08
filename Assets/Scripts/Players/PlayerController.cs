@@ -37,7 +37,7 @@ public class PlayerController : NetworkBehaviour
     [Header("Shoot")]
     public float shootRate = 0.1f;
     public float shootTimer = 0f;
-
+    public float shootRefraction = 10f;
 
     [Header("Player Movement")]
     public Vector3 move;
@@ -261,7 +261,7 @@ public class PlayerController : NetworkBehaviour
                 }
 
                 BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
-                bullet.Direction = direction.normalized;
+                bullet.Direction = direction.normalized + new Vector3(Random.Range(0, shootRefraction), Random.Range(0, shootRefraction),0);
                 bullet.damage = GetComponent<PlayerStatsController>().GetDamageDone();
                 bullet.GetComponent<NetworkObject>().Spawn();
 
@@ -357,7 +357,7 @@ public class PlayerController : NetworkBehaviour
     public void ShootServerRpc(Vector3 dir, int damage)
     {
         BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
-        bullet.Direction = dir.normalized;
+        bullet.Direction = dir.normalized + new Vector3(Random.Range(0, shootRefraction), Random.Range(0, shootRefraction), 0);
         bullet.damage = damage;
         bullet.GetComponent<NetworkObject>().Spawn();
     }
