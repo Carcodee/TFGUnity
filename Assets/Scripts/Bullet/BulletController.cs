@@ -9,9 +9,15 @@ public class BulletController : NetworkBehaviour
     public Vector3 Direction;
     public float speed = 10f;
     public int damage;
+    public MeshRenderer meshRenderer;
+
+    public float colorLerpTimer;
+    public bool collided = false;
+    public BulletHitType bulletHitType;
     void Start()
     {
-        rb.isKinematic = false;
+    collided = false;
+    rb.isKinematic = false;
         if (IsOwner)
         {
             StartCoroutine(DestroyBullet());
@@ -22,8 +28,10 @@ public class BulletController : NetworkBehaviour
     {
 
 
-            rb.velocity = -Direction * speed;
-        
+        if (collided)
+        {
+            ColorChange(bulletHitType);
+        }
 
     }
 
@@ -42,17 +50,54 @@ public class BulletController : NetworkBehaviour
     [ServerRpc]
     public void DestroyServerRpc()
     {
-          Destroy(gameObject);
+        NetworkManager.Destroy(gameObject);
     }
     private void FixedUpdate()
     {
-
+        rb.velocity = -Direction * speed;
     }
     private void OnCollisionEnter(Collision collision)
     {
-        if (TryGetComponent<EnemyBase>(out EnemyBase enemyRef))
+        if (TryGetComponent<PlayerStatsController>(out PlayerStatsController enemyRef))
         {
             enemyRef.TakeDamage(damage);
+            collided = true;
+            bulletHitType = BulletHitType.Enemy;
         }
+        else
+        {
+            collided = true;
+            bulletHitType = BulletHitType.Enviroment;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+ 
+    }
+
+    private void ColorChange(BulletHitType bulletHitType)
+    {
+        colorLerpTimer += Time.deltaTime;
+        Color lerpedCol;
+        switch (bulletHitType)
+        {
+            case BulletHitType.Enemy:
+
+                lerpedCol = Color.Lerp(Color.red, Color.cyan, colorLerpTimer);
+                meshRenderer.material.SetColor("_EmissiveColor", lerpedCol);
+
+                break;
+            case BulletHitType.Enviroment:
+                lerpedCol= Color.Lerp(Color.blue, Color.white, colorLerpTimer);
+                meshRenderer.material.SetColor("_EmissiveColor", lerpedCol);
+                break;
+        }
+
+    }
+    public enum BulletHitType
+    {
+        Enemy,
+        Enviroment
     }
 }

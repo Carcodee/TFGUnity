@@ -20,6 +20,7 @@ public class AimingState : PlayerStateBase
 
     public override void StateExit()
     {
+        networkAnimator.Animator.SetFloat("Aiming", 0);
 
     }
 
@@ -35,8 +36,10 @@ public class AimingState : PlayerStateBase
         StateInput();
         this.networkAnimator.Animator.SetFloat("X", this.playerRef.move.x);
         this.networkAnimator.Animator.SetFloat("Y", this.playerRef.move.z);
-        AimAinimation();
         playerRef.CreateAimTargetPos();
+        //this.playerRef.AimAinimation(ref aimAnimation,networkAnimator);
+        networkAnimator.Animator.SetFloat("Aiming", 1);
+
         this.playerRef.Shoot();
         this.playerRef.Reloading();
         if (Input.GetKeyUp(KeyCode.Mouse1))
@@ -49,6 +52,7 @@ public class AimingState : PlayerStateBase
             return;
         }
 
+
     }
     public override void StatePhysicsUpdate()
     {
@@ -59,19 +63,5 @@ public class AimingState : PlayerStateBase
         playerRef.RotatePlayer();
     }
 
-    public void AimAinimation()
-    {
-        if (Input.GetKey(KeyCode.Mouse1))
-        {
-            aimAnimation += Time.deltaTime * 5;
-        }
-        else
-        {
-            aimAnimation -= Time.deltaTime * 5;
-        }
-        aimAnimation = Mathf.Clamp(aimAnimation, 0, 1);
-        float LerpedAnim = Mathf.Clamp(Mathf.Lerp(0, 1, aimAnimation), 0, 1);
-        networkAnimator.Animator.SetFloat("Aiming", aimAnimation);
-
-    }
+    
 }

@@ -3,20 +3,23 @@ using System.Collections.Generic;
 using Unity.Netcode.Components;
 using UnityEngine;
 
-public class FallingState : PlayerStateBase
+public class JetpackState : PlayerStateBase
 {
-    public FallingState(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
+    public JetpackState(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
     {
         playerRef = stateMachineController.GetComponent<PlayerController>();
         networkAnimator = stateMachineController.GetComponent<NetworkAnimator>();
     }
     Vector3 moveDir;
+    private float aimAnimation;
+
     public override void StateEnter()
     {
         networkAnimator.Animator.SetBool("Fall", true);
         playerRef._bodyVelocity.y = 0;
         moveDir = playerRef.move;
-        this.playerRef.gravityMultiplier = 1;
+        this.playerRef.gravityMultiplier = 0.05f;
+        aimAnimation = 0;
 
     }
 
@@ -34,17 +37,14 @@ public class FallingState : PlayerStateBase
 
     public override void StateUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            stateMachineController.SetState("Jetpack");
-        }
-        if (Input.GetKeyDown(KeyCode.Mouse1))
-        {
-            stateMachineController.SetState("Aiming");
-        }
-
+        this.playerRef.AimAinimation(ref aimAnimation, networkAnimator);
+        playerRef.CreateAimTargetPos();
         this.playerRef.Shoot();
         this.playerRef.Reloading();
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            stateMachineController.SetState("Falling");
+        }
     }
     public override void StatePhysicsUpdate()
     {
@@ -59,5 +59,5 @@ public class FallingState : PlayerStateBase
         playerRef.ApplyMovement(moveDir);
         playerRef.RotatePlayer();
     }
-
+    
 }

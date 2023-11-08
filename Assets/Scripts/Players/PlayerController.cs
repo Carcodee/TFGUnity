@@ -76,7 +76,8 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float jumpHeight = 5f;
     [SerializeField] public bool isGrounded;
     [SerializeField] public Vector3 groundPos;
-    [SerializeField] private float gravityForce = -9.8f;
+    [SerializeField] private float gravityForce = 100f;
+    public float gravityMultiplier = 1f;
     public Vector3 _bodyVelocity;
 
 
@@ -136,30 +137,15 @@ public class PlayerController : NetworkBehaviour
     public void Jump()
     {
         
-        _bodyVelocity.y = Mathf.Sqrt(2* gravityForce * jumpHeight);
+        _bodyVelocity.y = Mathf.Sqrt(2* (gravityForce * gravityMultiplier) * jumpHeight);
         isGrounded = false;
     }
 
 
     public void ApplyGravity()
     {
-        //Vector3 position = transform.position;
-        //groundPos = GetGroundPosFromPoint(position);
-        //if (position.y > groundPos.y)
-        //{
-        //    _bodyVelocity.y += gravityForce * Mathf.Pow(Time.fixedDeltaTime, 2);
-        //}
-        //else if(!isGrounded && _bodyVelocity.y <= 0 && position.y <= groundPos.y)
-        //{
-        //    //en el suelo
-        //    //transform.position = groundPos;
-        //    Debug.Log("OnGround");
-        //    _bodyVelocity = Vector2.zero;
-        //    isGrounded = true;
-        //    stateMachineController.SetState("Movement");
 
-        //}
-        _bodyVelocity.y -= gravityForce * Time.fixedDeltaTime;
+        _bodyVelocity.y -= (gravityForce *gravityMultiplier) * Time.fixedDeltaTime;
         characterController.Move(_bodyVelocity* Time.fixedDeltaTime);
         if (characterController.isGrounded)
         {
@@ -237,6 +223,22 @@ public class PlayerController : NetworkBehaviour
             isReloading = true;
             Debug.Log("Reloading");
         }
+    }
+    public void AimAinimation(ref float aimAnimation, NetworkAnimator networkAnimator)
+    {
+        if (Input.GetKey(KeyCode.Mouse1))
+        {
+            aimAnimation += Time.deltaTime * 5;
+        }
+        else
+        {
+            aimAnimation -= Time.deltaTime * 5;
+        }
+        aimAnimation = Mathf.Clamp(aimAnimation, 0, 1);
+        float LerpedAnim = Mathf.Clamp(Mathf.Lerp(0, 1, aimAnimation), 0, 1);
+        //TODO : fix this aiming thing
+        networkAnimator.Animator.SetFloat("Aiming", 1);
+
     }
     public void Shoot()
     {
@@ -386,21 +388,6 @@ public class PlayerController : NetworkBehaviour
     }
 
     #endregion
-
-}
-
-public enum PlayerMovementStates
-{
-    idle,
-    runnning,
-    sprinting,
-    crouching,
-    sliding,
-    aiming,
-    jumping,
-    reloading,
-    Aiming,
-    falling
 
 }
 

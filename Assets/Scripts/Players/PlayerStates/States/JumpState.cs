@@ -15,8 +15,10 @@ public class JumpState : PlayerStateBase
     {
         base.StateEnter();
         moveDir = playerRef.move;
-        playerRef.Jump();
+        this.playerRef.Jump();
+        this.playerRef.gravityMultiplier = 1;
         networkAnimator.Animator.Play("Jump");
+
     }
 
     public override void StateExit()
@@ -35,9 +37,9 @@ public class JumpState : PlayerStateBase
     {
         //TODO: fix jump animation
 
-        if (Input.GetKeyDown(KeyCode.Mouse1))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            stateMachineController.SetState("Aiming");
+            stateMachineController.SetState("Jetpack");
         }
 
         this.playerRef.Shoot();
