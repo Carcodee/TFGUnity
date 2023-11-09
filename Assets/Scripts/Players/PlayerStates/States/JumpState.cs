@@ -36,7 +36,10 @@ public class JumpState : PlayerStateBase
     public override void StateUpdate()
     {
         //TODO: fix jump animation
-
+        if (playerRef._bodyVelocity.y < 0)
+        {
+            stateMachineController.SetState("Falling");
+        }
         if (Input.GetKeyDown(KeyCode.Space))
         {
             stateMachineController.SetState("Jetpack");
@@ -51,12 +54,10 @@ public class JumpState : PlayerStateBase
     }
     public override void StateLateUpdate()
     {
-        if (playerRef._bodyVelocity.y < 0)
-        {
-            stateMachineController.SetState("Falling");
-        }
-        playerRef.ApplyMovement(moveDir);
+
         playerRef.RotatePlayer();
+        playerRef.ApplyMovement(playerRef.move);
+
     }
 
 }

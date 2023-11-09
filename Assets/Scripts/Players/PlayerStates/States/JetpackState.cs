@@ -57,7 +57,6 @@ public class JetpackState : PlayerStateBase
     public override void StateLateUpdate()
     {
         playerRef.ApplyMovement(moveDir);
-        playerRef.RotatePlayer();
     }
     
 }

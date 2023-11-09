@@ -48,16 +48,17 @@ public class FallingState : PlayerStateBase
     }
     public override void StatePhysicsUpdate()
     {
-        playerRef.ApplyGravity();
-        if (playerRef.characterController.isGrounded)
-        {
-            stateMachineController.SetState("Movement");
-        }
+
     }
     public override void StateLateUpdate()
     {
         playerRef.ApplyMovement(moveDir);
         playerRef.RotatePlayer();
+        playerRef.ApplyGravity();
+        if (playerRef.characterController.isGrounded)
+        {
+            stateMachineController.SetState("Movement");
+        }
     }
 
 }

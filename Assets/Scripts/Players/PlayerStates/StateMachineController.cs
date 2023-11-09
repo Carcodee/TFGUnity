@@ -64,6 +64,7 @@ public class StateMachineController : NetworkBehaviour
         if (currentState != null )
         {
             currentState.StateUpdate();
+            Debug.Log(currentState.stateName);
         }
     }
 

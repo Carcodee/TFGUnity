@@ -116,6 +116,7 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
             stateMachineController.StateLateUpdate();
+
         }
 
     }
@@ -147,10 +148,7 @@ public class PlayerController : NetworkBehaviour
 
         _bodyVelocity.y -= (gravityForce *gravityMultiplier) * Time.fixedDeltaTime;
         characterController.Move(_bodyVelocity* Time.fixedDeltaTime);
-        if (characterController.isGrounded)
-        {
-            stateMachineController.SetState("Movement");
-        }
+       
 
 
     }

@@ -37,11 +37,6 @@ public class MovementState : PlayerStateBase
     public override void StateUpdate()
     {
         StateInput();
-        this.networkAnimator.Animator.SetFloat("X", this.playerRef.move.x);
-        this.networkAnimator.Animator.SetFloat("Y", this.playerRef.move.z);
-        this.networkAnimator.Animator.SetFloat("Speed",  this.playerRef.sprintFactor);
-        this.playerRef.Shoot();
-        this.playerRef.Reloading();
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             stateMachineController.SetState("Sprint");
@@ -56,13 +51,19 @@ public class MovementState : PlayerStateBase
             return;
         }
         if (Input.GetKeyDown(KeyCode.Mouse1))
-        { 
+        {
             stateMachineController.SetState("Aiming");
         }
         if (!playerRef.characterController.isGrounded)
         {
             stateMachineController.SetState("Falling");
         }
+        this.networkAnimator.Animator.SetFloat("X", this.playerRef.move.x);
+        this.networkAnimator.Animator.SetFloat("Y", this.playerRef.move.z);
+        this.networkAnimator.Animator.SetFloat("Speed",  this.playerRef.sprintFactor);
+        this.playerRef.Shoot();
+        this.playerRef.Reloading();
+
     }
     public override void StatePhysicsUpdate()
     {

@@ -11,7 +11,7 @@ public class SlidingState : PlayerStateBase
         networkAnimator = stateMachineController.GetComponent<NetworkAnimator>();
     }
     public float slidingTimer;
-    public float slidingTime=1.0f;
+    public float slidingTime=2.0f;
     private Vector3 moveDir;
     public override void StateEnter()
     {
@@ -23,10 +23,8 @@ public class SlidingState : PlayerStateBase
     }
 
     public override void StateExit()
-    {
-        this.networkAnimator.Animator.Play("Movement");
+    { 
     }
-
 
     public override void StateInput()
     {
@@ -39,13 +37,13 @@ public class SlidingState : PlayerStateBase
         StateInput();
         this.networkAnimator.Animator.SetFloat("X", moveDir.x);
         this.networkAnimator.Animator.SetFloat("Y", moveDir.z);
-        slidingTimer += Time.fixedDeltaTime;
+        slidingTimer += Time.deltaTime;
         if (slidingTimer > slidingTime)
         {
             slidingTimer = 0;
             stateMachineController.SetState("Movement");
         }
-        if (Input.GetKeyUp(KeyCode.LeftShift))
+        if (Input.GetKeyUp(KeyCode.Space))
         {
             stateMachineController.SetState("Jump");
         }
@@ -53,13 +51,12 @@ public class SlidingState : PlayerStateBase
     public override void StateLateUpdate()
     {
         playerRef.ApplyMovement(moveDir);
-
+        playerRef.ApplyGravity();
+        playerRef.RotatePlayer();
     }
     public override void StatePhysicsUpdate()
     {
-        playerRef.ApplyMovement(moveDir);   
-        playerRef.ApplyGravity();
-        playerRef.RotatePlayer();
+
     }
 }
 
@@ -96,6 +93,10 @@ public class CrouchState : PlayerStateBase
         this.networkAnimator.Animator.SetFloat("X", playerRef.move.x);
         this.networkAnimator.Animator.SetFloat("Y", playerRef.move.z);
         networkAnimator.Animator.SetBool("Crouch", true);
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            stateMachineController.SetState("Aiming");
+        }
         if (Input.GetKeyUp(KeyCode.LeftAlt))
         {
             stateMachineController.SetState("Movement");
@@ -108,6 +109,5 @@ public class CrouchState : PlayerStateBase
     public override void StateLateUpdate()
     {
         playerRef.RotatePlayer();
-        playerRef.ApplyMovement(playerRef.move);
     }
 }

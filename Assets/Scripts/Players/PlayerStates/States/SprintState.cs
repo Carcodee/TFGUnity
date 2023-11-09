@@ -36,30 +36,32 @@ public class SprintState : PlayerStateBase
         this.networkAnimator.Animator.SetFloat("Speed", this.playerRef.sprintFactor);
 
         this.networkAnimator.Animator.SetBool("Sprint", true);
-        if (Input.GetKeyDown(KeyCode.LeftAlt))
+        
+        if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-            stateMachineController.SetState("Sliding");
-            return;
+            stateMachineController.SetState("Movement");
         }
         if (Input.GetKeyDown(KeyCode.Space))
         {
             stateMachineController.SetState("Jump");
             return;
         }
-        if (Input.GetKeyUp(KeyCode.LeftShift))
+        if (Input.GetKeyDown(KeyCode.LeftAlt))
         {
-            stateMachineController.SetState("Movement");
+            stateMachineController.SetState("Sliding");
+            return;
         }
-        
+
 
     }
     public override void StatePhysicsUpdate()
     {
+
     }
     public override void StateLateUpdate()
     {
-        this.playerRef.ApplyMovement(this.playerRef.move);
         this.playerRef.RotatePlayer();
+        playerRef.ApplyMovement(playerRef.move);
 
     }
 }

@@ -56,12 +56,13 @@ public class AimingState : PlayerStateBase
     }
     public override void StatePhysicsUpdate()
     {
-    }
+    }   
     public override void StateLateUpdate()
     {
-        playerRef.ApplyMovement(playerRef.move);
         playerRef.RotatePlayer();
+        playerRef.ApplyMovement(playerRef.move);
+
     }
 
-    
+
 }
