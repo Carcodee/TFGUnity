@@ -12,7 +12,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
 {
     public UnityAction OnSpawnPlayer;
     public UnityAction OnStatsChanged;
-
+    public Action OnLevelUp;    
     [Header("References")]
     public StatsTemplate[] statsTemplates;
     public NetworkVariable <int> statsTemplateSelected;
@@ -52,6 +52,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
             base.OnNetworkSpawn();
             OnSpawnPlayer += InitializateStats;
             OnStatsChanged += UpdateStats;
+            OnLevelUp += LevelUp;
             iDamageable = GetComponent<IDamageable>();
             InitializateStats();
         }

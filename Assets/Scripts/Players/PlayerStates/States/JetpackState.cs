@@ -22,7 +22,7 @@ public class JetpackState : PlayerStateBase
         aimAnimation = 0;
 
     }
-
+    
     public override void StateExit()
     {
         //animation
@@ -41,6 +41,7 @@ public class JetpackState : PlayerStateBase
         playerRef.CreateAimTargetPos();
         this.playerRef.Shoot();
         this.playerRef.Reloading();
+        
         if (Input.GetKeyUp(KeyCode.Space))
         {
             stateMachineController.SetState("Falling");

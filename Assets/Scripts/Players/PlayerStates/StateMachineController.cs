@@ -9,7 +9,7 @@ public class StateMachineController : NetworkBehaviour
 {
     [Tooltip("All my states")]
     public StateMachineBase[] states;
-    private StateMachineBase currentState;
+    public StateMachineBase currentState { get; private set; }
     public MovementState movementState;
     public JumpState jumpState;
     public SprintState sprintState;

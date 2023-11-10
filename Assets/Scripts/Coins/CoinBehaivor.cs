@@ -32,9 +32,8 @@ public class CoinBehaivor : NetworkBehaviour
                 if (playerRef.OwnerClientId == networkPlayerID.Value)
                 {
                     //something happens
-                    playerRef.LevelUp();
+                    playerRef.OnLevelUp?.Invoke();
                     playerRef.RefillAmmo();
-
                     CoinCollectedClientRpc();
                 }
             }
@@ -48,7 +47,7 @@ public class CoinBehaivor : NetworkBehaviour
     [ClientRpc]
     public void CoinCollectedClientRpc()
     {
-        Instantiate(coinEffectPrefab, transform.position, Quaternion.identity);
+        //Instantiate(coinEffectPrefab, transform.position, Quaternion.identity);
         OnCoinCollected?.Invoke(gameObject.GetComponent<CoinBehaivor>());
     }
 }

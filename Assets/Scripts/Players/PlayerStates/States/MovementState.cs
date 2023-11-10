@@ -12,7 +12,7 @@ public class MovementState : PlayerStateBase
         playerRef = stateMachineController.GetComponent<PlayerController>();
         networkAnimator = stateMachineController.GetComponent<NetworkAnimator>();
     }
-
+    Vector2 animInput;
     public override void StateEnter()
     {
         base.StateEnter();
@@ -29,8 +29,9 @@ public class MovementState : PlayerStateBase
 
     public override void StateInput()
     {
-        float x= Input.GetAxis("Horizontal");
-        float y= Input.GetAxis("Vertical");
+        float x= Input.GetAxisRaw("Horizontal");
+        float y= Input.GetAxisRaw("Vertical");
+        animInput=new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         this.playerRef.Move(x, y);
     }
 
@@ -40,10 +41,13 @@ public class MovementState : PlayerStateBase
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             stateMachineController.SetState("Sprint");
+            return;
         }
         if (Input.GetKeyDown(KeyCode.LeftAlt))
         {
             stateMachineController.SetState("Crouch");
+            return;
+
         }
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -53,13 +57,17 @@ public class MovementState : PlayerStateBase
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             stateMachineController.SetState("Aiming");
+            return;
+
         }
         if (!playerRef.characterController.isGrounded)
         {
             stateMachineController.SetState("Falling");
+            return;
+
         }
-        this.networkAnimator.Animator.SetFloat("X", this.playerRef.move.x);
-        this.networkAnimator.Animator.SetFloat("Y", this.playerRef.move.z);
+        this.networkAnimator.Animator.SetFloat("X", animInput.x);
+        this.networkAnimator.Animator.SetFloat("Y", animInput.y);
         this.networkAnimator.Animator.SetFloat("Speed",  this.playerRef.sprintFactor);
         this.playerRef.Shoot();
         this.playerRef.Reloading();

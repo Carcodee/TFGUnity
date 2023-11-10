@@ -1459,6 +1459,7 @@ GameObject:
   - component: {fileID: 811542298380123267}
   - component: {fileID: 1071611250771317373}
   - component: {fileID: 3989233279740246775}
+  - component: {fileID: 2497920667317450386}
   - component: {fileID: -7918970974976374508}
   - component: {fileID: 5319185021556315752}
   - component: {fileID: 7439418814137783279}
@@ -1713,6 +1714,35 @@ MonoBehaviour:
   networkIsCrouching: 0
   networkSlidingTime: 0
   slidingTimer: 0.5
+--- !u!114 &2497920667317450386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3940185642830209463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4a53d78d2a7ac743b38eb93446c9e1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stateMachineController: {fileID: 811542298380123267}
+  playerStatsControlle: {fileID: 0}
+  meshTrailTime: 2
+  meshTrailTick: 0.1
+  destroyTime: 0.2
+  meshTrailActive: 0
+  skinnedMeshRenderers:
+  - {fileID: 8330240687708528113}
+  mat: {fileID: 2100000, guid: 3ceb7475b46bf3e47b21cf6428d9ab34, type: 2}
+  shaderVariableName: _Alpha
+  shaderVariableRate: 0.1
+  shaderVariableRefreshRate: 0
+  levelUpMat: {fileID: 2100000, guid: 59f1707a3ff7dfb448886db6bd81a632, type: 2}
+  levelUpGlowTime: 0.05
+  shaderVariableGlowRate: 0.1
+  glowGoalValue: -7
+  shaderVariableNameGlow: 
 --- !u!143 &-7918970974976374508
 CharacterController:
   m_ObjectHideFlags: 0
