@@ -31,6 +31,7 @@ public class SprintState : PlayerStateBase
     public override void StateUpdate()
     {
         StateInput();
+
         this.networkAnimator.Animator.SetFloat("X", this.playerRef.move.x);
         this.networkAnimator.Animator.SetFloat("Y", this.playerRef.move.z);
         this.networkAnimator.Animator.SetFloat("Speed", this.playerRef.sprintFactor);
@@ -52,6 +53,10 @@ public class SprintState : PlayerStateBase
             return;
         }
 
+        if (!playerRef.characterController.isGrounded)
+        {
+            stateMachineController.SetState("Falling");
+        }
 
     }
     public override void StatePhysicsUpdate()

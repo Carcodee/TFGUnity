@@ -34,7 +34,7 @@ public class PlayerController : NetworkBehaviour
     public Transform targetPos;
     public Transform headAim;
     public Transform spawnBulletPoint;
-
+    
     [Header("Shoot")]
     public float shootRate = 0.1f;
     public float shootTimer = 0f;
@@ -101,6 +101,7 @@ public class PlayerController : NetworkBehaviour
         cam.enabled = IsOwner;
         if (IsOwner)
         {
+
             stateMachineController.StateUpdate();
         }
 }
@@ -108,6 +109,7 @@ public class PlayerController : NetworkBehaviour
     {
         if (IsOwner)
         {
+
             stateMachineController.StatePhysicsUpdate();
         }
 
@@ -116,6 +118,9 @@ public class PlayerController : NetworkBehaviour
     {
         if (IsOwner)
         {
+            //TODO : fix this is grounded thing
+            Debug.Log(characterController.isGrounded);
+
             stateMachineController.StateLateUpdate();
 
         }
@@ -146,12 +151,10 @@ public class PlayerController : NetworkBehaviour
 
     public void ApplyGravity()
     {
-
+        
         _bodyVelocity.y -= (gravityForce *gravityMultiplier) * Time.fixedDeltaTime;
         characterController.Move(_bodyVelocity* Time.fixedDeltaTime);
-       
-
-
+        
     }
 
     public void RotatePlayer()
@@ -307,44 +310,7 @@ public class PlayerController : NetworkBehaviour
 
 
     }
-
-    public void CrouchAndSprint()
-    {
-        if (isSliding)
-        {
-            slidingTimer += Time.fixedDeltaTime;
-            if (slidingTimer > slidingTime)
-            {
-                isSliding = false;
-                slidingTimer = 0;
-            }
-            return;
-        }
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            SetSprintFactor(sprintFactor);
-            isSprinting = true;
-            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.LeftAlt))
-            {
-                isSliding = true;
-                SetSprintFactor(slidingSpeed);
-                return;
-            }
-            return;
-        }
-        if (Input.GetKey(KeyCode.LeftAlt))
-        {
-            isCrouching = true;
-            isSprinting = false;
-            SetSprintFactor(crouchFactor);
-            return;
-        }
-
-        SetSprintFactor(1f);
-        isCrouching = false;
-        isSprinting = false;
-
-    }
+    
 
     public void SetSprintFactor(float val)
     {

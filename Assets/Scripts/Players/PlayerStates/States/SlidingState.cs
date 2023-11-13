@@ -13,6 +13,7 @@ public class SlidingState : PlayerStateBase
     public float slidingTimer;
     public float slidingTime=2.0f;
     private Vector3 moveDir;
+    
     public override void StateEnter()
     {
         base.StateEnter();
@@ -46,6 +47,12 @@ public class SlidingState : PlayerStateBase
         if (Input.GetKeyUp(KeyCode.Space))
         {
             stateMachineController.SetState("Jump");
+        }
+        if (!playerRef.characterController.isGrounded)
+        {
+            stateMachineController.SetState("Falling");
+            return;
+
         }
     }
     public override void StateLateUpdate()
