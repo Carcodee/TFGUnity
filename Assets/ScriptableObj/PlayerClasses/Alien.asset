@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   preset: Alien
   haste: 5
-  health: 5
+  health: 10
   stamina: 5
   damage: 5
   armor: 5

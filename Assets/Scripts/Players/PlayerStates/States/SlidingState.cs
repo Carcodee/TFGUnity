@@ -90,17 +90,29 @@ public class CrouchState : PlayerStateBase
     public override void StateUpdate()
     {
         StateInput();
-        this.networkAnimator.Animator.SetFloat("X", playerRef.move.x);
-        this.networkAnimator.Animator.SetFloat("Y", playerRef.move.z);
-        networkAnimator.Animator.SetBool("Crouch", true);
-        if (Input.GetKeyDown(KeyCode.Mouse1))
-        {
-            stateMachineController.SetState("Aiming");
-        }
         if (Input.GetKeyUp(KeyCode.LeftAlt))
         {
             stateMachineController.SetState("Movement");
-        }   
+            return;
+        }  
+        this.networkAnimator.Animator.SetFloat("X", playerRef.move.x);
+        this.networkAnimator.Animator.SetFloat("Y", playerRef.move.z);
+        networkAnimator.Animator.SetBool("Crouch", true);
+
+        if (Input.GetKey(KeyCode.Mouse1))
+        {
+            this.networkAnimator.Animator.SetFloat("X", this.playerRef.move.x);
+            this.networkAnimator.Animator.SetFloat("Y", this.playerRef.move.z);
+            playerRef.CreateAimTargetPos();
+            //this.playerRef.AimAinimation(ref aimAnimation,networkAnimator);
+            networkAnimator.Animator.SetFloat("Aiming", 1);
+        }
+        else
+        {
+            networkAnimator.Animator.SetFloat("Aiming", 0);
+        }
+        this.playerRef.Shoot();
+        this.playerRef.Reloading();
     }
     public override void StatePhysicsUpdate()
     {
@@ -108,6 +120,7 @@ public class CrouchState : PlayerStateBase
     }
     public override void StateLateUpdate()
     {
-        playerRef.RotatePlayer();
+        this.playerRef.ApplyMovement(this.playerRef.move);
+        this.playerRef.RotatePlayer();
     }
 }

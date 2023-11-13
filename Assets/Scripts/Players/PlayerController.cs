@@ -23,7 +23,8 @@ public class PlayerController : NetworkBehaviour
     public BulletController bulletPrefab;
     public Transform cinemachineCameraTarget;
     public CharacterController characterController;
-
+    public Camera cam;
+        
     [SerializeField] private Camera cameraRef;
     [SerializeField] private StateMachineController stateMachineController;
 
@@ -43,8 +44,8 @@ public class PlayerController : NetworkBehaviour
     public Vector3 move;
 
     public float rotationFactor;
-    public float RotationSmoothTime = 0.1f;
-    public float _rotationVelocity;
+    public float rotationSmoothTime = 0.1f;
+    public float rotationVelocity;
     public float slidingTime = 0.5f;
     public float slidingSpeed = 3f;
     public float sprintFactor = 2.5f;
@@ -68,7 +69,7 @@ public class PlayerController : NetworkBehaviour
     float xRotation = 0f;
     float yRotation = 0f;
 
-    public float reloadTime = 1f;
+    public float reloadTime =>3/playerStats.GetHaste();
     public float reloadCurrentTime = 0f;
     public bool isReloading = false;
 
@@ -79,10 +80,11 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float gravityForce = 100f;
     public float gravityMultiplier = 1f;
     public Vector3 _bodyVelocity;
-
+    
 
     void Start()
     {
+        cam= GetComponentInChildren<Camera>();
 
         if (IsOwner)
         {
@@ -96,10 +98,9 @@ public class PlayerController : NetworkBehaviour
 
     void Update()
     {
-        GetComponentInChildren<Camera>().enabled = IsOwner;
+        cam.enabled = IsOwner;
         if (IsOwner)
         {
- 
             stateMachineController.StateUpdate();
         }
 }
@@ -162,7 +163,7 @@ public class PlayerController : NetworkBehaviour
             return;
         }
         float targetAngle = (Mathf.Atan2(0, playerMovement.z) * Mathf.Rad2Deg) + cinemachineCameraTarget.rotation.eulerAngles.y;
-        float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _rotationVelocity, RotationSmoothTime);
+        float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref rotationVelocity, rotationSmoothTime);
         transform.rotation = Quaternion.Euler(0f, rotation, 0f);
     }
 

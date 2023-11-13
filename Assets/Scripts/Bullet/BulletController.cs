@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine.Utility;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -58,9 +60,10 @@ public class BulletController : NetworkBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        if (TryGetComponent<PlayerStatsController>(out PlayerStatsController enemyRef))
+        if (collision.transform.TryGetComponent<PlayerStatsController>(out PlayerStatsController enemyRef))
         {
             enemyRef.TakeDamage(damage);
+            Debug.Log("Hit: "+ damage);
             collided = true;
             bulletHitType = BulletHitType.Enemy;
         }
@@ -73,8 +76,14 @@ public class BulletController : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
- 
     }
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        Debug.Log("Hit");
+    }
+
+
 
     private void ColorChange(BulletHitType bulletHitType)
     {

@@ -63,28 +63,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         OnStatsChanged -= UpdateStats;
 
     }
-    private void OnEnable()
-    {
-        
-    }
-    private void OnDisable()
-    {
-        
-    }
-    private void Awake()
-    {
-
-    }
-    void Start()
-    {
-
-
-    }
-
-    void Update()
-    {
-
-    }
+    
     public void FillStatNameHolder()
     {
         statHolderNames = new string[6];
@@ -174,11 +153,22 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
 
     public void TakeDamage(int damage)
     {
-        SetHealthServerRpc(health.Value - damage);
-        if (health.Value <= 0)
+        if (IsOwner)
         {
-            Destroy(gameObject);
+            if (IsServer)
+            {
+                health.Value -= (damage);
+            }
+            else
+            {
+                SetHealthServerRpc(health.Value - (damage));  
+            }
+            if (health.Value <= 0)
+            {
+                Destroy(gameObject);
+            }
         }
+
     }
     public void AddValueFromButton(int index)
     {

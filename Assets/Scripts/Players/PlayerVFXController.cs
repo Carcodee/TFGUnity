@@ -25,6 +25,8 @@ public class PlayerVFXController : NetworkBehaviour
     public float glowGoalValue= -7.0f;
     public string shaderVariableNameGlow;
 
+    
+    
     void Start()
     {
 

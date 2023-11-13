@@ -15,7 +15,7 @@ public class AimingState : PlayerStateBase
     public override void StateEnter()
     {
         base.StateEnter();
-        playerRef.sprintFactor = 0.3f;
+        playerRef.sprintFactor = 0.7f;
     }
 
     public override void StateExit()
