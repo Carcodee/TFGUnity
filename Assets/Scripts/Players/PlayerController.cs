@@ -14,8 +14,7 @@ public class PlayerController : NetworkBehaviour
 {
     [Header("Player Stats")]
     public PlayerStatsController playerStats;
-    public float speedHolder;
-    public float speedFactor;
+
 
 
     [Header("Player Components")]
@@ -24,9 +23,10 @@ public class PlayerController : NetworkBehaviour
     public Transform cinemachineCameraTarget;
     public CharacterController characterController;
     public Camera cam;
-        
+    [SerializeField] private Transform body;
+    
     [SerializeField] private Camera cameraRef;
-    [SerializeField] private StateMachineController stateMachineController;
+    public StateMachineController stateMachineController;
 
     [Header("TargetConfigs")]
     public float mouseSensitivity = 100f;
@@ -89,7 +89,8 @@ public class PlayerController : NetworkBehaviour
             SetSpeedStateServerRpc(5);
             stateMachineController.Initializate();
             playerStats = GetComponent<PlayerStatsController>();
-            characterController = GetComponent<CharacterController>();
+            playerStats.OnPlayerDead += PlayerDeadCallback;
+
         }
 
     }
@@ -99,7 +100,6 @@ public class PlayerController : NetworkBehaviour
         cam.enabled = IsOwner;
         if (IsOwner)
         {
-
             stateMachineController.StateUpdate();
         }
 }
@@ -124,6 +124,28 @@ public class PlayerController : NetworkBehaviour
         }
 
     }
+
+    public void DeactivatePlayer()
+    {
+
+            cam.enabled = false;
+            characterController.enabled = false;
+            body.gameObject.SetActive(false);
+
+
+    }
+    public void ActivatePlayer()
+    {
+            cam.enabled = true;
+            characterController.enabled = true;
+            body.gameObject.SetActive(true);
+    }
+    public void PlayerDeadCallback()
+    {
+        DeactivatePlayer();
+        stateMachineController.SetState("Dead");
+    }
+    
     public void ApplyMovement(Vector3 movement)
     {
         Vector3 motion= movement * playerStats.GetSpeed() * sprintFactor * Time.deltaTime;
@@ -131,6 +153,8 @@ public class PlayerController : NetworkBehaviour
         characterController.Move(motion );
 
     }
+    
+    
 
 
     public void Move(float x, float y)
@@ -262,7 +286,7 @@ public class PlayerController : NetworkBehaviour
 
                 BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
                 bullet.Direction = direction.normalized + new Vector3(Random.Range(0, shootRefraction), Random.Range(0, shootRefraction),0);
-                bullet.damage = GetComponent<PlayerStatsController>().GetDamageDone();
+                bullet.damage.Value = GetComponent<PlayerStatsController>().GetDamageDone();
                 bullet.GetComponent<NetworkObject>().Spawn();
 
 
@@ -310,18 +334,25 @@ public class PlayerController : NetworkBehaviour
     }
     
 
-    public void SetSprintFactor(float val)
-    {
-        speedFactor = val;
-    }
+ 
     #region ServerRpc
 
+    
+    [ServerRpc]
+    public void ActivateOrDeactivatePlayerServerRpc(bool value)
+    {
+        cam.enabled = value;
+        characterController.enabled = value;
+        body.gameObject.SetActive(value);
+        
+    }
+    
     [ServerRpc]
     public void ShootServerRpc(Vector3 dir, int damage)
     {
         BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
         bullet.Direction = dir.normalized + new Vector3(Random.Range(0, shootRefraction), Random.Range(0, shootRefraction), 0);
-        bullet.damage = damage;
+        bullet.damage.Value = damage;
         bullet.GetComponent<NetworkObject>().Spawn();
     }
 

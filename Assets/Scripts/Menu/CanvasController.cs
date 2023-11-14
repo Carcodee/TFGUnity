@@ -22,11 +22,10 @@ public class CanvasController : MonoBehaviour
     public TextMeshProUGUI exp;
 
 
-    [Header("Shapes")]
-    public Shapes.Line hpBar;
-    public Shapes.Disc playerExp;
-    public Shapes.Disc playerBullets;
-
+    [Header("DeadScreen")] 
+    public TextMeshProUGUI timeToSpawn;
+    float timeToSpawnTimer;
+    float timeToSpawnHolder;
 
     [Header("Buttons")]
     public Button openStatsButton;
@@ -34,10 +33,13 @@ public class CanvasController : MonoBehaviour
 
     [Header("Ref")]
     public PlayerStatsController playerAssigned;
+    public PlayerController playerController;
 
     void Start()
     {
         GetComponents();
+        timeToSpawnHolder = GameController.instance.respawnTime;
+        timeToSpawnTimer = GameController.instance.respawnTime;
     }
 
     void Update()
@@ -46,12 +48,25 @@ public class CanvasController : MonoBehaviour
         DisplayBullets();
         SetTimer();
         DisplayPlayersConnected();
+        if (playerController.stateMachineController.currentState.stateName== "Dead")
+        {
+            timeToSpawn.gameObject.SetActive(true);
+            timeToSpawnTimer -= Time.deltaTime;
+            timeToSpawn.text = "Time to respawn: " + (timeToSpawnTimer).ToString("0.0");
+        }
+        else
+        {
+            timeToSpawnTimer = timeToSpawnHolder;
+            timeToSpawn.gameObject.SetActive(false);
+        }
+
     }
 
     private void GetComponents()
     {
         canvas = GetComponent<Canvas>();
         playerAssigned = GetComponentInParent<PlayerStatsController>();
+        playerController = GetComponentInParent<PlayerController>();
     }
     private void SetTimer()
     {

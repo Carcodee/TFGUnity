@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 262.38358, g: 325.10843, b: 430.30963, a: 1}
+  m_IndirectSpecularColor: {r: 262.3616, g: 325.0784, b: 430.26373, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3497,7 +3497,7 @@ MeshRenderer:
   m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a39963938acbc4049b33797ac6d43321, type: 2}
+  - {fileID: 2100000, guid: 98a685f20e97cf941a2a3709b7003c68, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -6298,7 +6298,7 @@ Transform:
   m_GameObject: {fileID: 1843262758}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1, y: 0, z: -2.07}
+  m_LocalPosition: {x: -1, y: 8.3, z: -2.07}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7017,6 +7017,7 @@ MonoBehaviour:
     m_InternalValue: 0
   randomPoint:
     m_InternalValue: {x: 0, y: 0, z: 0}
+  respawnTime: 5
   coinPrefab: {fileID: 331007805235256181, guid: 8d81f148e89dcad4bbd1e53767679d49,
     type: 3}
   spawnPoints:

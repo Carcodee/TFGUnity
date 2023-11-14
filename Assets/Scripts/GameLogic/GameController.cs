@@ -28,7 +28,8 @@ public class GameController : NetworkBehaviour
     public NetworkVariable<int> numberOfPlayers = new NetworkVariable<int>();
     public NetworkVariable<int> numberOfPlayersAlive = new NetworkVariable<int>();
     public NetworkVariable <Vector3> randomPoint = new NetworkVariable<Vector3>();
-
+    public int respawnTime=5;
+    
     [Header("References")]
     [SerializeField] private CoinBehaivor coinPrefab;
 
@@ -79,7 +80,6 @@ public class GameController : NetworkBehaviour
 
             if (IsClient && IsOwner)
             {
-
                 OnPlayerEnterServerRpc();
                 SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 3, 5);
                 SetNumberOfPlayerListServerRpc(clientId);
@@ -117,6 +117,18 @@ public class GameController : NetworkBehaviour
 
     }
 
+
+    void OnPlayerDead(int index)
+    {
+        if (IsServer)
+        {
+            players[index].position = zoneControllers[index].playerSpawn.position;
+        }
+        else
+        {
+            SetPlayerPosServerRpc(zoneControllers[index].playerSpawn.position, index);
+        }
+    }
     /// <summary>
     /// create the player zones with the player transforms
     /// </summary>
@@ -131,7 +143,11 @@ public class GameController : NetworkBehaviour
                     CreateZonesOnNet(i);
 
                 }
-                if (IsServer) SetPlayerPosClientRpc(zoneControllers[i].playerSpawn.position, i);
+
+                if (IsServer)
+                {
+                    SetPlayerPosClientRpc(zoneControllers[i].playerSpawn.position, i);
+                }
             }
             if (IsServer) SpawnCoins();
             started = true;
@@ -325,6 +341,11 @@ public class GameController : NetworkBehaviour
         zoneControllers[index].GetComponent<NetworkObject>().Spawn();
         
     }
+    [ServerRpc]
+    public void SetPlayerPosServerRpc(Vector3 pos, int playerIndex)
+    {
+        players[playerIndex].position = pos;
+    }
     #endregion
 
 
@@ -332,7 +353,10 @@ public class GameController : NetworkBehaviour
     [ClientRpc]
     public void SetPlayerPosClientRpc(Vector3 pos, int playerIndex)
     {
+        players[playerIndex].GetComponent<PlayerController>().characterController.enabled = false;
         players[playerIndex].position = pos;
+        players[playerIndex].GetComponent<PlayerController>().characterController.enabled = true;
+        Debug.Log("Called on client");
     }
     [ClientRpc]
     public void SendMapBattleRoyaleValueClientRpc(bool val)

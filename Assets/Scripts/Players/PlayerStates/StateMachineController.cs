@@ -18,8 +18,7 @@ public class StateMachineController : NetworkBehaviour
     public AimingState AimingState;
     public FallingState FallingState;
     public JetpackState jetpackState;
-
-
+    public DeadState deadState;
 
 
 
@@ -33,8 +32,9 @@ public class StateMachineController : NetworkBehaviour
         AimingState = new AimingState("Aiming", this);
         FallingState= new FallingState("Falling", this);
         jetpackState = new JetpackState("Jetpack", this);
-
-        states =new StateMachineBase[8];
+        deadState = new DeadState("Dead", this);
+        
+        states =new StateMachineBase[9];
         states[0] = movementState;
         states[1]=jumpState;
         states[2]=sprintState;
@@ -43,6 +43,8 @@ public class StateMachineController : NetworkBehaviour
         states[5]=AimingState;
         states[6]=FallingState;
         states[7]=jetpackState;
+        states[8]=deadState;
+        
 
         for (int i = 0; i < states.Length; i++)
         {

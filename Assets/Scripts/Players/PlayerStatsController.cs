@@ -13,6 +13,8 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     public UnityAction OnSpawnPlayer;
     public UnityAction OnStatsChanged;
     public Action OnLevelUp;    
+    public Action OnPlayerDead;
+    
     [Header("References")]
     public StatsTemplate[] statsTemplates;
     public NetworkVariable <int> statsTemplateSelected;
@@ -57,6 +59,12 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
             InitializateStats();
         }
     }
+
+    private void Start()
+    {
+        OnSpawnPlayer?.Invoke();
+    }
+
     public override void OnNetworkDespawn()
     {
         OnSpawnPlayer -= InitializateStats;
@@ -138,6 +146,18 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     {
         totalAmmo +=60;
     }
+
+    public void SetHealth(int value)
+    {
+        if (IsServer)
+        {
+            health.Value = value;
+        }
+        else
+        {
+            SetHealthServerRpc(value);
+        }
+    }
     public void SetTemplate(int index)
     {
         if (IsServer)
@@ -165,7 +185,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
             }
             if (health.Value <= 0)
             {
-                Destroy(gameObject);
+                OnPlayerDead?.Invoke();
             }
         }
 

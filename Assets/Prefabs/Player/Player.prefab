@@ -1572,8 +1572,9 @@ MonoBehaviour:
   bulletPrefab: {fileID: -1591147314410710446, guid: c21ebc95755fece489b05e14b245910b,
     type: 3}
   cinemachineCameraTarget: {fileID: 2578975527992398695}
-  characterController: {fileID: 0}
+  characterController: {fileID: -7918970974976374508}
   cam: {fileID: 0}
+  body: {fileID: 6373146417380487653}
   cameraRef: {fileID: 7287120717324667788}
   stateMachineController: {fileID: 811542298380123267}
   mouseSensitivity: 100

@@ -10,7 +10,7 @@ public class BulletController : NetworkBehaviour
     public Rigidbody rb;
     public Vector3 Direction;
     public float speed = 10f;
-    public int damage;
+    public NetworkVariable<int> damage;
     public MeshRenderer meshRenderer;
 
     public float colorLerpTimer;
@@ -18,8 +18,8 @@ public class BulletController : NetworkBehaviour
     public BulletHitType bulletHitType;
     void Start()
     {
-    collided = false;
-    rb.isKinematic = false;
+        collided = false;
+        rb.isKinematic = false;
         if (IsOwner)
         {
             StartCoroutine(DestroyBullet());
@@ -62,7 +62,7 @@ public class BulletController : NetworkBehaviour
     {
         if (collision.transform.TryGetComponent<PlayerStatsController>(out PlayerStatsController enemyRef))
         {
-            enemyRef.TakeDamage(damage);
+            enemyRef.TakeDamage(damage.Value);
             Debug.Log("Hit: "+ damage);
             collided = true;
             bulletHitType = BulletHitType.Enemy;
@@ -73,17 +73,7 @@ public class BulletController : NetworkBehaviour
             bulletHitType = BulletHitType.Enviroment;
         }
     }
-
-    private void OnTriggerEnter(Collider other)
-    {
-    }
-
-    private void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        Debug.Log("Hit");
-    }
-
-
+    
 
     private void ColorChange(BulletHitType bulletHitType)
     {
