@@ -1604,6 +1604,7 @@ MonoBehaviour:
   gravityForce: 25
   gravityMultiplier: 1
   _bodyVelocity: {x: 0, y: 0, z: 0}
+  moveAnimationSpeed: 5
 --- !u!114 &6344872551529989650
 MonoBehaviour:
   m_ObjectHideFlags: 0

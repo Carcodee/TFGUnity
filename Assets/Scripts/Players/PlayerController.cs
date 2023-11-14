@@ -38,7 +38,7 @@ public class PlayerController : NetworkBehaviour
     [Header("Shoot")]
     public float shootRate = 0.1f;
     public float shootTimer = 0f;
-    public float shootRefraction = 10f;
+    public float shootRefraction = 0.1f;
 
     [Header("Player Movement")]
     public Vector3 move;
@@ -61,26 +61,24 @@ public class PlayerController : NetworkBehaviour
     public LayerMask ground;
 
     [Header("Player Actions")]
-    bool jump = false;
-    bool isSprinting = false;
-    bool isCrouching = false;
-    bool isSliding = false;
-
     float xRotation = 0f;
     float yRotation = 0f;
 
-    public float reloadTime =>3/playerStats.GetHaste();
+    public float reloadTime => 3/playerStats.GetHaste();
     public float reloadCurrentTime = 0f;
     public bool isReloading = false;
 
     [Header("Jumping")]
     [SerializeField] private float jumpHeight = 5f;
     [SerializeField] public bool isGrounded;
-    [SerializeField] public Vector3 groundPos;
+    [SerializeField] private Vector3 groundPos;
     [SerializeField] private float gravityForce = 100f;
     public float gravityMultiplier = 1f;
     public Vector3 _bodyVelocity;
-    
+
+
+    [Header("AnimConfigs")]
+    public float moveAnimationSpeed;
 
     void Start()
     {

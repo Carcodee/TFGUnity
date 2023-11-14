@@ -174,6 +174,10 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     {
         statHolder[index]++;
     }
+    public void SustractValueFromButton(int index)
+    {
+        statHolder[index]--;
+    }
 
     public float GetSpeed()
     {

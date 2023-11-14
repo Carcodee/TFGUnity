@@ -31,7 +31,7 @@ public class MovementState : PlayerStateBase
     {
         float x= Input.GetAxisRaw("Horizontal");
         float y= Input.GetAxisRaw("Vertical");
-        animInput=new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        animInput=new Vector2(Input.GetAxis("Horizontal") * this.playerRef.moveAnimationSpeed, Input.GetAxis("Vertical") * this.playerRef.moveAnimationSpeed);
         this.playerRef.Move(x, y);
     }
 

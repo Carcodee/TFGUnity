@@ -202,11 +202,16 @@ public class StatsPanelController : MonoBehaviour
     {
 
         if (avaliblePoints >= sesionPoints) return;
-        avaliblePoints++;
         for (int i = 0; i < playerStatsController.statHolderNames.Length; i++)
         {
             if (playerStatsController.statHolderNames[i] == statName)
             {
+                playerStatsController.SustractValueFromButton(i);
+                avaliblePoints++;
+                playerStatsController.OnStatsChanged?.Invoke();
+                UpdateStats();
+                Debug.Log("Add Value From Button");
+                return;
                 //sustract stat
             }
         }
