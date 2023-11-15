@@ -153,6 +153,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   networkPlayerID:
     m_InternalValue: 0
+  zoneAssigned:
+    m_InternalValue: 0
+  coinEffectPrefab: {fileID: 4905556468550401104, guid: 9fefd74902fa1a74cad52713974e6d6d,
+    type: 3}
 --- !u!114 &-3728427638229382649
 MonoBehaviour:
   m_ObjectHideFlags: 0

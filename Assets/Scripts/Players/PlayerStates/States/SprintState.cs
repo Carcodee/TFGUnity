@@ -53,7 +53,7 @@ public class SprintState : PlayerStateBase
             return;
         }
 
-        if (!playerRef.characterController.isGrounded)
+        if (!playerRef.isGrounded)
         {
             stateMachineController.SetState("Falling");
         }

@@ -16,6 +16,9 @@ public class BulletController : NetworkBehaviour
     public float colorLerpTimer;
     public bool collided = false;
     public BulletHitType bulletHitType;
+    
+    public GameObject onHitEffectPrefab;
+
     void Start()
     {
         collided = false;
@@ -54,7 +57,7 @@ public class BulletController : NetworkBehaviour
     {
         NetworkManager.Destroy(gameObject);
     }
-    private void FixedUpdate()
+    private void FixedUpdate() 
     {
         rb.velocity = -Direction * speed;
     }
@@ -72,9 +75,10 @@ public class BulletController : NetworkBehaviour
             collided = true;
             bulletHitType = BulletHitType.Enviroment;
         }
+        
     }
     
-
+  
     private void ColorChange(BulletHitType bulletHitType)
     {
         colorLerpTimer += Time.deltaTime;
@@ -93,6 +97,14 @@ public class BulletController : NetworkBehaviour
                 break;
         }
 
+        CoinCollectedClientRpc();
+
+
+    }
+    [ClientRpc]
+    public void CoinCollectedClientRpc()
+    {
+        Instantiate(onHitEffectPrefab, transform.position, Quaternion.identity);
     }
     public enum BulletHitType
     {

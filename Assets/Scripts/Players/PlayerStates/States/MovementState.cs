@@ -60,7 +60,7 @@ public class MovementState : PlayerStateBase
             return;
 
         }
-        if (!playerRef.characterController.isGrounded)
+        if (!playerRef.isGrounded)
         {
             stateMachineController.SetState("Falling");
             return;

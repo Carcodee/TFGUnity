@@ -938,7 +938,6 @@ SkinnedMeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 1a58c46581423614e87dd63352e1bfe7, type: 2}
-  - {fileID: 2100000, guid: 59f1707a3ff7dfb448886db6bd81a632, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1565,8 +1564,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerStats: {fileID: 0}
-  speedHolder: 0
-  speedFactor: 0
   cameraPrefab: {fileID: 2763996978624655819, guid: 70976f809ab9bac479ca9692002cd81f,
     type: 3}
   bulletPrefab: {fileID: -1591147314410710446, guid: c21ebc95755fece489b05e14b245910b,
@@ -1600,12 +1597,18 @@ MonoBehaviour:
   reloadCurrentTime: 0
   isReloading: 0
   jumpHeight: 3
-  isGrounded: 0
   groundPos: {x: 0, y: 0, z: 0}
   gravityForce: 25
   gravityMultiplier: 1
   _bodyVelocity: {x: 0, y: 0, z: 0}
   moveAnimationSpeed: 5
+  sphereCastRadius: 0.1
+  range: 1
+  GroundLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  isGrounded: 0
+  sphereOffset: {x: 0, y: 0.21, z: 0.12}
 --- !u!114 &6344872551529989650
 MonoBehaviour:
   m_ObjectHideFlags: 0

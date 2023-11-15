@@ -1,3 +1,4 @@
+using System;
 using Cinemachine;
 using Newtonsoft.Json.Bson;
 using System.Collections;
@@ -9,6 +10,7 @@ using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -70,7 +72,6 @@ public class PlayerController : NetworkBehaviour
 
     [Header("Jumping")]
     [SerializeField] private float jumpHeight = 5f;
-    [SerializeField] public bool isGrounded;
     [SerializeField] private Vector3 groundPos;
     [SerializeField] private float gravityForce = 100f;
     public float gravityMultiplier = 1f;
@@ -79,6 +80,18 @@ public class PlayerController : NetworkBehaviour
 
     [Header("AnimConfigs")]
     public float moveAnimationSpeed;
+
+    [Header("GroundCheck")]
+    [Range(0.1f, 50f)] public float sphereCastRadius;
+    [Range(1f, 100f)] public float range;
+    public LayerMask GroundLayer;
+    public bool isGrounded;
+    public Vector3 sphereOffset;
+
+    private void OnValidate()
+    {
+
+    }
 
     void Start()
     {
@@ -100,6 +113,7 @@ public class PlayerController : NetworkBehaviour
         cam.enabled = IsOwner;
         if (IsOwner)
         {
+            isGroundedCheck();
             stateMachineController.StateUpdate();
         }
 }
@@ -107,7 +121,7 @@ public class PlayerController : NetworkBehaviour
     {
         if (IsOwner)
         {
-
+            isGroundedCheck();
             stateMachineController.StatePhysicsUpdate();
         }
 
@@ -119,12 +133,25 @@ public class PlayerController : NetworkBehaviour
             //TODO : fix this is grounded thing
             Debug.Log(characterController.isGrounded);
 
+            isGroundedCheck();
             stateMachineController.StateLateUpdate();
 
         }
 
     }
 
+    public void isGroundedCheck()
+    {
+
+        if (Physics.SphereCast(transform.position + sphereOffset, sphereCastRadius, Vector3.down, out RaycastHit hit, range, GroundLayer))
+        {
+            isGrounded = true;
+        }else
+        {
+            isGrounded = false;
+        }
+
+    }
     public void DeactivatePlayer()
     {
 
@@ -332,9 +359,13 @@ public class PlayerController : NetworkBehaviour
 
 
     }
-    
 
- 
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(transform.position + sphereOffset, sphereCastRadius);
+    }
+
     #region ServerRpc
 
     
