@@ -10,7 +10,7 @@ public class MovementState : PlayerStateBase
     public MovementState(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
     {
         playerRef = stateMachineController.GetComponent<PlayerController>();
-        networkAnimator = stateMachineController.GetComponent<NetworkAnimator>();
+        networkAnimator = stateMachineController.networkAnimator;
     }
     Vector2 animInput;
     public override void StateEnter()
@@ -29,14 +29,25 @@ public class MovementState : PlayerStateBase
 
     public override void StateInput()
     {
-        float x= Input.GetAxisRaw("Horizontal");
-        float y= Input.GetAxisRaw("Vertical");
+        float x= Input.GetAxis("Horizontal");
+        float y= Input.GetAxis("Vertical");
         animInput=new Vector2(Input.GetAxis("Horizontal") * this.playerRef.moveAnimationSpeed, Input.GetAxis("Vertical") * this.playerRef.moveAnimationSpeed);
         this.playerRef.Move(x, y);
     }
 
     public override void StateUpdate()
     {
+        if (!playerRef.isGrounded)
+        {
+            stateMachineController.SetState("Falling");
+            return;
+
+        }
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            stateMachineController.SetState("Aiming");
+
+        }
         StateInput();
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
@@ -54,18 +65,8 @@ public class MovementState : PlayerStateBase
             stateMachineController.SetState("Jump");
             return;
         }
-        if (Input.GetKeyDown(KeyCode.Mouse1))
-        {
-            stateMachineController.SetState("Aiming");
-            return;
 
-        }
-        if (!playerRef.isGrounded)
-        {
-            stateMachineController.SetState("Falling");
-            return;
-
-        }
+    
         
         this.networkAnimator.Animator.SetFloat("X", animInput.x);
         this.networkAnimator.Animator.SetFloat("Y", animInput.y);

@@ -8,7 +8,8 @@ public class FallingState : PlayerStateBase
     public FallingState(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
     {
         playerRef = stateMachineController.GetComponent<PlayerController>();
-        networkAnimator = stateMachineController.GetComponent<NetworkAnimator>();
+        networkAnimator = stateMachineController.networkAnimator;
+
     }
     Vector3 moveDir;
     public override void StateEnter()

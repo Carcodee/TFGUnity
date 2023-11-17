@@ -15,6 +15,7 @@ public class MapLogic:INetworkSerializable
     public float totalTime;
     public float enemiesSpawnRate;
     public bool isBattleRoyale;
+    public int damagePerTick;
 
       
     public MapLogic()
@@ -31,6 +32,7 @@ public class MapLogic:INetworkSerializable
         this.enemiesSpawnRate = enemiesSpawnRate;
         this.zoneRadius = zoneRadius;
         this.isBattleRoyale = false;
+        this.damagePerTick = 1;
     }
 
 
@@ -49,6 +51,7 @@ public class MapLogic:INetworkSerializable
         serializer.SerializeValue(ref totalTime);
         serializer.SerializeValue(ref enemiesSpawnRate);
         serializer.SerializeValue(ref isBattleRoyale);
+        serializer.SerializeValue(ref damagePerTick);
     }
 
  

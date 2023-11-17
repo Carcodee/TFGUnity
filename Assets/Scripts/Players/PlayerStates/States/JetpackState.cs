@@ -8,7 +8,8 @@ public class JetpackState : PlayerStateBase
     public JetpackState(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
     {
         playerRef = stateMachineController.GetComponent<PlayerController>();
-        networkAnimator = stateMachineController.GetComponent<NetworkAnimator>();
+        networkAnimator = stateMachineController.networkAnimator;
+
     }
     Vector3 moveDir;
     private float aimAnimation;

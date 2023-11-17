@@ -12,7 +12,7 @@ public class PlayerStateBase : StateMachineBase
     public PlayerStateBase(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
     {
         playerRef = stateMachineController.GetComponent<PlayerController>();
-        networkAnimator = stateMachineController.GetComponent<NetworkAnimator>();
+        networkAnimator = stateMachineController.networkAnimator;
     }
     public override void StateEnter()
     {

@@ -8,9 +8,10 @@ public class JumpState : PlayerStateBase
     public JumpState(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
     {
         playerRef = stateMachineController.GetComponent<PlayerController>();
-        networkAnimator = stateMachineController.GetComponent<NetworkAnimator>();
+        networkAnimator = stateMachineController.networkAnimator;
     }
     Vector3 moveDir;
+    Vector3 moveDirAirForce;
     public override void StateEnter()
     {
         base.StateEnter();
@@ -18,7 +19,7 @@ public class JumpState : PlayerStateBase
         this.playerRef.Jump();
         this.playerRef.gravityMultiplier = 1;
         networkAnimator.Animator.Play("Jump");
-
+        
     }
 
     public override void StateExit()
@@ -30,11 +31,12 @@ public class JumpState : PlayerStateBase
 
     public override void StateInput()
     {
-
+        //moveDirAirForce = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
     }
 
     public override void StateUpdate()
     {
+        StateInput();
         //TODO: fix jump animation
         if (playerRef._bodyVelocity.y < 0)
         {

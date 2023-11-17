@@ -75,7 +75,8 @@ public class BulletController : NetworkBehaviour
             collided = true;
             bulletHitType = BulletHitType.Enviroment;
         }
-        
+        Direction= new Vector3 (UnityEngine.Random.RandomRange(0.0f,1.0f), UnityEngine.Random.RandomRange(0.0f, 1.0f), UnityEngine.Random.RandomRange(0.0f, 1.0f));
+        speed = 1;   
     }
     
   

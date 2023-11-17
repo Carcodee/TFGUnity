@@ -114,6 +114,7 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
             isGroundedCheck();
+
             stateMachineController.StateUpdate();
         }
 }

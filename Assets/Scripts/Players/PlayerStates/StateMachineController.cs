@@ -20,6 +20,7 @@ public class StateMachineController : NetworkBehaviour
     public JetpackState jetpackState;
     public DeadState deadState;
 
+    public NetworkAnimator networkAnimator;
 
 
     public void Initializate()

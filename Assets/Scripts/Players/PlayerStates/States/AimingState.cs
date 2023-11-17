@@ -8,7 +8,7 @@ public class AimingState : PlayerStateBase
     public AimingState(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
     {
         playerRef = stateMachineController.GetComponent<PlayerController>();
-        networkAnimator = stateMachineController.GetComponent<NetworkAnimator>();
+        networkAnimator = stateMachineController.networkAnimator;
     }
     private float aimAnimation;
 
@@ -35,6 +35,12 @@ public class AimingState : PlayerStateBase
 
     public override void StateUpdate()
     {
+        if (!playerRef.isGrounded)
+        {
+            stateMachineController.SetState("Falling");
+            return;
+
+        }
         StateInput();
         this.networkAnimator.Animator.SetFloat("X", this.playerRef.move.x);
         this.networkAnimator.Animator.SetFloat("Y", this.playerRef.move.z);

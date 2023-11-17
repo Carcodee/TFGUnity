@@ -8,9 +8,10 @@ public class DeadState :PlayerStateBase
     public DeadState(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
     {
         playerRef = stateMachineController.GetComponent<PlayerController>();
-        networkAnimator = stateMachineController.GetComponent<NetworkAnimator>();
+        networkAnimator = stateMachineController.networkAnimator;
+
     }
-    
+
     bool isBattleRoyale;
     float currentRespawnTimer;
     

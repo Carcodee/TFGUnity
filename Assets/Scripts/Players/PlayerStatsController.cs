@@ -36,16 +36,22 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     public string[] statHolderNames;
     public int[] statHolder;
 
+    public bool isPlayerInsideTheZone;
     [Header("Current Gamelogic")]
     public NetworkVariable<zoneColors> zoneAsigned=new NetworkVariable<zoneColors>();
     public Transform coinPosition;
     public PlayerZoneController playerZoneController;
+    public float currentOutsideTimerTick;
+    public float outsideTimerTick=1;
+
 
     [Header("Interfaces")]
     private IDamageable iDamageable;
 
     [Header("NetCode")]
     public NetworkObject playerObj;
+
+    
 
     public override void OnNetworkSpawn()
     {
@@ -56,6 +62,8 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
             OnStatsChanged += UpdateStats;
             OnLevelUp += LevelUp;
             iDamageable = GetComponent<IDamageable>();
+            isPlayerInsideTheZone = true;
+
             InitializateStats();
         }
     }
@@ -63,8 +71,16 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     private void Start()
     {
         OnSpawnPlayer?.Invoke();
-    }
+        isPlayerInsideTheZone = true;
 
+    }
+    private void Update()
+    {
+        if (IsOwner)
+        {
+            OutsideZoneDamage();
+        }
+    }
     public override void OnNetworkDespawn()
     {
         OnSpawnPlayer -= InitializateStats;
@@ -170,7 +186,18 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         }
         
     }
-
+    public void OutsideZoneDamage()
+    {
+        if (!isPlayerInsideTheZone)
+        {
+            currentOutsideTimerTick += Time.deltaTime;
+            if (currentOutsideTimerTick > outsideTimerTick)
+            {
+                currentOutsideTimerTick = 0;
+                TakeDamage(GameController.instance.mapLogic.Value.damagePerTick);
+            }
+        }
+    }
     public void TakeDamage(int damage)
     {
         if (IsOwner)
@@ -187,6 +214,10 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
             {
                 OnPlayerDead?.Invoke();
             }
+        }
+        if (health.Value <= 0)
+        {
+            GameController.instance.OnPlayerDeadEvent?.Invoke((int)zoneAsigned.Value);
         }
 
     }
@@ -320,4 +351,19 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
 
 
     #endregion
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Zone"))
+        {
+            isPlayerInsideTheZone = false;
+        }
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Zone"))
+        {
+            isPlayerInsideTheZone = true;
+        }
+    }
 }

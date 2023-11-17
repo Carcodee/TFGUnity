@@ -14,7 +14,7 @@ public class GameController : NetworkBehaviour
 
     public static GameController instance;
     [Header("Events")]
-
+    public Action<int> OnPlayerDeadEvent;
 
     [Header("Lobby")]
     public bool started;
@@ -28,11 +28,12 @@ public class GameController : NetworkBehaviour
     public NetworkVariable<int> numberOfPlayers = new NetworkVariable<int>();
     public NetworkVariable<int> numberOfPlayersAlive = new NetworkVariable<int>();
     public NetworkVariable <Vector3> randomPoint = new NetworkVariable<Vector3>();
+
     public int respawnTime=5;
     
     [Header("References")]
     [SerializeField] private CoinBehaivor coinPrefab;
-
+    public SphereCollider sphereRadius;
     [Header("Zones")]
     public Transform[] spawnPoints;
     public Transform zoneInstances;
@@ -56,10 +57,13 @@ public class GameController : NetworkBehaviour
     private void OnEnable()
     {
         CoinBehaivor.OnCoinCollected += MoveCoin;
+        OnPlayerDeadEvent+=OnPlayerDead;
     }
     private void OnDisable()
     {
         CoinBehaivor.OnCoinCollected -= MoveCoin;
+        OnPlayerDeadEvent -= OnPlayerDead;
+
     }
     public override void OnNetworkSpawn()
     {
@@ -81,7 +85,7 @@ public class GameController : NetworkBehaviour
             if (IsClient && IsOwner)
             {
                 OnPlayerEnterServerRpc();
-                SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 3, 5);
+                SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 4f, 10, 3, 5);
                 SetNumberOfPlayerListServerRpc(clientId);
             }
 
@@ -114,20 +118,20 @@ public class GameController : NetworkBehaviour
     {
 
         UpdateTime();
-
+        if (mapLogic.Value.isBattleRoyale && sphereRadius.radius>0)
+        {
+            if (IsServer)
+            {
+                ReduceSphereSizeClientRpc();
+            }
+        }
+        
     }
 
 
     void OnPlayerDead(int index)
     {
-        if (IsServer)
-        {
-            players[index].position = zoneControllers[index].playerSpawn.position;
-        }
-        else
-        {
-            SetPlayerPosServerRpc(zoneControllers[index].playerSpawn.position, index);
-        }
+         SetPlayerPosClientRpc(zoneControllers[index].playerSpawn.position, index);
     }
     /// <summary>
     /// create the player zones with the player transforms
@@ -362,6 +366,11 @@ public class GameController : NetworkBehaviour
     public void SendMapBattleRoyaleValueClientRpc(bool val)
     {
         mapLogic.Value.isBattleRoyale = val;
+    }
+    [ClientRpc]
+    public void ReduceSphereSizeClientRpc()
+    {
+        sphereRadius.radius -= mapLogic.Value.zoneRadiusExpandSpeed * Time.deltaTime;
     }
 
     [ClientRpc]

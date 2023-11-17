@@ -8,7 +8,7 @@ public class SprintState : PlayerStateBase
     public SprintState(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
     {
         playerRef = stateMachineController.GetComponent<PlayerController>();
-        networkAnimator = stateMachineController.GetComponent<NetworkAnimator>();
+        networkAnimator = stateMachineController.networkAnimator;
     }
     public override void StateEnter()
     {

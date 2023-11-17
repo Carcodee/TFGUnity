@@ -8,7 +8,7 @@ public class SlidingState : PlayerStateBase
     public SlidingState(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
     {
         playerRef = stateMachineController.GetComponent<PlayerController>();
-        networkAnimator = stateMachineController.GetComponent<NetworkAnimator>();
+        networkAnimator = stateMachineController.networkAnimator;
     }
     public float slidingTimer;
     public float slidingTime=2.0f;
@@ -74,7 +74,7 @@ public class CrouchState : PlayerStateBase
     public CrouchState(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
     {
         playerRef = stateMachineController.GetComponent<PlayerController>();
-        networkAnimator = stateMachineController.GetComponent<NetworkAnimator>();
+        networkAnimator = stateMachineController.networkAnimator;
     }
     public override void StateEnter()
     {
