@@ -24,9 +24,10 @@ public class PlayerController : NetworkBehaviour
     public BulletController bulletPrefab;
     public Transform cinemachineCameraTarget;
     public CharacterController characterController;
+    
+    //TODO : Refactor this cam thing
     public Camera cam;
     [SerializeField] private Transform body;
-    
     [SerializeField] private Camera cameraRef;
     public StateMachineController stateMachineController;
 
@@ -315,6 +316,7 @@ public class PlayerController : NetworkBehaviour
                 BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
                 bullet.Direction = direction.normalized + new Vector3(Random.Range(0, shootRefraction), Random.Range(0, shootRefraction),0);
                 bullet.damage.Value = GetComponent<PlayerStatsController>().GetDamageDone();
+                bullet.mainCam = cam;
                 bullet.GetComponent<NetworkObject>().Spawn();
 
 
@@ -385,6 +387,8 @@ public class PlayerController : NetworkBehaviour
         BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
         bullet.Direction = dir.normalized + new Vector3(Random.Range(0, shootRefraction), Random.Range(0, shootRefraction), 0);
         bullet.damage.Value = damage;
+        bullet.mainCam = cam;
+
         bullet.GetComponent<NetworkObject>().Spawn();
     }
 

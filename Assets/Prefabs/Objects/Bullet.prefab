@@ -171,6 +171,8 @@ MonoBehaviour:
   bulletHitType: 0
   onHitEffectPrefab: {fileID: 4905556468550401104, guid: 9fefd74902fa1a74cad52713974e6d6d,
     type: 3}
+  floatingTextPrefab: {fileID: 4164564840435435554, guid: 8c4d2286ea1c32240916516408666fb1,
+    type: 3}
 --- !u!1 &7683756260238382647
 GameObject:
   m_ObjectHideFlags: 0

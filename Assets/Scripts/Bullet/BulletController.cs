@@ -7,6 +7,9 @@ using UnityEngine;
 
 public class BulletController : NetworkBehaviour
 {
+    [Header("Ref")] 
+    public Camera mainCam;
+    
     public Rigidbody rb;
     public Vector3 Direction;
     public float speed = 10f;
@@ -17,8 +20,10 @@ public class BulletController : NetworkBehaviour
     public bool collided = false;
     public BulletHitType bulletHitType;
     
+    [Header("Spawns Effects")]
     public GameObject onHitEffectPrefab;
-
+    public FloatingTextController floatingTextPrefab;
+    
     void Start()
     {
         collided = false;
@@ -69,12 +74,16 @@ public class BulletController : NetworkBehaviour
             Debug.Log("Hit: "+ damage);
             collided = true;
             bulletHitType = BulletHitType.Enemy;
+
         }
         else
         {
             collided = true;
             bulletHitType = BulletHitType.Enviroment;
         }
+        FloatingTextController floatingText= Instantiate(floatingTextPrefab, transform.position, Quaternion.identity);
+        floatingText.text.text = "Damage: "+damage.Value.ToString();
+        floatingText.mainCam= mainCam;
         Direction= new Vector3 (UnityEngine.Random.RandomRange(0.0f,1.0f), UnityEngine.Random.RandomRange(0.0f, 1.0f), UnityEngine.Random.RandomRange(0.0f, 1.0f));
         speed = 1;   
     }
