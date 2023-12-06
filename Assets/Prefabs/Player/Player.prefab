@@ -1580,9 +1580,9 @@ MonoBehaviour:
     m_Bits: 256
   reloadCurrentTime: 0
   isReloading: 0
-  jumpHeight: 3
+  jumpHeight: 4
   groundPos: {x: 0, y: 0, z: 0}
-  gravityForce: 25
+  gravityForce: 20
   gravityMultiplier: 1
   _bodyVelocity: {x: 0, y: 0, z: 0}
   moveAnimationSpeed: 5
@@ -1631,10 +1631,13 @@ MonoBehaviour:
   currentBullets: 30
   statHolderNames: []
   statHolder: 
+  isPlayerInsideTheZone: 0
   zoneAsigned:
     m_InternalValue: 0
   coinPosition: {fileID: 0}
   playerZoneController: {fileID: 0}
+  currentOutsideTimerTick: 0
+  outsideTimerTick: 1
   playerObj: {fileID: 0}
 --- !u!114 &811542298380123267
 MonoBehaviour:

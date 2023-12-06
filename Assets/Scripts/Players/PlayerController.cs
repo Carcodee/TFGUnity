@@ -115,7 +115,8 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
             isGroundedCheck();
-
+            Shoot();
+            Reloading();
             stateMachineController.StateUpdate();
         }
 }
@@ -132,10 +133,9 @@ public class PlayerController : NetworkBehaviour
     {
         if (IsOwner)
         {
-            //TODO : fix this is grounded thing
-            Debug.Log(characterController.isGrounded);
 
             isGroundedCheck();
+            ApplyMovement(move);
             stateMachineController.StateLateUpdate();
 
         }

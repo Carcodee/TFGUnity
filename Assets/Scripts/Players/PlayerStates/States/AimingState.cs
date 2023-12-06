@@ -48,8 +48,7 @@ public class AimingState : PlayerStateBase
         //this.playerRef.AimAinimation(ref aimAnimation,networkAnimator);
         networkAnimator.Animator.SetFloat("Aiming", 1);
 
-        this.playerRef.Shoot();
-        this.playerRef.Reloading();
+
         if (Input.GetKeyUp(KeyCode.Mouse1))
         {
             stateMachineController.SetState("Movement");
@@ -68,7 +67,6 @@ public class AimingState : PlayerStateBase
     public override void StateLateUpdate()
     {
         playerRef.RotatePlayer();
-        playerRef.ApplyMovement(playerRef.move);
 
     }
 

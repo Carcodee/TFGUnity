@@ -11,7 +11,7 @@ public class SlidingState : PlayerStateBase
         networkAnimator = stateMachineController.networkAnimator;
     }
     public float slidingTimer;
-    public float slidingTime=2.0f;
+    public float slidingTime=1.4f;
     private Vector3 moveDir;
     
     public override void StateEnter()
@@ -57,7 +57,6 @@ public class SlidingState : PlayerStateBase
     }
     public override void StateLateUpdate()
     {
-        playerRef.ApplyMovement(moveDir);
         playerRef.ApplyGravity();
         playerRef.RotatePlayer();
     }
@@ -118,8 +117,7 @@ public class CrouchState : PlayerStateBase
         {
             networkAnimator.Animator.SetFloat("Aiming", 0);
         }
-        this.playerRef.Shoot();
-        this.playerRef.Reloading();
+
     }
     public override void StatePhysicsUpdate()
     {
@@ -127,7 +125,6 @@ public class CrouchState : PlayerStateBase
     }
     public override void StateLateUpdate()
     {
-        this.playerRef.ApplyMovement(this.playerRef.move);
         this.playerRef.RotatePlayer();
     }
 }

@@ -23,7 +23,8 @@ public class FloatingTextController : MonoBehaviour
     }
     void LookAtCamera()
     {
-        transform.LookAt(mainCam.transform.position, Vector3.up);
+        transform.LookAt(-mainCam.transform.position, Vector3.up);
+        //create a better solution for this
         transform.forward = -transform.forward;
     }
     

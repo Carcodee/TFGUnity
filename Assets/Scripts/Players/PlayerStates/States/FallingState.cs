@@ -44,8 +44,7 @@ public class FallingState : PlayerStateBase
             stateMachineController.SetState("Aiming");
         }
 
-        this.playerRef.Shoot();
-        this.playerRef.Reloading();
+
     }
     public override void StatePhysicsUpdate()
     {
@@ -53,7 +52,6 @@ public class FallingState : PlayerStateBase
     }
     public override void StateLateUpdate()
     {
-        playerRef.ApplyMovement(moveDir);
         playerRef.RotatePlayer();
         playerRef.ApplyGravity();
         if (playerRef.characterController.isGrounded)

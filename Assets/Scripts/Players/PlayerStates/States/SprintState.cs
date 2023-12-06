@@ -37,7 +37,10 @@ public class SprintState : PlayerStateBase
         this.networkAnimator.Animator.SetFloat("Speed", this.playerRef.sprintFactor);
 
         this.networkAnimator.Animator.SetBool("Sprint", true);
-        
+        if (Input.GetKeyDown(KeyCode.Mouse0)||Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            stateMachineController.SetState("Movement");
+        }
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
             stateMachineController.SetState("Movement");
@@ -66,7 +69,6 @@ public class SprintState : PlayerStateBase
     public override void StateLateUpdate()
     {
         this.playerRef.RotatePlayer();
-        playerRef.ApplyMovement(playerRef.move);
 
     }
 }

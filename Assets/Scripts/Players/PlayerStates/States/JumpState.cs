@@ -47,8 +47,6 @@ public class JumpState : PlayerStateBase
             stateMachineController.SetState("Jetpack");
         }
 
-        this.playerRef.Shoot();
-        this.playerRef.Reloading();
     }
     public override void StatePhysicsUpdate()
     {
@@ -58,7 +56,6 @@ public class JumpState : PlayerStateBase
     {
 
         playerRef.RotatePlayer();
-        playerRef.ApplyMovement(playerRef.move);
 
     }
 

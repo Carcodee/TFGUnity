@@ -71,8 +71,7 @@ public class MovementState : PlayerStateBase
         this.networkAnimator.Animator.SetFloat("X", animInput.x);
         this.networkAnimator.Animator.SetFloat("Y", animInput.y);
         this.networkAnimator.Animator.SetFloat("Speed",  this.playerRef.sprintFactor);
-        this.playerRef.Shoot();
-        this.playerRef.Reloading();
+
 
     }
     public override void StatePhysicsUpdate()
@@ -83,6 +82,5 @@ public class MovementState : PlayerStateBase
     {
 
         this.playerRef.RotatePlayer();
-        this.playerRef.ApplyMovement(this.playerRef.move);
     }
 }
