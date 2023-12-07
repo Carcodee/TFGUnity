@@ -90,6 +90,19 @@ public class PlayerComponentsHandler : NetworkBehaviour
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
             }
+
+            // if (Input.GetKeyDown(KeyCode.Mouse0))
+            // {
+            //     cinemachineVirtualCameraInstance.StartCameraShake(5, 5, 0.5f);
+            //     cinmachineCloseLookCameraIntance.StartCameraShake(5, 5, 0.5f);
+            //
+            // }
+            // if (Input.GetKeyUp(KeyCode.Mouse0))
+            // {
+            //     cinemachineVirtualCameraInstance.StopCameraShake();
+            //     cinmachineCloseLookCameraIntance.StopCameraShake();
+            //
+            // }
         }
     }
     private void LateUpdate()
@@ -100,6 +113,8 @@ public class PlayerComponentsHandler : NetworkBehaviour
 
         }
     }
+
+
     private void HandleAction(InputAction.CallbackContext context)
     {
         if (context.action.name == "ExactNameOfYourLookAction") // Replace with your action's name

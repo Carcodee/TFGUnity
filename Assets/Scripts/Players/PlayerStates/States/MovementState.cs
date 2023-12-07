@@ -18,7 +18,7 @@ public class MovementState : PlayerStateBase
         base.StateEnter();
         this.playerRef.sprintFactor = 1;
         networkAnimator.Animator.Play("Movement");
-        networkAnimator.Animator.SetFloat("Aiming", 0);
+        // networkAnimator.Animator.SetFloat("Aiming", 0);
 
     }
 

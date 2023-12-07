@@ -49,6 +49,10 @@ public class AimingState : PlayerStateBase
         networkAnimator.Animator.SetFloat("Aiming", 1);
 
 
+        if (Input.GetKeyDown(KeyCode.LeftAlt))
+        {
+            stateMachineController.SetState("Crouch");
+        }
         if (Input.GetKeyUp(KeyCode.Mouse1))
         {
             stateMachineController.SetState("Movement");
