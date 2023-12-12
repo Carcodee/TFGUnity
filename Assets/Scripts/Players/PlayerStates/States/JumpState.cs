@@ -12,6 +12,7 @@ public class JumpState : PlayerStateBase
     }
     Vector3 moveDir;
     Vector3 moveDirAirForce;
+
     public override void StateEnter()
     {
         base.StateEnter();
@@ -32,12 +33,20 @@ public class JumpState : PlayerStateBase
     public override void StateInput()
     {
         //moveDirAirForce = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+
     }
 
     public override void StateUpdate()
     {
         StateInput();
-        //TODO: fix jump animation
+        if (Input.GetKey(KeyCode.Mouse1))
+        {
+            this.networkAnimator.Animator.SetFloat("X", this.playerRef.move.x);
+            this.networkAnimator.Animator.SetFloat("Y", this.playerRef.move.z);
+            playerRef.CreateAimTargetPos();
+            //this.playerRef.AimAinimation(ref aimAnimation,networkAnimator);
+            networkAnimator.Animator.SetFloat("Aiming", 1);
+        }
         if (playerRef._bodyVelocity.y < 0)
         {
             stateMachineController.SetState("Falling");
@@ -46,6 +55,7 @@ public class JumpState : PlayerStateBase
         {
             stateMachineController.SetState("Jetpack");
         }
+
 
     }
     public override void StatePhysicsUpdate()

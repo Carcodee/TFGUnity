@@ -103,7 +103,7 @@ public class GameController : NetworkBehaviour
             {
 
                 OnPlayerOutServerRpc();
-                SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 0.5f, 10, 3, 5);
+                SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 5.0f, 10, 3, 5);
                 SetNumberOfPlayerListServerRpc(clientId);
 
             }
@@ -170,9 +170,6 @@ public class GameController : NetworkBehaviour
         }
        
     }
-
-
-    
 
     public void CreateZonesOnNet(int index)
     {
@@ -276,6 +273,7 @@ public class GameController : NetworkBehaviour
         Vector3 newPos=new Vector3(UnityEngine.Random.Range(col.bounds.min.x, col.bounds.max.x), 2.5f ,UnityEngine.Random.Range(col.bounds.min.z, col.bounds.max.z));
         return newPos;
     }
+    
     #region ServerRpc
     [ServerRpc]
     public void SetTimeToStartServerRpc(float time)
@@ -360,6 +358,8 @@ public class GameController : NetworkBehaviour
         players[playerIndex].GetComponent<PlayerController>().characterController.enabled = false;
         players[playerIndex].position = pos;
         players[playerIndex].GetComponent<PlayerController>().characterController.enabled = true;
+        players[playerIndex].GetComponent<PlayerStatsController>().SetHealth(players[playerIndex].GetComponent<PlayerStatsController>().maxHealth);
+        players[playerIndex].GetComponent<PlayerStatsController>().OnStatsChanged?.Invoke();
         Debug.Log("Called on client");
     }
     [ClientRpc]

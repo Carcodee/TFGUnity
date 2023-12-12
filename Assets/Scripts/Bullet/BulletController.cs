@@ -74,6 +74,8 @@ public class BulletController : NetworkBehaviour
             Debug.Log("Hit: "+ damage);
             collided = true;
             bulletHitType = BulletHitType.Enemy;
+            SpawnHitEffectClientRpc();
+
 
         }
         else
@@ -107,12 +109,12 @@ public class BulletController : NetworkBehaviour
                 break;
         }
 
-        CoinCollectedClientRpc();
+        
 
 
     }
     [ClientRpc]
-    public void CoinCollectedClientRpc()
+    public void SpawnHitEffectClientRpc()
     {
         Instantiate(onHitEffectPrefab, transform.position, Quaternion.identity);
     }

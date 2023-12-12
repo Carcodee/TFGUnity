@@ -24,8 +24,8 @@ public class DeadState :PlayerStateBase
     public override void StateExit()
     {
         this.playerRef.ActivatePlayer();
-        int health = playerRef.playerStats.statHolder[1];
-        this.playerRef.playerStats.SetHealth(health);
+        playerRef.playerStats.statHolder[1] = playerRef.playerStats.maxHealth;
+        playerRef.playerStats.OnStatsChanged?.Invoke();
         //respawn
     }
 

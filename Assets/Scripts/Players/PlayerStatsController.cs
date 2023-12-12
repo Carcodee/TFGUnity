@@ -31,8 +31,8 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     [SerializeField] private NetworkVariable<int> avaliblePoints = new NetworkVariable<int>();
     public int totalAmmo;
     public int totalBullets;
-    public int currentBullets;
-
+    public int currentBullets; 
+    public int maxHealth;
     public string[] statHolderNames;
     public int[] statHolder;
 
@@ -72,6 +72,10 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     {
         OnSpawnPlayer?.Invoke();
         isPlayerInsideTheZone = true;
+        if (IsOwner)
+        {
+            OnStatsChanged?.Invoke();
+        }
 
     }
     private void Update()
@@ -97,7 +101,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         statHolderNames[3] = nameof(damage);
         statHolderNames[4] = nameof(armor);
         statHolderNames[5] = nameof(speed);
-
+        maxHealth = health.Value;
 
 
     }
@@ -120,7 +124,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         SetDamageServerRpc(statHolder[3]);
         SetArmorServerRpc(statHolder[4]);
         SetSpeedServerRpc(statHolder[5]);
-
+        maxHealth = health.Value;
     }
 
     void InitializateStats()
@@ -132,7 +136,6 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
             Debug.LogError("StatsTemplate is null");
             return;
         }
-        Debug.Log("StatsTemplate chosed by " + playerObj.OwnerClientId.ToString() + " " + statsTemplates[statsTemplateSelected.Value].preset);
         SetHasteServerRpc(statsTemplates[statsTemplateSelected.Value].haste);
         SetHealthServerRpc(statsTemplates[statsTemplateSelected.Value].health);
         SetStaminaServerRpc(statsTemplates[statsTemplateSelected.Value].stamina);
@@ -144,9 +147,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         FillArrayHolder();
         currentBullets=totalBullets;
         //Stats on controller player
-        Debug.Log("Before setting speed: " + speed.Value);
         transform.GetComponent<PlayerController>().SetSpeedStateServerRpc(statsTemplates[statsTemplateSelected.Value].speed);
-        Debug.Log("After setting speed: " + speed.Value);
         FillStatNameHolder();
     }
 
@@ -188,37 +189,48 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     }
     public void OutsideZoneDamage()
     {
-        if (!isPlayerInsideTheZone)
+        if (health.Value >= 0)
         {
-            currentOutsideTimerTick += Time.deltaTime;
-            if (currentOutsideTimerTick > outsideTimerTick)
+            if (!isPlayerInsideTheZone)
             {
-                currentOutsideTimerTick = 0;
-                TakeDamage(GameController.instance.mapLogic.Value.damagePerTick);
+                currentOutsideTimerTick += Time.deltaTime;
+                if (currentOutsideTimerTick > outsideTimerTick)
+                {
+                    currentOutsideTimerTick = 0;
+                    TakeDamage(GameController.instance.mapLogic.Value.damagePerTick);
+                }
             }
         }
+
     }
     public void TakeDamage(int damage)
     {
-        if (IsOwner)
-        {
-            if (IsServer)
-            {
-                health.Value -= (damage);
-            }
-            else
-            {
-                SetHealthServerRpc(health.Value - (damage));  
-            }
-            if (health.Value <= 0)
-            {
-                OnPlayerDead?.Invoke();
-            }
-        }
-        if (health.Value <= 0)
+        if (statHolder[1] <= 0)
         {
             GameController.instance.OnPlayerDeadEvent?.Invoke((int)zoneAsigned.Value);
         }
+        if (IsOwner)
+        {
+
+            if (statHolder[1] <= 0)
+            {
+                OnPlayerDead?.Invoke();
+            }
+            else
+            {
+                if (IsServer)
+                {
+                    //this is wrong stat holder is controlling the health
+                    statHolder[1] -= (damage);
+                }
+                else
+                {
+                    SetHealthServerRpc(statHolder[1] - (damage));  
+                }
+                OnStatsChanged?.Invoke();
+            }
+        }
+
 
     }
     public void AddValueFromButton(int index)

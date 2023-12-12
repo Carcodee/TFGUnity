@@ -1,12 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using Michsky.UI.ModernUIPack;
+using Third_Party.Modern_UI_Pack.Scripts.Slider;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
-
+using UnityEditor;
 public class CanvasController : MonoBehaviour
 {
     Canvas canvas;
@@ -17,10 +20,12 @@ public class CanvasController : MonoBehaviour
 
     [Header("Player")]
     public TextMeshProUGUI level;
-    public TextMeshProUGUI bullets;
+    public TextMeshProUGUI totalAmmo;
     public TextMeshProUGUI hp;
     public TextMeshProUGUI exp;
 
+    public RadialSlider bulletsSlider;
+    public RadialSlider expSlider;
 
     [Header("DeadScreen")] 
     public TextMeshProUGUI timeToSpawn;
@@ -29,25 +34,52 @@ public class CanvasController : MonoBehaviour
 
     [Header("Buttons")]
     public Button openStatsButton;
+    
+    [Header("Health")]
+    public ProgressBar healthBar;
 
 
     [Header("Ref")]
     public PlayerStatsController playerAssigned;
     public PlayerController playerController;
 
+    [Header("Crosshair")] 
+    public Image noAimCrosshair;
+    public Image aimCrosshair;
+
+    private void OnEnable()
+    {
+    }
+
+    private void OnDisable()
+    {
+        playerAssigned.OnStatsChanged -= SetStats;
+    }
+
     void Start()
     {
+
         GetComponents();
+        noAimCrosshair.gameObject.SetActive(true);
+        aimCrosshair.gameObject.SetActive(false);
         timeToSpawnHolder = GameController.instance.respawnTime;
         timeToSpawnTimer = GameController.instance.respawnTime;
+        playerAssigned.OnStatsChanged += SetStats;
+        playerAssigned.OnStatsChanged?.Invoke(); 
+        
+        
+        //TODO: bullets are not being updated
+        bulletsSlider.currentValue = playerAssigned.currentBullets;
+
     }
+
+  
 
     void Update()
     {
-        DisplayLevel();
-        DisplayBullets();
         SetTimer();
         DisplayPlayersConnected();
+        HandleCrosshair();
         if (playerController.stateMachineController.currentState.stateName== "Dead")
         {
             timeToSpawn.gameObject.SetActive(true);
@@ -59,9 +91,37 @@ public class CanvasController : MonoBehaviour
             timeToSpawnTimer = timeToSpawnHolder;
             timeToSpawn.gameObject.SetActive(false);
         }
-
+    
     }
-
+    void HandleCrosshair()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            noAimCrosshair.gameObject.SetActive(false);
+            aimCrosshair.gameObject.SetActive(true);
+        }
+        if (Input.GetKeyUp(KeyCode.Mouse1))
+        {
+            noAimCrosshair.gameObject.SetActive(true);
+            aimCrosshair.gameObject.SetActive(false);
+        }
+    }
+    public void SetStats()
+    {
+        /*(float) playerAssigned.maxHealth*10*/
+        healthBar.currentPercent =  playerAssigned.GetHealth()*10;
+        // while(healthBar.currentPercent>playerAssigned.GetHealth()*10)
+        // {
+        //     healthBar.currentPercent-=1;
+        //     if (healthBar.currentPercent<= playerAssigned.GetHealth()*10)
+        //     {
+        //         healthBar.currentPercent = playerAssigned.GetHealth()*10;
+        //     }
+        // }
+        
+        Debug.Log("Health: " + playerAssigned.GetHealth());
+    }
+    
     private void GetComponents()
     {
         canvas = GetComponent<Canvas>();
@@ -100,10 +160,10 @@ public class CanvasController : MonoBehaviour
             playersConnected.text = "Players Alive: " + GameController.instance.numberOfPlayersAlive.Value.ToString();
         }
     }
-    private void DisplayBullets()
+    public void DisplayBullets()
     {
-        bullets.text = playerAssigned.currentBullets + "/"+ playerAssigned.totalAmmo;
-
+        totalAmmo.text = playerAssigned.totalAmmo.ToString();
+        bulletsSlider.currentValue = playerAssigned.currentBullets;
     }
     private void DisplayHP()
     {

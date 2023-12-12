@@ -160,6 +160,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5cdf56aafff7ef42bf14d387b192401, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCam: {fileID: 0}
   rb: {fileID: 3691029345200572531}
   Direction: {x: 0, y: 0, z: 0}
   speed: 10
@@ -169,8 +170,7 @@ MonoBehaviour:
   colorLerpTimer: 0
   collided: 0
   bulletHitType: 0
-  onHitEffectPrefab: {fileID: 4905556468550401104, guid: 9fefd74902fa1a74cad52713974e6d6d,
-    type: 3}
+  onHitEffectPrefab: {fileID: 100000, guid: f06e78284f831ae469c74624ab5d513b, type: 3}
   floatingTextPrefab: {fileID: 4164564840435435554, guid: 8c4d2286ea1c32240916516408666fb1,
     type: 3}
 --- !u!1 &7683756260238382647
