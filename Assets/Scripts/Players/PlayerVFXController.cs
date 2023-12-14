@@ -25,7 +25,9 @@ public class PlayerVFXController : NetworkBehaviour
     public float glowGoalValue= -7.0f;
     public string shaderVariableNameGlow;
 
-    
+    [Header("Jump")]
+    public GameObject jumpEffectPrefab;
+    public Transform jumpEffectPosition;
     
     void Start()
     {
@@ -51,6 +53,13 @@ public class PlayerVFXController : NetworkBehaviour
     }
     void Update()
     {
+        if (IsOwner)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Instantiate(jumpEffectPrefab, jumpEffectPosition.position, Quaternion.identity);
+            }
+        }
    
     }
     private void FixedUpdate()

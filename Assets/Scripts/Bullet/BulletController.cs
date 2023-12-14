@@ -74,7 +74,6 @@ public class BulletController : NetworkBehaviour
             Debug.Log("Hit: "+ damage);
             collided = true;
             bulletHitType = BulletHitType.Enemy;
-            SpawnHitEffectClientRpc();
 
 
         }
@@ -87,6 +86,8 @@ public class BulletController : NetworkBehaviour
         floatingText.text.text = "Damage: "+damage.Value.ToString();
         floatingText.mainCam= mainCam;
         Direction= new Vector3 (UnityEngine.Random.RandomRange(0.0f,1.0f), UnityEngine.Random.RandomRange(0.0f, 1.0f), UnityEngine.Random.RandomRange(0.0f, 1.0f));
+        SpawnHitEffectClientRpc();
+
         speed = 1;   
     }
     
