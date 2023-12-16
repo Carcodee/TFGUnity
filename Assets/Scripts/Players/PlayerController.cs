@@ -1,24 +1,17 @@
 using System;
-using Cinemachine;
-using Newtonsoft.Json.Bson;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Netcode.Components;
-using Unity.Networking.Transport.Error;
-using UnityEditor.ShaderGraph.Internal;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
-using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
 public class PlayerController : NetworkBehaviour
 {
     [Header("Player Stats")]
     public PlayerStatsController playerStats;
-
-
-
+    
+    public Action OnPlyerShoot;
+    
     [Header("Player Components")]
     public GameObject cameraPrefab;
     public BulletController bulletPrefab;
@@ -100,6 +93,7 @@ public class PlayerController : NetworkBehaviour
 
         if (IsOwner)
         {
+       
             SetSpeedStateServerRpc(5);
             stateMachineController.Initializate();
             playerStats = GetComponent<PlayerStatsController>();
@@ -299,6 +293,8 @@ public class PlayerController : NetworkBehaviour
         if (Input.GetKey(KeyCode.Mouse0) && shootTimer > shootRate && playerStats.currentBullets > 0 && !isReloading)
         {
             playerStats.currentBullets--;
+            OnPlyerShoot?.Invoke();
+
             if (IsServer)
             {
                 Vector3 direction;
@@ -317,6 +313,7 @@ public class PlayerController : NetworkBehaviour
                 bullet.Direction = direction.normalized + new Vector3(Random.Range(0, shootRefraction), Random.Range(0, shootRefraction),0);
                 bullet.damage.Value = GetComponent<PlayerStatsController>().GetDamageDone();
                 bullet.mainCam = cam;
+
                 bullet.GetComponent<NetworkObject>().Spawn();
 
 

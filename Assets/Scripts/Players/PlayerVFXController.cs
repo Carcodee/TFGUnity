@@ -29,8 +29,13 @@ public class PlayerVFXController : NetworkBehaviour
     public GameObject jumpEffectPrefab;
     public Transform jumpEffectPosition;
     
+    [Header("Shoot")]
+    public GameObject ShootEffectPrefab;
+    public Transform ShootEffectPosition;
+    
     void Start()
     {
+        GetComponent<PlayerController>().OnPlyerShoot += ShootEffect;
 
     }
     private void OnEnable()
@@ -49,6 +54,8 @@ public class PlayerVFXController : NetworkBehaviour
         if (IsOwner)
         {
             playerStatsController.OnLevelUp -= AnimateGlowMaterial;
+            playerStatsController.GetComponent<PlayerController>().OnPlyerShoot -= ShootEffect;
+
         }
     }
     void Update()
@@ -59,6 +66,7 @@ public class PlayerVFXController : NetworkBehaviour
             {
                 Instantiate(jumpEffectPrefab, jumpEffectPosition.position, Quaternion.identity);
             }
+
         }
    
     }
@@ -74,6 +82,10 @@ public class PlayerVFXController : NetworkBehaviour
         
     }
 
+    public void ShootEffect()
+    {
+        Instantiate(ShootEffectPrefab, ShootEffectPosition.position, Quaternion.identity);
+    }   
     public void AnimateGlowMaterial()
     {
         levelUpMat.GetFloat("_FresnelIntensity");

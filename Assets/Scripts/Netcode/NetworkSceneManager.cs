@@ -23,7 +23,10 @@ public class NetworkSceneManager : NetworkBehaviour
     public TMP_InputField joinCode;
     private string joinText;
     private UnityTransport _transport;
+    public GameObject menu;
+    public GameObject canvas;
 
+    
     private async void Awake()
     {
      
@@ -51,6 +54,9 @@ public class NetworkSceneManager : NetworkBehaviour
         if (IsServer && !string.IsNullOrEmpty(m_SceneName))
         {
             var status = NetworkManager.SceneManager.LoadScene(m_SceneName, LoadSceneMode.Additive);
+
+            menu.SetActive(false);
+            canvas.SetActive(false);
             if (status != SceneEventProgressStatus.Started)
             {
                 Debug.LogWarning($"Failed to load {m_SceneName} " +
@@ -88,4 +94,6 @@ public class NetworkSceneManager : NetworkBehaviour
     {
         NetworkManager.Singleton.StartServer();
     }
+
+
 }

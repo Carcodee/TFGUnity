@@ -5,9 +5,10 @@ using UnityEngine;
 
 public class VFXController : MonoBehaviour
 {
+    public float time;
     private void Start()
     {
         //destroy after 2 seconds
-        Destroy(gameObject, 0.5f);
+        Destroy(gameObject, time);
     }
 }

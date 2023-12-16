@@ -271,30 +271,30 @@ namespace SlimUI.ModernMenu{
 			#endif
 		}
 
-		// Load Bar synching animation
-		//IEnumerator LoadAsynchronously(string sceneName){ // scene name is just the name of the current scene being loaded
-		//	AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
-		//	operation.allowSceneActivation = false;
-		//	mainCanvas.SetActive(false);
-		//	loadingMenu.SetActive(true);
-
-		//	while (!operation.isDone){
-		//		float progress = Mathf.Clamp01(operation.progress / .95f);
-		//		loadingBar.value = progress;
-
-		//		if (operation.progress >= 0.9f && waitForInput){
-		//			loadPromptText.text = "Press " + userPromptKey.ToString().ToUpper() + " to continue";
-		//			loadingBar.value = 1;
-
-		//			if (Input.GetKeyDown(userPromptKey)){
-		//				operation.allowSceneActivation = true;
-		//			}
-  //              }else if(operation.progress >= 0.9f && !waitForInput){
-		//			operation.allowSceneActivation = true;
-		//		}
-
-		//		yield return null;
-		//	}
-		//}
+		//  // Load Bar synching animation
+		// IEnumerator LoadAsynchronously(string sceneName){ // scene name is just the name of the current scene being loaded
+		// 	AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+		// 	operation.allowSceneActivation = false;
+		// 	mainCanvas.SetActive(false);
+		// 	loadingMenu.SetActive(true);
+  //
+		// 	while (!operation.isDone){
+		// 		float progress = Mathf.Clamp01(operation.progress / .95f);
+		// 		loadingBar.value = progress;
+  //
+		// 		if (operation.progress >= 0.9f && waitForInput){
+		// 			loadPromptText.text = "Press " + userPromptKey.ToString().ToUpper() + " to continue";
+		// 			loadingBar.value = 1;
+  //
+		// 			if (Input.GetKeyDown(userPromptKey)){
+		// 				operation.allowSceneActivation = true;
+		// 			}
+  //               }else if(operation.progress >= 0.9f && !waitForInput){
+		// 			operation.allowSceneActivation = true;
+		// 		}
+  //
+		// 		yield return null;
+		// 	}
+		}
 	}
-}
+

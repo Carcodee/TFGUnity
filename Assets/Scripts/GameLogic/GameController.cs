@@ -2,12 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using Unity.Collections;
 using Unity.Netcode;
-using UnityEditor.Networking.PlayerConnection;
-using UnityEditor.PackageManager;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 public class GameController : NetworkBehaviour
 {
@@ -52,6 +48,8 @@ public class GameController : NetworkBehaviour
         {
             Destroy(this);
         }
+
+  
 
     }
     private void OnEnable()
