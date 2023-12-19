@@ -1,63 +1,66 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Netcode.Components;
 using UnityEngine;
 
-public class FallingState : PlayerStateBase
+namespace Players.PlayerStates.States
 {
-    public FallingState(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
+    public class FallingState : PlayerStateBase
     {
-        playerRef = stateMachineController.GetComponent<PlayerController>();
-        networkAnimator = stateMachineController.networkAnimator;
-
-    }
-    Vector3 moveDir;
-    public override void StateEnter()
-    {
-        networkAnimator.Animator.SetBool("Fall", true);
-        playerRef._bodyVelocity.y = 0;
-        moveDir = playerRef.move;
-        this.playerRef.gravityMultiplier = 1;
-
-    }
-
-    public override void StateExit()
-    {
-        //animation
-
-
-    }
-
-    public override void StateInput()
-    {
-
-    }
-
-    public override void StateUpdate()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
+        public FallingState(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
         {
-            stateMachineController.SetState("Jetpack");
+            playerRef = stateMachineController.GetComponent<PlayerController>();
+            networkAnimator = stateMachineController.networkAnimator;
+
         }
-        if (Input.GetKeyDown(KeyCode.Mouse1))
+        Vector3 moveDir;
+        public override void StateEnter()
         {
-            stateMachineController.SetState("Aiming");
+            networkAnimator.Animator.Play("Falling",0);
+            playerRef._bodyVelocity.y = 0;
+            moveDir = playerRef.move;
+            this.playerRef.gravityMultiplier = 1;
+
         }
 
-
-    }
-    public override void StatePhysicsUpdate()
-    {
-
-    }
-    public override void StateLateUpdate()
-    {
-        playerRef.RotatePlayer();
-        playerRef.ApplyGravity();
-        if (playerRef.characterController.isGrounded)
+        public override void StateExit()
         {
-            stateMachineController.SetState("Movement");
-        }
-    }
+            //animation
 
+
+        }
+
+        public override void StateInput()
+        {
+            float x= Input.GetAxis("Horizontal");
+            float y= Input.GetAxis("Vertical");
+            this.playerRef.Move(x, y);
+        }
+
+        public override void StateUpdate()
+        {
+            StateInput();
+            if (Input.GetKeyDown(KeyCode.Space)&&!playerRef.hasPlaned)
+            {
+                stateMachineController.SetState("Jetpack");
+            }
+            if (Input.GetKeyDown(KeyCode.Mouse1))
+            {
+                stateMachineController.SetState("Aiming");
+            }
+
+
+        }
+        public override void StatePhysicsUpdate()
+        {
+
+        }
+        public override void StateLateUpdate()
+        {
+            playerRef.RotatePlayer();
+            playerRef.ApplyGravity();
+            if (playerRef.isGrounded)
+            {
+                stateMachineController.SetState("Movement");
+            }
+        }
+
+    }
 }

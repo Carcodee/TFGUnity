@@ -197,4 +197,20 @@ public class PlayerComponentsHandler : NetworkBehaviour
 
         }
     }
+    public IEnumerator ShakeCamera(float duration, float magnitude, float frecuency)
+    {
+        float elapsed = 0.0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            MyUtilities.StartCameraShake(cinemachineVirtualCameraInstance, magnitude, frecuency, 0);
+            MyUtilities.StartCameraShake(cinmachineCloseLookCameraIntance, magnitude, frecuency, 0);
+
+            yield return null;
+        }
+
+        MyUtilities.StopCameraShake(cinemachineVirtualCameraInstance);
+        MyUtilities.StopCameraShake(cinmachineCloseLookCameraIntance);
+
+    }
 }

@@ -1,46 +1,45 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Unity.Netcode;
 using Unity.Netcode.Components;
 
-public class PlayerStateBase : StateMachineBase
+namespace Players.PlayerStates
 {
-    public PlayerController playerRef;
-    public NetworkAnimator networkAnimator;
+    public class PlayerStateBase : StateMachineBase
+    {
+        public PlayerController playerRef;
+        public NetworkAnimator networkAnimator;
 
-    public PlayerStateBase(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
-    {
-        playerRef = stateMachineController.GetComponent<PlayerController>();
-        networkAnimator = stateMachineController.networkAnimator;
-    }
-    public override void StateEnter()
-    {
+        public PlayerStateBase(string name, StateMachineController stateMachineController) : base(name, stateMachineController)
+        {
+            playerRef = stateMachineController.GetComponent<PlayerController>();
+            networkAnimator = stateMachineController.networkAnimator;
+        }
+        public override void StateEnter()
+        {
 
         
-    }
+        }
 
-    public override void StateExit()
-    {
+        public override void StateExit()
+        {
         
-    }
+        }
 
-    public override void StateLateUpdate()
-    {
+        public override void StateLateUpdate()
+        {
         
-    }
-    public virtual void StateInput()
-    {
+        }
+        public virtual void StateInput()
+        {
 
-    }
-    public override void StatePhysicsUpdate()
-    {
+        }
+        public override void StatePhysicsUpdate()
+        {
         
-    }
+        }
 
-    public override void StateUpdate()
-    {
+        public override void StateUpdate()
+        {
         
+        }
     }
 }
 

@@ -1,4 +1,5 @@
 using System;
+using Players.PlayerStates;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using Unity.VisualScripting;
@@ -17,6 +18,8 @@ public class PlayerController : NetworkBehaviour
     public BulletController bulletPrefab;
     public Transform cinemachineCameraTarget;
     public CharacterController characterController;
+    public Collider [] ragdollColliders;
+    public Rigidbody[] ragdollRigidbodies;
     
     //TODO : Refactor this cam thing
     public Camera cam;
@@ -70,23 +73,18 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float gravityForce = 100f;
     public float gravityMultiplier = 1f;
     public Vector3 _bodyVelocity;
-
+    public bool hasPlaned = false;
 
     [Header("AnimConfigs")]
     public float moveAnimationSpeed;
 
     [Header("GroundCheck")]
     [Range(0.1f, 50f)] public float sphereCastRadius;
-    [Range(1f, 100f)] public float range;
+    [Range(0.1f, 100f)] public float range;
     public LayerMask GroundLayer;
     public bool isGrounded;
     public Vector3 sphereOffset;
-
-    private void OnValidate()
-    {
-
-    }
-
+    
     void Start()
     {
         cam= GetComponentInChildren<Camera>();
@@ -98,7 +96,7 @@ public class PlayerController : NetworkBehaviour
             stateMachineController.Initializate();
             playerStats = GetComponent<PlayerStatsController>();
             playerStats.OnPlayerDead += PlayerDeadCallback;
-
+            DoRagdoll(false);
         }
 
     }
@@ -111,6 +109,7 @@ public class PlayerController : NetworkBehaviour
             isGroundedCheck();
             Shoot();
             Reloading();
+            CreateAimTargetPos();
             stateMachineController.StateUpdate();
         }
 }
@@ -153,6 +152,7 @@ public class PlayerController : NetworkBehaviour
 
             cam.enabled = false;
             characterController.enabled = false;
+            DoRagdoll(false);
             body.gameObject.SetActive(false);
 
 
@@ -162,6 +162,8 @@ public class PlayerController : NetworkBehaviour
             cam.enabled = true;
             characterController.enabled = true;
             body.gameObject.SetActive(true);
+            DoRagdoll(false);
+
     }
     public void PlayerDeadCallback()
     {
@@ -292,6 +294,7 @@ public class PlayerController : NetworkBehaviour
         shootTimer += Time.deltaTime;
         if (Input.GetKey(KeyCode.Mouse0) && shootTimer > shootRate && playerStats.currentBullets > 0 && !isReloading)
         {
+            StartCoroutine(playerStats.playerComponentsHandler.ShakeCamera(0.1f, .9f, .7f));
             playerStats.currentBullets--;
             OnPlyerShoot?.Invoke();
 
@@ -311,7 +314,7 @@ public class PlayerController : NetworkBehaviour
 
                 BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
                 bullet.Direction = direction.normalized + new Vector3(Random.Range(0, shootRefraction), Random.Range(0, shootRefraction),0);
-                bullet.damage.Value = GetComponent<PlayerStatsController>().GetDamageDone();
+                bullet.damage.Value = playerStats.GetDamageDone();
                 bullet.mainCam = cam;
 
                 bullet.GetComponent<NetworkObject>().Spawn();
@@ -332,7 +335,7 @@ public class PlayerController : NetworkBehaviour
                     direction = spawnBulletPoint.position - cameraRef.transform.forward * distanceFactor;
                 }
 
-                ShootServerRpc(direction, GetComponent<PlayerStatsController>().GetDamageDone());
+                ShootServerRpc(direction, playerStats.GetDamageDone());
             }
             shootTimer = 0;
         }
@@ -358,6 +361,17 @@ public class PlayerController : NetworkBehaviour
         }
 
 
+    }
+    
+    public void DoRagdoll(bool value)
+    {
+        for (int i = 0; i < ragdollRigidbodies.Length; i++)
+        {
+            ragdollColliders[i].enabled = value;
+            ragdollRigidbodies[i].isKinematic = !value;
+            ragdollRigidbodies[i].useGravity = value;
+        }
+        stateMachineController.networkAnimator.Animator.enabled = !value;
     }
 
     private void OnDrawGizmosSelected()

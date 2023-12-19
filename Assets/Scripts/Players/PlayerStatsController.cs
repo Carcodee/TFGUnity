@@ -18,7 +18,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     [Header("References")]
     public StatsTemplate[] statsTemplates;
     public NetworkVariable <int> statsTemplateSelected;
-
+    public PlayerComponentsHandler playerComponentsHandler;
     [Header("Stats")]
     [SerializeField] private NetworkVariable<int> haste = new NetworkVariable<int>();
     [SerializeField] private NetworkVariable<int> health = new NetworkVariable<int>();
@@ -37,6 +37,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     public int[] statHolder;
 
     public bool isPlayerInsideTheZone;
+    
     [Header("Current Gamelogic")]
     public NetworkVariable<zoneColors> zoneAsigned=new NetworkVariable<zoneColors>();
     public Transform coinPosition;
@@ -62,6 +63,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
             OnStatsChanged += UpdateStats;
             OnLevelUp += LevelUp;
             iDamageable = GetComponent<IDamageable>();
+            playerComponentsHandler = GetComponent<PlayerComponentsHandler>();
             isPlayerInsideTheZone = true;
 
             InitializateStats();
@@ -222,10 +224,13 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
                 {
                     //this is wrong stat holder is controlling the health
                     statHolder[1] -= (damage);
+                    StartCoroutine(playerComponentsHandler.ShakeCamera(0.3f, 5, 5));
                 }
                 else
                 {
                     SetHealthServerRpc(statHolder[1] - (damage));  
+                    StartCoroutine(playerComponentsHandler.ShakeCamera(0.3f, 5, 5));
+
                 }
                 OnStatsChanged?.Invoke();
             }
@@ -233,6 +238,8 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
 
 
     }
+    
+
     public void AddValueFromButton(int index)
     {
         statHolder[index]++;
@@ -287,6 +294,9 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     {
         avaliblePoints.Value--;
     }
+    
+    
+    
     #region ServerRpc
 
     //template selected
@@ -300,6 +310,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     private void SetHealthServerRpc(int healthPoint)
     {
          health.Value = healthPoint;
+
     }
     [ServerRpc]
     private void SetHasteServerRpc(int hastePoint)
@@ -359,9 +370,6 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     {
         zoneAsigned.Value = zone;
     }
-
-
-
     #endregion
 
     private void OnTriggerExit(Collider other)
