@@ -88,10 +88,13 @@ public class PlayerController : NetworkBehaviour
     void Start()
     {
         cam= GetComponentInChildren<Camera>();
-
+        cam.enabled = IsOwner;
+        if (!cam)
+        {
+            Destroy(cam);
+        }
         if (IsOwner)
         {
-       
             SetSpeedStateServerRpc(5);
             stateMachineController.Initializate();
             playerStats = GetComponent<PlayerStatsController>();
@@ -103,7 +106,6 @@ public class PlayerController : NetworkBehaviour
 
     void Update()
     {
-        cam.enabled = IsOwner;
         if (IsOwner)
         {
             isGroundedCheck();
@@ -315,7 +317,7 @@ public class PlayerController : NetworkBehaviour
                 BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
                 bullet.Direction = direction.normalized + new Vector3(Random.Range(0, shootRefraction), Random.Range(0, shootRefraction),0);
                 bullet.damage.Value = playerStats.GetDamageDone();
-                bullet.mainCam = cam;
+                // bullet.mainCam = cam;
 
                 bullet.GetComponent<NetworkObject>().Spawn();
 
@@ -397,10 +399,9 @@ public class PlayerController : NetworkBehaviour
     {
         BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
         bullet.Direction = dir.normalized + new Vector3(Random.Range(0, shootRefraction), Random.Range(0, shootRefraction), 0);
-        bullet.damage.Value = damage;
-        bullet.mainCam = cam;
-
+        bullet.damage.Value = damage; 
         bullet.GetComponent<NetworkObject>().Spawn();
+        // SetMainCameraClientRpc(NetworkManager.SpawnManager.SpawnedObjects[bullet.GetComponent<NetworkObject>().NetworkObjectId].NetworkObjectId);
     }
 
     [ServerRpc]
@@ -430,6 +431,17 @@ public class PlayerController : NetworkBehaviour
 
     #endregion
 
+    #region ClientRpc
+
+    [ClientRpc]
+    void SetMainCameraClientRpc(ulong networkID)
+    {
+        if (IsOwner)
+        {
+            NetworkManager.SpawnManager.SpawnedObjects[networkID].GetComponentInChildren<BulletController>().mainCam = cam;
+        }
+    }
+    #endregion
 }
 
 public class AmmoBehaviour

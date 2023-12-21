@@ -56,30 +56,29 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
 
     public override void OnNetworkSpawn()
     {
+
+    }
+
+    private void Awake()
+    {
+
+    }
+
+    private void OnEnable()
+    {
         if (IsOwner)
         {
-            base.OnNetworkSpawn();
+            
             OnSpawnPlayer += InitializateStats;
             OnStatsChanged += UpdateStats;
             OnLevelUp += LevelUp;
             iDamageable = GetComponent<IDamageable>();
-            playerComponentsHandler = GetComponent<PlayerComponentsHandler>();
             isPlayerInsideTheZone = true;
-
-            InitializateStats();
-        }
-    }
-
-    private void Start()
-    {
-        OnSpawnPlayer?.Invoke();
-        isPlayerInsideTheZone = true;
-        if (IsOwner)
-        {
+            OnSpawnPlayer?.Invoke();
             OnStatsChanged?.Invoke();
         }
-
     }
+    
     private void Update()
     {
         if (IsOwner)
@@ -93,7 +92,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         OnStatsChanged -= UpdateStats;
 
     }
-    
+
     public void FillStatNameHolder()
     {
         statHolderNames = new string[6];
@@ -144,6 +143,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         SetDamageServerRpc(statsTemplates[statsTemplateSelected.Value].damage);
         SetArmorServerRpc(statsTemplates[statsTemplateSelected.Value].armor);
         SetSpeedServerRpc(statsTemplates[statsTemplateSelected.Value].speed);
+
         SetLevelServerRpc(1);
         SetAvaliblePointsServerRpc(3);
         FillArrayHolder();
@@ -174,7 +174,10 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         }
         else
         {
-            SetHealthServerRpc(value);
+            if (IsOwner)
+            {
+                SetHealthServerRpc(value);
+            }
         }
     }
     public void SetTemplate(int index)
@@ -309,6 +312,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     [ServerRpc]
     private void SetHealthServerRpc(int healthPoint)
     {
+        
          health.Value = healthPoint;
 
     }

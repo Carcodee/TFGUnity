@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -53,9 +54,8 @@ public class StatsPanelController : MonoBehaviour
     {
         OnPannelOpen += OpenPanel;
         OnPannelClosed += ClosePanel;
-
-        
     }
+
     private void OnDisable()
     {
         OnPannelOpen -= OpenPanel;
@@ -68,7 +68,7 @@ public class StatsPanelController : MonoBehaviour
         buttonSelectorIndex = 1;
         isPanelOpen =false;
         playerStatsController = GetComponentInParent<PlayerStatsController>();
-        AddListenersToButtons();
+        // StartCoroutine("AddListenersToButtons", 0.5f);
         endPos= targetPos.localPosition;
         startPos= transform.localPosition;
     }
@@ -149,8 +149,9 @@ public class StatsPanelController : MonoBehaviour
 
         transform.localPosition=Vector3.Lerp(startPos, new Vector3(-endPos.x, transform.localPosition.y, 0), animationFunction);
     }
-    public void AddListenersToButtons()
+    IEnumerator AddListenersToButtons()
     {
+        yield return new WaitForSecondsRealtime(0.5f);
         for (int i = 0; i < addButtons.Length; i++)
         {
             PointButtonFunction(addButtons[i], "+", playerStatsController.statHolderNames[i]);

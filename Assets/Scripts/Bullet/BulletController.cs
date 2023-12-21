@@ -28,6 +28,7 @@ public class BulletController : NetworkBehaviour
     {
         collided = false;
         rb.isKinematic = false;
+        mainCam = Camera.main;
         if (IsOwner)
         {
             StartCoroutine(DestroyBullet());
@@ -82,9 +83,9 @@ public class BulletController : NetworkBehaviour
             collided = true;
             bulletHitType = BulletHitType.Enviroment;
         }
-        FloatingTextController floatingText= Instantiate(floatingTextPrefab, transform.position, Quaternion.identity);
-        floatingText.text.text = "Damage: "+damage.Value.ToString();
-        floatingText.mainCam= mainCam;
+        // FloatingTextController floatingText= Instantiate(floatingTextPrefab, transform.position, Quaternion.identity);
+        // floatingText.text.text = "Damage: "+damage.Value.ToString();
+        // floatingText.mainCam = mainCam;
         Direction= new Vector3 (UnityEngine.Random.RandomRange(0.0f,1.0f), UnityEngine.Random.RandomRange(0.0f, 1.0f), UnityEngine.Random.RandomRange(0.0f, 1.0f));
         SpawnHitEffectClientRpc();
 

@@ -569,7 +569,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 26c98a67db06f9c4d885b80af884c40e, type: 2}
   statsTemplateSelected:
     m_InternalValue: 0
-  playerComponentsHandler: {fileID: 0}
+  playerComponentsHandler: {fileID: 1071611250771317373}
   haste:
     m_InternalValue: 0
   health:
