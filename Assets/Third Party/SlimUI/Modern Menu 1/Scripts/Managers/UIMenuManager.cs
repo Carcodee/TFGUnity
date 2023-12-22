@@ -271,7 +271,7 @@ namespace SlimUI.ModernMenu{
 			#endif
 		}
 
-		//  // Load Bar synching animation
+		 // Load Bar synching animation
 		// IEnumerator LoadAsynchronously(string sceneName){ // scene name is just the name of the current scene being loaded
 		// 	AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
 		// 	operation.allowSceneActivation = false;
@@ -295,6 +295,6 @@ namespace SlimUI.ModernMenu{
   //
 		// 		yield return null;
 		// 	}
-		}
+		 }
 	}
 

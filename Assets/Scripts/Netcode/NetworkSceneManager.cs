@@ -51,20 +51,35 @@ public class NetworkSceneManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        
         if (IsServer && !string.IsNullOrEmpty(m_SceneName))
         {
-            var status = NetworkManager.SceneManager.LoadScene(m_SceneName, LoadSceneMode.Additive);
-
             menu.SetActive(false);
             canvas.SetActive(false);
+            var status = NetworkManager.SceneManager.LoadScene(m_SceneName, LoadSceneMode.Additive);
             if (status != SceneEventProgressStatus.Started)
-            {
+            {   
                 Debug.LogWarning($"Failed to load {m_SceneName} " +
-                      $"with a {nameof(SceneEventProgressStatus)}: {status}");
+                                  $"with a {nameof(SceneEventProgressStatus)}: {status}");
             }
         }
     }
-
+    public IEnumerator LoadAsynchronously(string sceneName){ // scene name is just the name of the current scene being loaded
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+        operation.allowSceneActivation = true;
+        while (!operation.isDone){
+            if(operation.progress >= 0.9f){
+                // var status = NetworkManager.SceneManager.LoadScene(m_SceneName, LoadSceneMode.Additive);
+                // if (status != SceneEventProgressStatus.Started)
+                // {
+                //     Debug.LogWarning($"Failed to load {m_SceneName} " +
+                //                       $"with a {nameof(SceneEventProgressStatus)}: {status}");
+                // }
+                operation.allowSceneActivation = true;
+            }
+            yield return null;
+        }
+    }
 
     private static async Task Authenticate()
     {
@@ -77,10 +92,11 @@ public class NetworkSceneManager : NetworkBehaviour
     {
         Allocation a = await RelayService.Instance.CreateAllocationAsync(2,"europe-west2");
         hostCode= await RelayService.Instance.GetJoinCodeAsync(a.AllocationId);
-       
         _transport.SetHostRelayData(a.RelayServer.IpV4,(ushort)a.RelayServer.Port,a.AllocationIdBytes, a.Key, a.ConnectionData);
 
         NetworkManager.Singleton.StartHost();
+        LoadAsynchronously(m_SceneName);
+
     }
     public async void StartClient()
     {

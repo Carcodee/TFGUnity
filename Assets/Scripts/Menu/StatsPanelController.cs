@@ -190,7 +190,6 @@ public class StatsPanelController : MonoBehaviour
                 playerStatsController.AddValueFromButton(i);
                 avaliblePoints--;
                 playerStatsController.OnStatsChanged?.Invoke();
-                UpdateStats();
                 Debug.Log("Add Value From Button");
                 return;
                 //add add stat
@@ -210,7 +209,6 @@ public class StatsPanelController : MonoBehaviour
                 playerStatsController.SustractValueFromButton(i);
                 avaliblePoints++;
                 playerStatsController.OnStatsChanged?.Invoke();
-                UpdateStats();
                 Debug.Log("Add Value From Button");
                 return;
                 //sustract stat

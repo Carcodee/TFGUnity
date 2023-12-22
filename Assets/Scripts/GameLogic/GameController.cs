@@ -356,7 +356,7 @@ public class GameController : NetworkBehaviour
         players[playerIndex].GetComponent<PlayerController>().characterController.enabled = false;
         players[playerIndex].position = pos;
         players[playerIndex].GetComponent<PlayerController>().characterController.enabled = true;
-        players[playerIndex].GetComponent<PlayerStatsController>().SetHealth(players[playerIndex].GetComponent<PlayerStatsController>().maxHealth);
+        players[playerIndex].GetComponent<PlayerStatsController>().SetHealth(players[playerIndex].GetComponent<PlayerStatsController>().GetMaxHealth());
         players[playerIndex].GetComponent<PlayerStatsController>().OnStatsChanged?.Invoke();
         Debug.Log("Called on client");
     }

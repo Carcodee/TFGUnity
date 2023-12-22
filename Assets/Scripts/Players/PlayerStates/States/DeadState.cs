@@ -23,7 +23,7 @@ namespace Players.PlayerStates.States
         public override void StateExit()
         {
             this.playerRef.ActivatePlayer();
-            playerRef.playerStats.statHolder[1] = playerRef.playerStats.maxHealth;
+            playerRef.playerStats.SetHealth(playerRef.playerStats.GetMaxHealth());
             playerRef.playerStats.OnStatsChanged?.Invoke();
             //respawn
         }
