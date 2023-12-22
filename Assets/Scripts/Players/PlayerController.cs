@@ -413,8 +413,8 @@ public class PlayerController : NetworkBehaviour
         BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
         bullet.Direction = dir.normalized + new Vector3(Random.Range(0, shootRefraction), Random.Range(0, shootRefraction), 0);
         bullet.damage.Value = damage; 
-        bullet.GetComponent<NetworkObject>().Spawn();
         bullet.GetComponent<Renderer>().enabled = false;
+        bullet.GetComponent<NetworkObject>().Spawn();
         // SetMainCameraClientRpc(NetworkManager.SpawnManager.SpawnedObjects[bullet.GetComponent<NetworkObject>().NetworkObjectId].NetworkObjectId);
     }
 
