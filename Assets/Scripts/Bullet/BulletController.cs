@@ -9,7 +9,6 @@ public class BulletController : NetworkBehaviour
 {
     [Header("Ref")] 
     public Camera mainCam;
-    
     public Rigidbody rb;
     public Vector3 Direction;
     public float speed = 10f;
@@ -24,21 +23,18 @@ public class BulletController : NetworkBehaviour
     public GameObject onHitEffectPrefab;
     public FloatingTextController floatingTextPrefab;
     
+    
     void Start()
     {
+        Physics.IgnoreCollision(GameController.instance.sphereRadius.GetComponent<Collider>(), GetComponent<Collider>());
         collided = false;
-        rb.isKinematic = false;
+        rb.isKinematic = true;
         mainCam = Camera.main;
-        if (IsOwner)
-        {
-            StartCoroutine(DestroyBullet());
-        }
+        Destroy(gameObject,2.0f);
     }
 
     void Update()
     {
-
-
         if (collided)
         {
             ColorChange(bulletHitType);
@@ -65,21 +61,40 @@ public class BulletController : NetworkBehaviour
     }
     private void FixedUpdate() 
     {
-        rb.velocity = -Direction * speed;
+        if (!collided)
+        {
+            transform.position += -Direction * speed * Time.deltaTime;
+        }
+        else
+        {
+            rb.velocity = -Direction * speed;
+        }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+
+        if (other.TryGetComponent<PlayerStatsController>(out PlayerStatsController enemyRef))
+        {
+            enemyRef.TakeDamage(damage.Value);
+        }
+        transform.GetComponent<Collider>().isTrigger = false;
+        rb.isKinematic = false;
+        collided = true;
+        Debug.Log(other.transform.name);
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.transform.TryGetComponent<PlayerStatsController>(out PlayerStatsController enemyRef))
         {
-            enemyRef.TakeDamage(damage.Value);
-            Debug.Log("Hit: "+ damage);
             collided = true;
             bulletHitType = BulletHitType.Enemy;
-
-
+            Debug.Log(enemyRef.name);
         }
         else
         {
+            Debug.Log(collision.transform.name);
             collided = true;
             bulletHitType = BulletHitType.Enviroment;
         }
