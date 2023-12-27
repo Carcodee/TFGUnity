@@ -9,8 +9,6 @@ public class GameController : NetworkBehaviour
 {
 
     public static GameController instance;
-    [Header("Events")]
-    public Action<int> OnPlayerDeadEvent;
 
     [Header("Lobby")]
     public bool started;
@@ -55,12 +53,10 @@ public class GameController : NetworkBehaviour
     private void OnEnable()
     {
         CoinBehaivor.OnCoinCollected += MoveCoin;
-        OnPlayerDeadEvent+=OnPlayerDead;
     }
     private void OnDisable()
     {
         CoinBehaivor.OnCoinCollected -= MoveCoin;
-        OnPlayerDeadEvent -= OnPlayerDead;
 
     }
     public override void OnNetworkSpawn()
@@ -118,16 +114,13 @@ public class GameController : NetworkBehaviour
         UpdateTime();
         if (mapLogic.Value.isBattleRoyale && sphereRadius.radius>0)
         {
-            if (IsServer)
-            {
-                ReduceSphereSizeClientRpc();
-            }
+                ReduceSphereSize();
         }
         
     }
 
 
-    void OnPlayerDead(int index)
+    public void OnPlayerDead(int index)
     {
          SetPlayerPosClientRpc(zoneControllers[index].playerSpawn.position, index);
     }
@@ -271,7 +264,13 @@ public class GameController : NetworkBehaviour
         Vector3 newPos=new Vector3(UnityEngine.Random.Range(col.bounds.min.x, col.bounds.max.x), 2.5f ,UnityEngine.Random.Range(col.bounds.min.z, col.bounds.max.z));
         return newPos;
     }
-    
+    public void ReduceSphereSize()
+    {
+        if (sphereRadius.radius>0)
+        {
+            sphereRadius.radius -= mapLogic.Value.zoneRadiusExpandSpeed * Time.deltaTime;
+        }
+    }
     #region ServerRpc
     [ServerRpc]
     public void SetTimeToStartServerRpc(float time)
@@ -356,7 +355,6 @@ public class GameController : NetworkBehaviour
         players[playerIndex].GetComponent<PlayerController>().characterController.enabled = false;
         players[playerIndex].position = pos;
         players[playerIndex].GetComponent<PlayerController>().characterController.enabled = true;
-        players[playerIndex].GetComponent<PlayerStatsController>().SetHealth(players[playerIndex].GetComponent<PlayerStatsController>().GetMaxHealth());
         players[playerIndex].GetComponent<PlayerStatsController>().OnStatsChanged?.Invoke();
         Debug.Log("Called on client");
     }
@@ -365,11 +363,7 @@ public class GameController : NetworkBehaviour
     {
         mapLogic.Value.isBattleRoyale = val;
     }
-    [ClientRpc]
-    public void ReduceSphereSizeClientRpc()
-    {
-        sphereRadius.radius -= mapLogic.Value.zoneRadiusExpandSpeed * Time.deltaTime;
-    }
+
 
     [ClientRpc]
     public void AddPlayerToListClientRpc()

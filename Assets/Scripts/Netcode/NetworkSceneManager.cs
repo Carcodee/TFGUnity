@@ -56,12 +56,12 @@ public class NetworkSceneManager : NetworkBehaviour
         {
             menu.SetActive(false);
             canvas.SetActive(false);
-            var status = NetworkManager.SceneManager.LoadScene(m_SceneName, LoadSceneMode.Additive);
-            if (status != SceneEventProgressStatus.Started)
-            {   
-                Debug.LogWarning($"Failed to load {m_SceneName} " +
-                                  $"with a {nameof(SceneEventProgressStatus)}: {status}");
-            }
+            // var status = NetworkManager.SceneManager.LoadScene(m_SceneName, LoadSceneMode.Additive);
+            // if (status != SceneEventProgressStatus.Started)
+            // {   
+            //     Debug.LogWarning($"Failed to load {m_SceneName} " +
+            //                       $"with a {nameof(SceneEventProgressStatus)}: {status}");
+            // }
         }
     }
     public IEnumerator LoadAsynchronously(string sceneName){ // scene name is just the name of the current scene being loaded

@@ -30,7 +30,7 @@ public class BulletController : NetworkBehaviour
         collided = false;
         rb.isKinematic = true;
         mainCam = Camera.main;
-        Destroy(gameObject,2.0f);
+        StartCoroutine(DestroyBullet());
     }
 
     void Update()
@@ -45,14 +45,18 @@ public class BulletController : NetworkBehaviour
     IEnumerator DestroyBullet()
     {
         yield return new WaitForSeconds(2f);
-        if (IsServer)
+        if (IsOwner)
         {
-            Destroy(gameObject);
+            if (IsServer)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                DestroyServerRpc();
+            }
         }
-        else
-        {
-            DestroyServerRpc();
-        }
+
     }
     [ServerRpc]
     public void DestroyServerRpc()
@@ -94,7 +98,6 @@ public class BulletController : NetworkBehaviour
         }
         else
         {
-            Debug.Log(collision.transform.name);
             collided = true;
             bulletHitType = BulletHitType.Enviroment;
         }

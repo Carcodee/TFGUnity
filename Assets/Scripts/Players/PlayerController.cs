@@ -106,10 +106,10 @@ public class PlayerController : NetworkBehaviour
 
     void Update()
     {
+        Shoot();
 
         if (IsOwner)
         {
-            Shoot();
 
             isGroundedCheck();
             Reloading();
@@ -154,7 +154,6 @@ public class PlayerController : NetworkBehaviour
     public void DeactivatePlayer()
     {
 
-            cam.enabled = false;
             characterController.enabled = false;
             DoRagdoll(false);
             body.gameObject.SetActive(false);
@@ -163,7 +162,6 @@ public class PlayerController : NetworkBehaviour
     }
     public void ActivatePlayer()
     {
-            cam.enabled = true;
             characterController.enabled = true;
             body.gameObject.SetActive(true);
             DoRagdoll(false);
@@ -294,7 +292,12 @@ public class PlayerController : NetworkBehaviour
 
     }
     public void Shoot()
-    {
+    {                
+        Vector3 direction = Vector3.zero;
+        float randomRefraction =Random.Range(0, shootRefraction);
+
+        if (IsOwner)
+        {
             shootTimer += Time.deltaTime;
             if (Input.GetKey(KeyCode.Mouse0) && shootTimer > shootRate && playerStats.currentBullets > 0 && !isReloading)
             {
@@ -302,26 +305,25 @@ public class PlayerController : NetworkBehaviour
                 playerStats.currentBullets--;
                 OnPlyerShoot?.Invoke();
 
-                if (IsServer)
+
+                shootTimer = 0;
+                if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, 
+                        distanceFactor))
                 {
-                    Vector3 direction;
-                    if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, 
-                            distanceFactor))
-                    {
-                        direction = spawnBulletPoint.position - hit.point;
-
-
-                    }
-                    else
-                    {
-                        direction = spawnBulletPoint.position - cameraRef.transform.forward * distanceFactor;
-                    }
+                    direction = spawnBulletPoint.position - hit.point;
+                }
+                else
+                {
+                    direction = spawnBulletPoint.position - cameraRef.transform.forward * distanceFactor;
+                }
+                if (!IsOwner)
+                {
 
                     BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position,
                         cinemachineCameraTarget.rotation);
                     Physics.IgnoreCollision(bullet.GetComponent<Collider>(),characterController.GetComponent<Collider>());
-                    bullet.Direction = direction.normalized + new Vector3(Random.Range(0, shootRefraction),
-                        Random.Range(0, shootRefraction), 0);
+                    bullet.Direction = direction.normalized + new Vector3(randomRefraction, randomRefraction, 0);
+
                     bullet.damage.Value = playerStats.GetDamageDone();
                     // bullet.mainCam = cam;
 
@@ -329,36 +331,16 @@ public class PlayerController : NetworkBehaviour
                 else
                 {
 
-                    Vector3 direction;
+                    BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
+                    bullet.Direction = direction.normalized + new Vector3(randomRefraction, randomRefraction, 0);
+                    bullet.damage.Value = playerStats.GetDamageDone();
 
-                    if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit,
-                            distanceFactor))
-                    {
-                        direction = spawnBulletPoint.position - hit.point;
-
-                    }
-                    else
-                    {
-                        direction = spawnBulletPoint.position - cameraRef.transform.forward * distanceFactor;
-                    }
-                    float randomRefraction =Random.Range(0, shootRefraction);
-
-                    // if (IsOwner)
-                    // {
-                    //     BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
-                    //     bullet.Direction = direction.normalized + new Vector3(randomRefraction, randomRefraction, 0);
-                    //     bullet.damage.Value = playerStats.GetDamageDone();
-                    // }
-                    // else
-                    // {
-                    ShootServerRpc(direction, playerStats.GetDamageDone(),randomRefraction);
-                    // }
-
+                    // ShootServerRpc(direction, playerStats.GetDamageDone(),randomRefraction);
                     // SpawnFakeBulletClientRpc(direction, playerStats.GetDamageDone(),randomRefraction);
                 }
-
-                shootTimer = 0;
             }
+        }
+ 
         
     }
 

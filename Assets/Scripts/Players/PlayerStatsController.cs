@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Players.PlayerStates;
 using Unity.Collections;
 using Unity.Netcode;
 using Unity.VisualScripting;
@@ -19,6 +20,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     public StatsTemplate[] statsTemplates;
     public NetworkVariable <int> statsTemplateSelected;
     public PlayerComponentsHandler playerComponentsHandler;
+    public StateMachineController stateMachineController;
     [Header("Stats")]
     [SerializeField] private NetworkVariable<int> haste = new NetworkVariable<int>();
     [SerializeField] private NetworkVariable<int> health = new NetworkVariable<int>();
@@ -75,6 +77,8 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
 
     private void Start()
     {
+        stateMachineController=GetComponent<StateMachineController>();
+
         if (IsOwner)
         {
             OnSpawnPlayer += InitializateStats;
@@ -215,16 +219,21 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     }
     public void TakeDamage(int damage)
     {
-        if (health.Value <= 0)
+
+        if (health.Value <= 0 && IsServer)
         {
-            GameController.instance.OnPlayerDeadEvent?.Invoke((int)zoneAsigned.Value);
+            GameController.instance.OnPlayerDead((int)zoneAsigned.Value);
         }
         if (IsOwner)
         {
-
+            if (stateMachineController.currentState.stateName == "Dead")
+            {
+                return;
+            }
             if (health.Value <= 0)
             {
                 OnPlayerDead?.Invoke();
+
             }
             else
             {
@@ -394,16 +403,24 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Zone"))
+        if (IsOwner)
         {
-            isPlayerInsideTheZone = false;
+            if (other.CompareTag("Zone"))
+            {
+                isPlayerInsideTheZone = false;
+            }
         }
+
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Zone"))
+        if (IsOwner)
         {
-            isPlayerInsideTheZone = true;
+            if (other.CompareTag("Zone"))
+            {
+                isPlayerInsideTheZone = true;
+            }
         }
+
     }
 }
