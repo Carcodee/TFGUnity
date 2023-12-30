@@ -304,8 +304,6 @@ public class PlayerController : NetworkBehaviour
                 StartCoroutine(playerStats.playerComponentsHandler.ShakeCamera(0.1f, .9f, .7f));
                 playerStats.currentBullets--;
                 OnPlyerShoot?.Invoke();
-
-
                 shootTimer = 0;
                 if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, 
                         distanceFactor))
@@ -316,28 +314,27 @@ public class PlayerController : NetworkBehaviour
                 {
                     direction = spawnBulletPoint.position - cameraRef.transform.forward * distanceFactor;
                 }
-                if (!IsOwner)
+                if (IsServer)
                 {
-
                     BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position,
                         cinemachineCameraTarget.rotation);
                     Physics.IgnoreCollision(bullet.GetComponent<Collider>(),characterController.GetComponent<Collider>());
+                    Physics.IgnoreCollision(bullet.GetComponent<Collider>(),bullet.GetComponent<Collider>());
+
                     bullet.Direction = direction.normalized + new Vector3(randomRefraction, randomRefraction, 0);
-
                     bullet.damage.Value = playerStats.GetDamageDone();
-                    // bullet.mainCam = cam;
-
+                    bullet.GetComponent<NetworkObject>().SpawnWithOwnership(NetworkManager.Singleton.LocalClientId, true);
                 }
                 else
                 {
-
                     BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
+                    Physics.IgnoreCollision(bullet.GetComponent<Collider>(),characterController.GetComponent<Collider>());
+                    Physics.IgnoreCollision(bullet.GetComponent<Collider>(),bullet.GetComponent<Collider>());
                     bullet.Direction = direction.normalized + new Vector3(randomRefraction, randomRefraction, 0);
                     bullet.damage.Value = playerStats.GetDamageDone();
-
-                    // ShootServerRpc(direction, playerStats.GetDamageDone(),randomRefraction);
-                    // SpawnFakeBulletClientRpc(direction, playerStats.GetDamageDone(),randomRefraction);
+                    // bullet.GetComponent<NetworkObject>().SpawnWithOwnership(NetworkManager.Singleton.LocalClientId, true);
                 }
+                // SpawnFakeBulletClientRpc(direction, playerStats.GetDamageDone(),randomRefraction);
             }
         }
  
@@ -396,14 +393,17 @@ public class PlayerController : NetworkBehaviour
     }
     
     [ServerRpc]
-    public void ShootServerRpc(Vector3 dir, int damage, float randomRefraction)
+    public void ShootServerRpc(Vector3 dir, int damage, float randomRefraction, ulong clientID)
     {
-        BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
-        bullet.Direction = dir.normalized + new Vector3(randomRefraction, randomRefraction, 0);
-        bullet.damage.Value = damage;
-        Physics.IgnoreCollision(bullet.GetComponent<Collider>(),characterController.GetComponent<Collider>());
-        bullet.GetComponent<NetworkObject>().Spawn();
+            BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
+            bullet.Direction = dir.normalized + new Vector3(randomRefraction, randomRefraction, 0);
+            bullet.damage.Value = damage;
+            // bullet.meshRenderer.enabled = false;
+            Physics.IgnoreCollision(bullet.GetComponent<Collider>(),NetworkManager.Singleton.SpawnManager.SpawnedObjects[clientID].GetComponent<Collider>());
+            Physics.IgnoreCollision(bullet.GetComponent<Collider>(), bullet.GetComponent<Collider>());
+            bullet.GetComponent<NetworkObject>().SpawnWithOwnership(bullet.GetComponent<NetworkObject>().OwnerClientId, true);
     }
+
     [ClientRpc]
     public void SpawnFakeBulletClientRpc(Vector3 dir, int damage, float randomRefraction)
     {

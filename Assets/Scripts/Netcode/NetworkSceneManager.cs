@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -6,6 +7,8 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
+using Unity.Services.Lobbies;
+using Unity.Services.Lobbies.Models;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
@@ -25,7 +28,7 @@ public class NetworkSceneManager : NetworkBehaviour
     private UnityTransport _transport;
     public GameObject menu;
     public GameObject canvas;
-
+    public string lobbyId;
     
     private async void Awake()
     {
@@ -56,12 +59,12 @@ public class NetworkSceneManager : NetworkBehaviour
         {
             menu.SetActive(false);
             canvas.SetActive(false);
-            // var status = NetworkManager.SceneManager.LoadScene(m_SceneName, LoadSceneMode.Additive);
-            // if (status != SceneEventProgressStatus.Started)
-            // {   
-            //     Debug.LogWarning($"Failed to load {m_SceneName} " +
-            //                       $"with a {nameof(SceneEventProgressStatus)}: {status}");
-            // }
+            var status = NetworkManager.SceneManager.LoadScene(m_SceneName, LoadSceneMode.Additive);
+            if (status != SceneEventProgressStatus.Started)
+            {   
+                Debug.LogWarning($"Failed to load {m_SceneName} " +
+                                  $"with a {nameof(SceneEventProgressStatus)}: {status}");
+            }
         }
     }
     public IEnumerator LoadAsynchronously(string sceneName){ // scene name is just the name of the current scene being loaded
@@ -94,9 +97,45 @@ public class NetworkSceneManager : NetworkBehaviour
         hostCode= await RelayService.Instance.GetJoinCodeAsync(a.AllocationId);
         _transport.SetHostRelayData(a.RelayServer.IpV4,(ushort)a.RelayServer.Port,a.AllocationIdBytes, a.Key, a.ConnectionData);
 
-        NetworkManager.Singleton.StartHost();
-        LoadAsynchronously(m_SceneName);
 
+        try
+        {
+            var createLobbyOptions = new CreateLobbyOptions();
+            createLobbyOptions.IsPrivate = false;
+            createLobbyOptions.Data = new Dictionary<string, DataObject>()
+            {
+                {
+                    "JoinCode", new DataObject(
+                        visibility: DataObject.VisibilityOptions.Member,
+                        value: hostCode
+                    )
+                }
+            };
+            Lobby lobby = await Lobbies.Instance.CreateLobbyAsync("New Lobby", 8, createLobbyOptions);
+            lobbyId= lobby.Id;
+            StartCoroutine(Heartbeat(15));
+
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        
+        NetworkManager.Singleton.StartHost();
+
+    }
+    
+    public IEnumerator Heartbeat(float waitTime)
+    {
+        var delay= new WaitForSeconds(waitTime);
+
+        while (true)
+        {
+            Lobbies.Instance.SendHeartbeatPingAsync(lobbyId);
+            yield return delay;
+        }
     }
     public async void StartClient()
     {

@@ -26,11 +26,14 @@ public class BulletController : NetworkBehaviour
     
     void Start()
     {
+
         Physics.IgnoreCollision(GameController.instance.sphereRadius.GetComponent<Collider>(), GetComponent<Collider>());
         collided = false;
         rb.isKinematic = true;
         mainCam = Camera.main;
+        
         StartCoroutine(DestroyBullet());
+
     }
 
     void Update()
@@ -45,8 +48,7 @@ public class BulletController : NetworkBehaviour
     IEnumerator DestroyBullet()
     {
         yield return new WaitForSeconds(2f);
-        if (IsOwner)
-        {
+
             if (IsServer)
             {
                 Destroy(gameObject);
@@ -55,7 +57,7 @@ public class BulletController : NetworkBehaviour
             {
                 DestroyServerRpc();
             }
-        }
+        
 
     }
     [ServerRpc]
@@ -65,14 +67,29 @@ public class BulletController : NetworkBehaviour
     }
     private void FixedUpdate() 
     {
-        if (!collided)
+        if (IsOwner)
         {
-            transform.position += -Direction * speed * Time.deltaTime;
+            if (!collided)
+            {
+                transform.position += -Direction * speed * Time.deltaTime;
+            }
+            else
+            {
+                rb.velocity = -Direction * speed;
+            }
         }
         else
         {
-            rb.velocity = -Direction * speed;
+            if (!collided)
+            {
+                transform.position += -Direction * speed * Time.deltaTime;
+            }
+            else
+            {
+                rb.velocity = -Direction * speed;
+            }
         }
+
     }
 
     private void OnTriggerEnter(Collider other)
@@ -85,7 +102,6 @@ public class BulletController : NetworkBehaviour
         transform.GetComponent<Collider>().isTrigger = false;
         rb.isKinematic = false;
         collided = true;
-        Debug.Log(other.transform.name);
     }
 
     private void OnCollisionEnter(Collision collision)
