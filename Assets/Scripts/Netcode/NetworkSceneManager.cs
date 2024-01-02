@@ -149,6 +149,10 @@ public class NetworkSceneManager : NetworkBehaviour
     {
         NetworkManager.Singleton.StartServer();
     }
-
+    
+    public UnityTransport GetTransport()
+    {
+        return _transport;
+    }
 
 }
