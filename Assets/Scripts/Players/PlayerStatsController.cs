@@ -93,10 +93,15 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
 
     private void Update()
     {
+        if (health.Value <= 0)
+        {
+            OnPlayerDead?.Invoke();
+        }
         if (IsOwner)
         {
             OutsideZoneDamage();
         }
+        
     }
     public override void OnNetworkDespawn()
     {
@@ -224,35 +229,31 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         {
             GameController.instance.OnPlayerDead((int)zoneAsigned.Value);
         }
+
         if (IsOwner)
         {
             if (stateMachineController.currentState.stateName == "Dead")
             {
                 return;
             }
-            if (health.Value <= 0)
+        }
+        
+        else
+        {
+            if (IsServer)
             {
-                OnPlayerDead?.Invoke();
-
+                //this is wrong stat holder is controlling the health
+                health.Value -= (damage);
+                StartCoroutine(playerComponentsHandler.ShakeCamera(0.3f, 5, 5));
             }
             else
             {
-                if (IsServer)
-                {
-                    //this is wrong stat holder is controlling the health
-                    health.Value -= (damage);
-                    StartCoroutine(playerComponentsHandler.ShakeCamera(0.3f, 5, 5));
-                }
-                else
-                {
-                    SetHealthServerRpc(health.Value - (damage));  
-                    StartCoroutine(playerComponentsHandler.ShakeCamera(0.3f, 5, 5));
+                SetHealthServerRpc(health.Value - (damage));  
+                StartCoroutine(playerComponentsHandler.ShakeCamera(0.3f, 5, 5));
 
-                }
-                OnStatsChanged?.Invoke();
             }
+            OnStatsChanged?.Invoke();
         }
-
 
     }
     

@@ -308,32 +308,38 @@ public class PlayerController : NetworkBehaviour
                 if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, 
                         distanceFactor))
                 {
+                    hit.collider.gameObject.TryGetComponent<PlayerStatsController>(out PlayerStatsController enemyRef);
+                    if (enemyRef)
+                    {
+                        enemyRef.TakeDamage(playerStats.GetDamageDone());
+                        Debug.Log(enemyRef.name);
+                    }
                     direction = spawnBulletPoint.position - hit.point;
                 }
                 else
                 {
                     direction = spawnBulletPoint.position - cameraRef.transform.forward * distanceFactor;
                 }
-                if (IsServer)
-                {
-                    BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position,
-                        cinemachineCameraTarget.rotation);
-                    Physics.IgnoreCollision(bullet.GetComponent<Collider>(),characterController.GetComponent<Collider>());
-                    Physics.IgnoreCollision(bullet.GetComponent<Collider>(),bullet.GetComponent<Collider>());
-
-                    bullet.Direction = direction.normalized + new Vector3(randomRefraction, randomRefraction, 0);
-                    bullet.damage.Value = playerStats.GetDamageDone();
-                    bullet.GetComponent<NetworkObject>().SpawnWithOwnership(NetworkManager.Singleton.LocalClientId, true);
-                }
-                else
-                {
-                    BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
-                    Physics.IgnoreCollision(bullet.GetComponent<Collider>(),characterController.GetComponent<Collider>());
-                    Physics.IgnoreCollision(bullet.GetComponent<Collider>(),bullet.GetComponent<Collider>());
-                    bullet.Direction = direction.normalized + new Vector3(randomRefraction, randomRefraction, 0);
-                    bullet.damage.Value = playerStats.GetDamageDone();
-                    // bullet.GetComponent<NetworkObject>().SpawnWithOwnership(NetworkManager.Singleton.LocalClientId, true);
-                }
+                // if (IsServer)
+                // {
+                //     BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position,
+                //         cinemachineCameraTarget.rotation);
+                //     Physics.IgnoreCollision(bullet.GetComponent<Collider>(),characterController.GetComponent<Collider>());
+                //     Physics.IgnoreCollision(bullet.GetComponent<Collider>(),bullet.GetComponent<Collider>());
+                //
+                //     bullet.Direction = direction.normalized + new Vector3(randomRefraction, randomRefraction, 0);
+                //     bullet.damage.Value = playerStats.GetDamageDone();
+                //     bullet.GetComponent<NetworkObject>().SpawnWithOwnership(NetworkManager.Singleton.LocalClientId, true);
+                // }
+                // else
+                // {
+                //     BulletController bullet = Instantiate(bulletPrefab, spawnBulletPoint.position, cinemachineCameraTarget.rotation);
+                //     Physics.IgnoreCollision(bullet.GetComponent<Collider>(),characterController.GetComponent<Collider>());
+                //     Physics.IgnoreCollision(bullet.GetComponent<Collider>(),bullet.GetComponent<Collider>());
+                //     bullet.Direction = direction.normalized + new Vector3(randomRefraction, randomRefraction, 0);
+                //     bullet.damage.Value = playerStats.GetDamageDone();
+                //     // bullet.GetComponent<NetworkObject>().SpawnWithOwnership(NetworkManager.Singleton.LocalClientId, true);
+                // }
                 // SpawnFakeBulletClientRpc(direction, playerStats.GetDamageDone(),randomRefraction);
             }
         }

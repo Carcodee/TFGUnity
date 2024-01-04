@@ -60,7 +60,7 @@ public class BulletController : NetworkBehaviour
         
 
     }
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     public void DestroyServerRpc()
     {
         NetworkManager.Destroy(gameObject);

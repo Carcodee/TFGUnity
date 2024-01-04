@@ -327,7 +327,7 @@ Material:
     - _EnableGeometricSpecularAA: 0
     - _EnergyConservingSpecularColor: 1
     - _FallOff: 8.19
-    - _Farthest_Distance: 100.08
+    - _Farthest_Distance: 538.11
     - _FirstShadeOverridden: 0
     - _FirstShadeVisible: 1
     - _GI_Intensity: 0
@@ -397,10 +397,10 @@ Material:
     - _OcclusionStrength: 1
     - _Offset_X_Axis_BLD: -0.05
     - _Offset_Y_Axis_BLD: 0.09
-    - _Offset_Z: -0.17
+    - _Offset_Z: 1.15
     - _OutlineOverridden: 0
     - _OutlineVisible: 1
-    - _Outline_Width: 13.8
+    - _Outline_Width: 9.86
     - _PPDLodThreshold: 5
     - _PPDMaxSamples: 15
     - _PPDMinSamples: 5

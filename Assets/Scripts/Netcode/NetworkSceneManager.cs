@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Michsky.UI.ModernUIPack;
 using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -22,13 +23,13 @@ public class NetworkSceneManager : NetworkBehaviour
     /// INFO: You can remove the #if UNITY_EDITOR code segment and make SceneName public,
     /// </summary>
 
-    public string hostCode;
-    public TMP_InputField joinCode;
-    private string joinText;
     private UnityTransport _transport;
     public GameObject menu;
     public GameObject canvas;
-    public string lobbyId;
+    
+    public CustomInputField lobbyName;
+    [SerializeField]
+    private string m_SceneName;
     
     private async void Awake()
     {
@@ -48,9 +49,10 @@ public class NetworkSceneManager : NetworkBehaviour
             m_SceneName = SceneAsset.name;
         }
     }
+
 #endif
-    [SerializeField]
-    private string m_SceneName;
+
+
 
     public override void OnNetworkSpawn()
     {
@@ -67,82 +69,37 @@ public class NetworkSceneManager : NetworkBehaviour
             }
         }
     }
-    public IEnumerator LoadAsynchronously(string sceneName){ // scene name is just the name of the current scene being loaded
-        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
-        operation.allowSceneActivation = true;
-        while (!operation.isDone){
-            if(operation.progress >= 0.9f){
-                // var status = NetworkManager.SceneManager.LoadScene(m_SceneName, LoadSceneMode.Additive);
-                // if (status != SceneEventProgressStatus.Started)
-                // {
-                //     Debug.LogWarning($"Failed to load {m_SceneName} " +
-                //                       $"with a {nameof(SceneEventProgressStatus)}: {status}");
-                // }
-                operation.allowSceneActivation = true;
-            }
-            yield return null;
-        }
-    }
 
     private static async Task Authenticate()
     {
         await UnityServices.InitializeAsync();
+        
+#if UNITY_EDITOR
+        if (ParrelSync.ClonesManager.IsClone())
+        {
+            // When using a ParrelSync clone, switch to a different authentication profile to force the clone
+            // to sign in as a different anonymous user account.
+            string customArgument = ParrelSync.ClonesManager.GetArgument();
+            AuthenticationService.Instance.SwitchProfile($"Clone_{customArgument}_Profile");
+        }
+#endif
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
     }
 
 
     public async void StartHost()
     {
-        Allocation a = await RelayService.Instance.CreateAllocationAsync(8,"europe-west2");
-        hostCode= await RelayService.Instance.GetJoinCodeAsync(a.AllocationId);
-        _transport.SetHostRelayData(a.RelayServer.IpV4,(ushort)a.RelayServer.Port,a.AllocationIdBytes, a.Key, a.ConnectionData);
-
-
-        try
+        if (lobbyName.inputText.text=="")
         {
-            var createLobbyOptions = new CreateLobbyOptions();
-            createLobbyOptions.IsPrivate = false;
-            createLobbyOptions.Data = new Dictionary<string, DataObject>()
-            {
-                {
-                    "JoinCode", new DataObject(
-                        visibility: DataObject.VisibilityOptions.Member,
-                        value: hostCode
-                    )
-                }
-            };
-            Lobby lobby = await Lobbies.Instance.CreateLobbyAsync("New Lobby", 8, createLobbyOptions);
-            lobbyId= lobby.Id;
-            StartCoroutine(Heartbeat(15));
-
-
+            lobbyName.inputText.text = "My Default lobby";
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-        
-        NetworkManager.Singleton.StartHost();
+        NetworkingHandling.HostManager.instance.lobbyName = lobbyName.inputText.text;
+        await NetworkingHandling.HostManager.instance.SetAllocation(_transport);
+        await NetworkingHandling.HostManager.instance.StartHost();
 
     }
     
-    public IEnumerator Heartbeat(float waitTime)
-    {
-        var delay= new WaitForSeconds(waitTime);
 
-        while (true)
-        {
-            Lobbies.Instance.SendHeartbeatPingAsync(lobbyId);
-            yield return delay;
-        }
-    }
-
-    public void StartServer()
-    {
-        NetworkManager.Singleton.StartServer();
-    }
-    
     public UnityTransport GetTransport()
     {
         return _transport;

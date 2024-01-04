@@ -52,18 +52,18 @@ using System.Collections.Generic;
 
 
                 
-                for (int i = 1; i < lobbyList.childCount; i++)
-                {
-                    
-                    // Destroy(lobbyList.GetChild(i).gameObject);
-                    
-                }
+                // for (int i = 1; i < lobbyList.childCount; i++)
+                // {
+                //     
+                //     Destroy(lobbyList.GetChild(i).gameObject);
+                //     
+                // }
                 
                 for (int i = 0; i < lobbies.Results.Count; i++)
                 {
                     var item = Instantiate(lobbyPrefab,lobbyList);
                     item.Initialise(this, lobbies.Results[i]);
-                    item.lobbyName.text = "New lobby";
+                    item.lobbyName.text = lobbies.Results[i].Name;
                     Debug.Log("Lobby: " + lobbies.Results[i].Name);
                 }
                 Debug.Log("Lobbies: " + lobbies.Results.Count);
@@ -87,7 +87,12 @@ using System.Collections.Generic;
             
             try
             {
-                await BeginConnection(lobby);
+                var joinLobby = await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id);
+                string joinCode = joinLobby.Data["JoinCode"].Value;
+                networkSceneManager.menu.SetActive(false);
+                networkSceneManager.canvas.SetActive(false);
+                await NetworkingHandling.ClientManager.instance.StartClient(joinCode,
+                    networkSceneManager.GetTransport());
 
             }
             catch(LobbyServiceException e)
@@ -101,13 +106,7 @@ using System.Collections.Generic;
         
         public async Task BeginConnection(Lobby lobby)
         { 
-            var joinLobby = await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id);
-            string joinCode = joinLobby.Data["JoinCode"].Value;
-            JoinAllocation a = await RelayService.Instance.JoinAllocationAsync(joinCode);
-            Debug.Log("Joining lobby: "+lobby.Id);
-            Debug.Log("Joining code: "+joinLobby.Data["JoinCode"].Value);
-            networkSceneManager.GetTransport().SetClientRelayData(a.RelayServer.IpV4, (ushort)a.RelayServer.Port,
-            a.AllocationIdBytes, a.Key, a.ConnectionData, a.HostConnectionData);
-            NetworkManager.Singleton.StartClient();
+
+           
         }
     }
