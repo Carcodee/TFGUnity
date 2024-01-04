@@ -32,11 +32,17 @@ public class PlayerVFXController : NetworkBehaviour
     
     [Header("Shoot")]
     public GameObject ShootEffectPrefab;
+    public GameObject hitEffectPrefab;
     public Transform ShootEffectPosition;
+    
+    public PlayerController playerController;
     
     void Start()
     {
-        GetComponent<PlayerController>().OnPlyerShoot += ShootEffect;
+        playerController = GetComponent<PlayerController>();
+        playerController.OnPlyerShoot += ShootEffect;
+        playerController.OnBulletHit += HitEffect;
+        
 
     }
     private void OnEnable()
@@ -87,6 +93,10 @@ public class PlayerVFXController : NetworkBehaviour
     {
         Instantiate(ShootEffectPrefab, ShootEffectPosition.position, Quaternion.identity);
     }   
+    public void HitEffect(Vector3 position)
+    {
+        Instantiate(hitEffectPrefab, position, Quaternion.identity);
+    }
     public void AnimateGlowMaterial()
     {
         levelUpMat.GetFloat("_FresnelIntensity");

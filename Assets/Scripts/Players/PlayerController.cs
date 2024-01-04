@@ -12,6 +12,7 @@ public class PlayerController : NetworkBehaviour
     public PlayerStatsController playerStats;
     
     public Action OnPlyerShoot;
+    public Action <Vector3> OnBulletHit;
     
     [Header("Player Components")]
     public GameObject cameraPrefab;
@@ -308,6 +309,7 @@ public class PlayerController : NetworkBehaviour
                 if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, 
                         distanceFactor))
                 {
+                    OnBulletHit?.Invoke(hit.point);
                     hit.collider.gameObject.TryGetComponent<PlayerStatsController>(out PlayerStatsController enemyRef);
                     if (enemyRef)
                     {
@@ -318,6 +320,8 @@ public class PlayerController : NetworkBehaviour
                 }
                 else
                 {
+                    OnBulletHit?.Invoke(hit.point);
+
                     direction = spawnBulletPoint.position - cameraRef.transform.forward * distanceFactor;
                 }
                 // if (IsServer)
@@ -466,11 +470,19 @@ public class AmmoBehaviour
     int totalAmmo;
     int currentBullets;
     int totalBullets;
-    public AmmoBehaviour(int totalAmmo, int currentBullets, int totalBullets)
+    bool isReloading;
+    float reloadTime;
+    float reloadCurrentTime;
+    public AmmoBehaviour(int totalAmmo, int currentBullets, int totalBullets, bool isReloading, float reloadTime, float reloadCurrentTime)
     {
         this.totalBullets = totalBullets;
         this.totalAmmo = totalAmmo;
         this.currentBullets = currentBullets;
+        this.isReloading = isReloading;
+        this.reloadTime = reloadTime;
+        this.reloadCurrentTime = reloadCurrentTime;
+        
+        
     }
     public void AddAmmo(int ammo)
     {
@@ -478,17 +490,43 @@ public class AmmoBehaviour
     }
     public void Reload()
     {
-        if (totalAmmo < totalBullets)
+        if (totalAmmo <= 0)
         {
-            currentBullets += totalAmmo;
-            currentBullets = Mathf.Clamp(currentBullets, 0, totalBullets);
+            totalAmmo = 0;
+            Debug.Log("Out of ammo find coins to fill your bullets");
+            return;
         }
-        else
+        if (isReloading && reloadCurrentTime < reloadTime)
         {
-            currentBullets += totalBullets - currentBullets;
+            reloadCurrentTime += Time.deltaTime;
+            if (reloadCurrentTime > reloadTime)
+            {
+                reloadCurrentTime = 0;
+                if (totalAmmo <= totalBullets)
+                {
+                    int tempBulletsToFill = totalBullets - currentBullets;
+                    currentBullets += totalAmmo;
+                    totalAmmo -= tempBulletsToFill;
+                    isReloading = false;
+                }
+                else
+                {
+                    totalAmmo -= totalBullets - currentBullets;
+                    currentBullets += totalBullets - currentBullets;
 
+                    isReloading = false;
+
+                }
+                currentBullets = Mathf.Clamp(currentBullets, 0,totalBullets);
+
+            }
+            return;
         }
-        totalAmmo = totalBullets - currentBullets;
+        if ((Input.GetKeyDown(KeyCode.R) || currentBullets <= 0) && (currentBullets !=totalBullets))
+        {
+            isReloading = true;
+            Debug.Log("Reloading");
+        }
 
     }
 }
