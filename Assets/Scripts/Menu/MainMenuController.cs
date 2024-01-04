@@ -19,64 +19,95 @@ using System.Collections.Generic;
         public NetworkSceneManager networkSceneManager;
         public Transform lobbyList;
         public LobbyItem lobbyPrefab;
-        
+        bool isRefreshing = false;
+        bool isJoining = false;
+
         public void OpenModalWindow()
         {
             modalWindowTabs.OpenWindow();
         }
         public async void LoadAllLobbies()
         {
+            if (isRefreshing)return;
+            isRefreshing = true;
 
-            var options = new QueryLobbiesOptions();
-            options.Count = 10;
-            options.Filters = new List<QueryFilter>()
+            try
             {
-                new QueryFilter(
-                    field: QueryFilter.FieldOptions.AvailableSlots,
-                    op: QueryFilter.OpOptions.GT,
-                    value: "0"
-                ),
-                new QueryFilter(
-                    field: QueryFilter.FieldOptions.IsLocked,
-                    op: QueryFilter.OpOptions.EQ,
-                    value: "0"
-                )
-            };
-            var lobbies = await Lobbies.Instance.QueryLobbiesAsync(options);
+                var options = new QueryLobbiesOptions();
+                options.Count = 10;
+                options.Filters = new List<QueryFilter>()
+                {
+                    new QueryFilter(
+                        field: QueryFilter.FieldOptions.AvailableSlots,
+                        op: QueryFilter.OpOptions.GT,
+                        value: "0"
+                    ),
+                    new QueryFilter(
+                        field: QueryFilter.FieldOptions.IsLocked,
+                        op: QueryFilter.OpOptions.EQ,
+                        value: "0"
+                    )
+                };
+                var lobbies = await Lobbies.Instance.QueryLobbiesAsync(options);
 
-            for (int i = 1; i < lobbyList.childCount; i++)
-            {
-                Destroy(lobbyList.GetChild(i).gameObject);
+
+                
+                for (int i = 1; i < lobbyList.childCount; i++)
+                {
+                    
+                    // Destroy(lobbyList.GetChild(i).gameObject);
+                    
+                }
+                
+                for (int i = 0; i < lobbies.Results.Count; i++)
+                {
+                    var item = Instantiate(lobbyPrefab,lobbyList);
+                    item.Initialise(this, lobbies.Results[i]);
+                    item.lobbyName.text = "New lobby";
+                    Debug.Log("Lobby: " + lobbies.Results[i].Name);
+                }
+                Debug.Log("Lobbies: " + lobbies.Results.Count);
             }
-
-            for (int i = 0; i < lobbies.Results.Count; i++)
+            catch (LobbyServiceException e)
             {
-                Transform item = Instantiate(lobbyPrefab.GetComponent<Transform>(), lobbyList);
-                item.GetComponent<LobbyItem>().Initialise(this, lobbies.Results[i]);
-                item.GetComponent<LobbyItem>().lobbyName.text = lobbies.Results[i].Data["LobbyName"].Value;
+                Debug.Log(e);
+                isRefreshing = false;
 
+                throw;
             }
+            isRefreshing = false;
 
-            Debug.Log("Lobbies: " + lobbies.Results.Count);
 
         }
 
         public async void JoinAsync(Lobby lobby)
         {
+            if (isJoining)return;
+            isJoining = true;
+            
             try
             {
-                var joinLobby = await Lobbies.Instance.JoinLobbyByCodeAsync(lobby.Id);
-                string joinCode = joinLobby.Data["JoinCode"].Value;
-                JoinAllocation a = await RelayService.Instance.JoinAllocationAsync(joinCode);
-
-                networkSceneManager.GetTransport().SetClientRelayData(a.RelayServer.IpV4, (ushort)a.RelayServer.Port,
-                    a.AllocationIdBytes, a.Key, a.ConnectionData, a.HostConnectionData);
-                NetworkManager.Singleton.StartClient();
+                await BeginConnection(lobby);
 
             }
-            catch
+            catch(LobbyServiceException e)
             {
-
+                Debug.Log(e);
+                isJoining = false;
+                throw;
             }
+            isJoining = false;
+        }
+        
+        public async Task BeginConnection(Lobby lobby)
+        { 
+            var joinLobby = await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id);
+            string joinCode = joinLobby.Data["JoinCode"].Value;
+            JoinAllocation a = await RelayService.Instance.JoinAllocationAsync(joinCode);
+            Debug.Log("Joining lobby: "+lobby.Id);
+            Debug.Log("Joining code: "+joinLobby.Data["JoinCode"].Value);
+            networkSceneManager.GetTransport().SetClientRelayData(a.RelayServer.IpV4, (ushort)a.RelayServer.Port,
+            a.AllocationIdBytes, a.Key, a.ConnectionData, a.HostConnectionData);
+            NetworkManager.Singleton.StartClient();
         }
     }

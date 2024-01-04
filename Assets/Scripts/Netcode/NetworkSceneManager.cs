@@ -93,7 +93,7 @@ public class NetworkSceneManager : NetworkBehaviour
 
     public async void StartHost()
     {
-        Allocation a = await RelayService.Instance.CreateAllocationAsync(2,"europe-west2");
+        Allocation a = await RelayService.Instance.CreateAllocationAsync(8,"europe-west2");
         hostCode= await RelayService.Instance.GetJoinCodeAsync(a.AllocationId);
         _transport.SetHostRelayData(a.RelayServer.IpV4,(ushort)a.RelayServer.Port,a.AllocationIdBytes, a.Key, a.ConnectionData);
 
@@ -137,14 +137,7 @@ public class NetworkSceneManager : NetworkBehaviour
             yield return delay;
         }
     }
-    public async void StartClient()
-    {
-        joinText = joinCode.text;
-        JoinAllocation a = await RelayService.Instance.JoinAllocationAsync(joinText);
 
-        _transport.SetClientRelayData(a.RelayServer.IpV4, (ushort)a.RelayServer.Port, a.AllocationIdBytes, a.Key, a.ConnectionData,a.HostConnectionData);
-        NetworkManager.Singleton.StartClient();
-    }
     public void StartServer()
     {
         NetworkManager.Singleton.StartServer();
