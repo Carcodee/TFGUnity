@@ -15,14 +15,11 @@ namespace Players.PlayerStates.States
         {
             base.StateEnter();
             playerRef.sprintFactor = 0.7f;
-            this.playerRef.shootRefraction=0.01f;
         }
 
         public override void StateExit()
         {
             networkAnimator.Animator.SetFloat("Aiming", 0);
-            this.playerRef.shootRefraction = 0.1f;
-
         }
 
         public override void StateInput()

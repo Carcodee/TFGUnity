@@ -222,7 +222,49 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         }
 
     }
+
     public void TakeDamage(int damage)
+    {
+        
+        if (health.Value <= 0 && IsServer)
+        {
+            GameController.instance.OnPlayerDead((int)zoneAsigned.Value);
+        }
+
+        if (IsOwner)
+        {
+            if (stateMachineController.currentState.stateName == "Dead")
+            {
+                return;
+            }
+            
+            else
+            {
+                if (IsServer)
+                {
+                    //this is wrong stat holder is controlling the health
+                    health.Value -= (damage);
+                    StartCoroutine(playerComponentsHandler.ShakeCamera(0.3f, 5, 5));
+                }
+                else
+                {
+                    SetHealthServerRpc(health.Value - (damage));  
+                    StartCoroutine(playerComponentsHandler.ShakeCamera(0.3f, 5, 5));
+
+                }
+                OnStatsChanged?.Invoke();
+            }
+        }
+    }
+
+    [ServerRpc]
+    public void TakeDamageServerRpc(int damage)
+    {
+        TakeDamageClientRpc(damage);
+    }
+    
+    [ClientRpc]
+    public void TakeDamageClientRpc(int damage)
     {
 
         if (health.Value <= 0 && IsServer)
@@ -236,26 +278,27 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
             {
                 return;
             }
-        }
-        
-        else
-        {
-            if (IsServer)
-            {
-                //this is wrong stat holder is controlling the health
-                health.Value -= (damage);
-                StartCoroutine(playerComponentsHandler.ShakeCamera(0.3f, 5, 5));
-            }
+            
             else
             {
-                SetHealthServerRpc(health.Value - (damage));  
-                StartCoroutine(playerComponentsHandler.ShakeCamera(0.3f, 5, 5));
+                if (IsServer)
+                {
+                    //this is wrong stat holder is controlling the health
+                    health.Value -= (damage);
+                    StartCoroutine(playerComponentsHandler.ShakeCamera(0.3f, 5, 5));
+                }
+                else
+                {
+                    SetHealthServerRpc(health.Value - (damage));  
+                    StartCoroutine(playerComponentsHandler.ShakeCamera(0.3f, 5, 5));
 
+                }
+                OnStatsChanged?.Invoke();
             }
-            OnStatsChanged?.Invoke();
         }
 
     }
+    
     
 
     public void AddValueFromButton(int index)

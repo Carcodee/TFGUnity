@@ -101,6 +101,8 @@ public class PlayerController : NetworkBehaviour
             playerStats = GetComponent<PlayerStatsController>();
             playerStats.OnPlayerDead += PlayerDeadCallback;
             DoRagdoll(false);
+            shootRefraction = 0.1f;
+
         }
 
     }
@@ -116,6 +118,15 @@ public class PlayerController : NetworkBehaviour
             Reloading();
             CreateAimTargetPos();
             stateMachineController.StateUpdate();
+            if (Input.GetKeyDown(KeyCode.Mouse1))
+            {
+                shootRefraction = 0.01f;
+            }
+
+            if (Input.GetKeyUp(KeyCode.Mouse1))
+            {
+                shootRefraction = 0.1f;
+            }
         }
 }
     private void FixedUpdate()
@@ -295,10 +306,11 @@ public class PlayerController : NetworkBehaviour
     public void Shoot()
     {                
         Vector3 direction = Vector3.zero;
-        float randomRefraction =Random.Range(0, shootRefraction);
 
         if (IsOwner)
         {
+            float randomRefraction =Random.Range(-shootRefraction , shootRefraction);
+
             shootTimer += Time.deltaTime;
             if (Input.GetKey(KeyCode.Mouse0) && shootTimer > shootRate && playerStats.currentBullets > 0 && !isReloading)
             {
@@ -306,23 +318,23 @@ public class PlayerController : NetworkBehaviour
                 playerStats.currentBullets--;
                 OnPlyerShoot?.Invoke();
                 shootTimer = 0;
-                if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, 
+                Vector3 shotDirection = new Vector3(cameraRef.transform.forward.x + randomRefraction, cameraRef.transform.forward.y + randomRefraction, cameraRef.transform.forward.z);
+                
+                if (Physics.Raycast(cameraRef.transform.position, shotDirection, out RaycastHit hit, 
                         distanceFactor))
                 {
                     OnBulletHit?.Invoke(hit.point);
                     hit.collider.gameObject.TryGetComponent<PlayerStatsController>(out PlayerStatsController enemyRef);
                     if (enemyRef)
                     {
-                        enemyRef.TakeDamage(playerStats.GetDamageDone());
+                        enemyRef.TakeDamageServerRpc(playerStats.GetDamageDone());
                         Debug.Log(enemyRef.name);
                     }
-                    direction = spawnBulletPoint.position - hit.point;
                 }
                 else
                 {
                     OnBulletHit?.Invoke(hit.point);
 
-                    direction = spawnBulletPoint.position - cameraRef.transform.forward * distanceFactor;
                 }
                 // if (IsServer)
                 // {

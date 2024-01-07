@@ -523,7 +523,7 @@ MonoBehaviour:
   spawnBulletPoint: {fileID: 2633052898966850613}
   shootRate: 0.1
   shootTimer: 0
-  shootRefraction: 0.2
+  shootRefraction: 0.1
   move: {x: 0, y: 0, z: 0}
   rotationFactor: 25
   rotationSmoothTime: 0.1
