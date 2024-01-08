@@ -35,18 +35,20 @@ public class PlayerVFXController : NetworkBehaviour
     public GameObject hitEffectPrefab;
     public Transform ShootEffectPosition;
     
+    [Header("Cartoon")]
+    public Material cartoonMat;
+    public Color enemyOutlineColor;
+    
     public PlayerController playerController;
     
+    public SkinnedMeshRenderer skinnedMeshRenderer; 
+    protected MaterialPropertyBlock mPB;
     void Start()
     {
         playerController = GetComponent<PlayerController>();
         playerController.OnPlyerShoot += ShootEffect;
         playerController.OnBulletHit += HitEffect;
         
-
-    }
-    private void OnEnable()
-    {
         if (IsOwner)
         {
             stateMachineController = GetComponent<StateMachineController>();
@@ -56,13 +58,37 @@ public class PlayerVFXController : NetworkBehaviour
 
 
     }
+
+    public override void OnNetworkSpawn()
+    {
+        if (IsOwner)
+        {
+            stateMachineController = GetComponent<StateMachineController>();
+            playerStatsController = GetComponent<PlayerStatsController>();
+            playerStatsController.OnLevelUp += AnimateGlowMaterial;
+        }
+        else
+        {
+            mPB = new MaterialPropertyBlock();
+            skinnedMeshRenderer.GetPropertyBlock(mPB);
+
+            mPB.SetColor("_Outline_Color", enemyOutlineColor);
+            skinnedMeshRenderer.SetPropertyBlock(mPB);
+
+        }
+    }
+
     private void OnDisable()
     {
         if (IsOwner)
         {
             playerStatsController.OnLevelUp -= AnimateGlowMaterial;
             playerStatsController.GetComponent<PlayerController>().OnPlyerShoot -= ShootEffect;
+            
 
+        }else
+        {
+            
         }
     }
     void Update()
@@ -75,6 +101,7 @@ public class PlayerVFXController : NetworkBehaviour
             }
 
         }
+       
    
     }
     private void FixedUpdate()

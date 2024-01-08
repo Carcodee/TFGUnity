@@ -327,7 +327,14 @@ public class PlayerController : NetworkBehaviour
                     hit.collider.gameObject.TryGetComponent<PlayerStatsController>(out PlayerStatsController enemyRef);
                     if (enemyRef)
                     {
-                        enemyRef.TakeDamageServerRpc(playerStats.GetDamageDone());
+                        if (IsServer)
+                        {
+                            enemyRef.TakeDamageClientRpc(playerStats.GetDamageDone());
+                        }
+                        if (IsClient)
+                        {
+                            enemyRef.TakeDamageServerRpc(playerStats.GetDamageDone());
+                        }
                         Debug.Log(enemyRef.name);
                     }
                 }

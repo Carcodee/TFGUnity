@@ -59,12 +59,6 @@ public class GameController : NetworkBehaviour
         CoinBehaivor.OnCoinCollected -= MoveCoin;
 
     }
-    public override void OnNetworkSpawn()
-    {
-
-
-
-    }
 
     void Start()
     {
@@ -79,7 +73,7 @@ public class GameController : NetworkBehaviour
             if (IsClient && IsOwner)
             {
                 OnPlayerEnterServerRpc();
-                SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 4f, 10, 3, 5);
+                SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 4f, 25, 3, 5);
                 SetNumberOfPlayerListServerRpc(clientId);
             }
 
@@ -97,7 +91,7 @@ public class GameController : NetworkBehaviour
             {
 
                 OnPlayerOutServerRpc();
-                SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 5.0f, 10, 3, 5);
+                SetMapLogicClientServerRpc(numberOfPlayers.Value, numberOfPlayersAlive.Value, 5.0f, 25, 3, 5);
                 SetNumberOfPlayerListServerRpc(clientId);
 
             }

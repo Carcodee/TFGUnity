@@ -257,14 +257,14 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         }
     }
 
-    [ServerRpc]
-    public void TakeDamageServerRpc(int damage)
+    [ServerRpc(RequireOwnership = false)]
+    public void TakeDamageServerRpc(int myDamage)
     {
-        TakeDamageClientRpc(damage);
+        TakeDamageClientRpc(myDamage);
     }
     
     [ClientRpc]
-    public void TakeDamageClientRpc(int damage)
+    public void TakeDamageClientRpc(int myDamage)
     {
 
         if (health.Value <= 0 && IsServer)
@@ -284,12 +284,12 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
                 if (IsServer)
                 {
                     //this is wrong stat holder is controlling the health
-                    health.Value -= (damage);
+                    health.Value -= (myDamage);
                     StartCoroutine(playerComponentsHandler.ShakeCamera(0.3f, 5, 5));
                 }
                 else
                 {
-                    SetHealthServerRpc(health.Value - (damage));  
+                    SetHealthServerRpc(health.Value - (myDamage));  
                     StartCoroutine(playerComponentsHandler.ShakeCamera(0.3f, 5, 5));
 
                 }

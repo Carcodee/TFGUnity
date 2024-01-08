@@ -685,7 +685,10 @@ MonoBehaviour:
   hitEffectPrefab: {fileID: 4419547557001927551, guid: ea79ef2c2d88e954ca41d4f3f7ba27c7,
     type: 3}
   ShootEffectPosition: {fileID: 2633052898966850613}
+  cartoonMat: {fileID: 2100000, guid: 0edefca9ace53b04793357c844bfe1d4, type: 2}
+  enemyOutlineColor: {r: 1, g: 0, b: 0, a: 1}
   playerController: {fileID: 0}
+  skinnedMeshRenderer: {fileID: 2456250149504106635}
 --- !u!143 &-7918970974976374508
 CharacterController:
   m_ObjectHideFlags: 0
