@@ -74,15 +74,19 @@ public class NetworkSceneManager : NetworkBehaviour
     {
         await UnityServices.InitializeAsync();
         
-#if UNITY_EDITOR
-        if (ParrelSync.ClonesManager.IsClone())
-        {
-            // When using a ParrelSync clone, switch to a different authentication profile to force the clone
-            // to sign in as a different anonymous user account.
-            string customArgument = ParrelSync.ClonesManager.GetArgument();
-            AuthenticationService.Instance.SwitchProfile($"Clone_{customArgument}_Profile");
-        }
-#endif
+// #if UNITY_EDITOR
+//         if (ParrelSync.ClonesManager.IsClone())
+//         {
+//             // When using a ParrelSync clone, switch to a different authentication profile to force the clone
+//             // to sign in as a different anonymous user account.
+//             string customArgument = ParrelSync.ClonesManager.GetArgument();
+//             AuthenticationService.Instance.SwitchProfile($"Clone_{customArgument}_Profile");
+//         }
+// #endif
+//         var options = new InitializationOptions();
+//         options.SetProfile("DefaultProfile");
+        AuthenticationService.Instance.SwitchProfile(UnityEngine.Random.Range(0, 1000000).ToString());
+
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
     }
 
