@@ -66,6 +66,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
             OnSpawnPlayer += InitializateStats;
             // OnStatsChanged += UpdateStats;
             OnLevelUp += LevelUp;
+            OnLevelUp+=RefillAmmo;
             iDamageable = GetComponent<IDamageable>();
             isPlayerInsideTheZone = true;
             OnSpawnPlayer?.Invoke();
@@ -83,6 +84,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
         {
             OnSpawnPlayer += InitializateStats;
             // OnStatsChanged += UpdateStats;
+            OnLevelUp += RefillAmmo;
             OnLevelUp += LevelUp;
             iDamageable = GetComponent<IDamageable>();
             isPlayerInsideTheZone = true;

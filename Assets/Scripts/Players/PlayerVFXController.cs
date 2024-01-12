@@ -26,6 +26,8 @@ public class PlayerVFXController : NetworkBehaviour
     public float glowGoalValue= -7.0f;
     public string shaderVariableNameGlow;
 
+    public GameObject levelUpEffectPrefabVFX;
+
     [Header("Jump")]
     public GameObject jumpEffectPrefab;
     public Transform jumpEffectPosition;
@@ -43,17 +45,21 @@ public class PlayerVFXController : NetworkBehaviour
     
     public SkinnedMeshRenderer skinnedMeshRenderer; 
     protected MaterialPropertyBlock mPB;
+
+
     void Start()
     {
         playerController = GetComponent<PlayerController>();
         playerController.OnPlyerShoot += ShootEffect;
         playerController.OnBulletHit += HitEffect;
-        
+        playerStatsController.OnLevelUp += LevelUpEffect;
+
         if (IsOwner)
         {
+
             stateMachineController = GetComponent<StateMachineController>();
             playerStatsController = GetComponent<PlayerStatsController>();
-            playerStatsController.OnLevelUp += AnimateGlowMaterial;
+
         }
 
 
@@ -65,7 +71,7 @@ public class PlayerVFXController : NetworkBehaviour
         {
             stateMachineController = GetComponent<StateMachineController>();
             playerStatsController = GetComponent<PlayerStatsController>();
-            playerStatsController.OnLevelUp += AnimateGlowMaterial;
+            playerStatsController.OnLevelUp += LevelUpEffect;
         }
         else
         {
@@ -82,11 +88,11 @@ public class PlayerVFXController : NetworkBehaviour
     {
         if (IsOwner)
         {
-            playerStatsController.OnLevelUp -= AnimateGlowMaterial;
             playerStatsController.GetComponent<PlayerController>().OnPlyerShoot -= ShootEffect;
-            
+            playerStatsController.OnLevelUp -= LevelUpEffect;
 
-        }else
+
+        } else
         {
             
         }
@@ -114,6 +120,11 @@ public class PlayerVFXController : NetworkBehaviour
             }
         }
         
+    }
+
+    public void LevelUpEffect() {
+
+        Instantiate(levelUpEffectPrefabVFX, transform.position, Quaternion.identity, transform);
     }
 
     public void ShootEffect()

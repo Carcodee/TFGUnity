@@ -417,6 +417,7 @@ Transform:
   - {fileID: 6373146417380487653}
   - {fileID: 2341437576093580743}
   - {fileID: 2578975527992398695}
+  - {fileID: 8263002986189430417}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &645085415590272702
@@ -678,6 +679,8 @@ MonoBehaviour:
   shaderVariableGlowRate: 0.1
   glowGoalValue: -7
   shaderVariableNameGlow: 
+  levelUpEffectPrefabVFX: {fileID: 1366119824670227294, guid: 3c23754c8653f6a43b28a6fb5a622ad4,
+    type: 3}
   jumpEffectPrefab: {fileID: 100000, guid: 83cd9cc9f9c88824ba18dc59b05ae328, type: 3}
   jumpEffectPosition: {fileID: 8245483971111335528}
   ShootEffectPrefab: {fileID: 2783980465707459881, guid: 887df253dec7cc847ae8fb1b6f06946e,
@@ -938,6 +941,80 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3061926372126453057}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &6942716441901032908
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 372611058870039632}
+    m_Modifications:
+    - target: {fileID: 1366119824670227293, guid: 3c23754c8653f6a43b28a6fb5a622ad4,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.20691323
+      objectReference: {fileID: 0}
+    - target: {fileID: 1366119824670227293, guid: 3c23754c8653f6a43b28a6fb5a622ad4,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.70654774
+      objectReference: {fileID: 0}
+    - target: {fileID: 1366119824670227293, guid: 3c23754c8653f6a43b28a6fb5a622ad4,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.28476
+      objectReference: {fileID: 0}
+    - target: {fileID: 1366119824670227293, guid: 3c23754c8653f6a43b28a6fb5a622ad4,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1366119824670227293, guid: 3c23754c8653f6a43b28a6fb5a622ad4,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1366119824670227293, guid: 3c23754c8653f6a43b28a6fb5a622ad4,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1366119824670227293, guid: 3c23754c8653f6a43b28a6fb5a622ad4,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1366119824670227293, guid: 3c23754c8653f6a43b28a6fb5a622ad4,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1366119824670227293, guid: 3c23754c8653f6a43b28a6fb5a622ad4,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1366119824670227293, guid: 3c23754c8653f6a43b28a6fb5a622ad4,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1366119824670227294, guid: 3c23754c8653f6a43b28a6fb5a622ad4,
+        type: 3}
+      propertyPath: m_Name
+      value: LevelUp
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3c23754c8653f6a43b28a6fb5a622ad4, type: 3}
+--- !u!4 &8263002986189430417 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1366119824670227293, guid: 3c23754c8653f6a43b28a6fb5a622ad4,
+    type: 3}
+  m_PrefabInstance: {fileID: 6942716441901032908}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7104497592241187237
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -12,16 +12,20 @@ public class CoinBehaivor : NetworkBehaviour
 
     public static Action<CoinBehaivor> OnCoinCollected;
     public GameObject coinEffectPrefab;
+    public PlayerStatsController playerStatsController;
 
     void Start()
     {
+        //playerStatsController= NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkPlayerID.Value].GetComponent<PlayerStatsController>();
 
     }
+
 
     void Update()
     {
 
     }
+    
 
     private void OnTriggerEnter(Collider other)
     {
@@ -34,20 +38,31 @@ public class CoinBehaivor : NetworkBehaviour
                     //something happens
                     playerRef.OnLevelUp?.Invoke();
                     playerRef.RefillAmmo();
-                    CoinCollectedClientRpc();
+                    Instantiate(coinEffectPrefab, transform.position, Quaternion.identity);
+                    Debug.Log("Coin Collected" + "Player Level: " + playerRef.GetLevel());
+
+
                 }
             }
         }
         else
         {
-
+            if (other.TryGetComponent(out PlayerStatsController playerRef)) {
+                if (playerRef.OwnerClientId == networkPlayerID.Value) {
+                    //something happens
+                    Instantiate(coinEffectPrefab, transform.position, Quaternion.identity);
+                    Debug.Log("Coin Collected"+ "Player Level: "+ playerRef.GetLevel());
+                }
+            }
         }
+
+
+
     }
 
     [ClientRpc]
     public void CoinCollectedClientRpc()
     {
-        //Instantiate(coinEffectPrefab, transform.position, Quaternion.identity);
         OnCoinCollected?.Invoke(gameObject.GetComponent<CoinBehaivor>());
     }
 }
