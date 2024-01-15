@@ -320,6 +320,7 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     {
         return damage.Value;
     }
+    
     public int GetLevel()
     {
         return playerLevel.Value;
@@ -374,40 +375,40 @@ public class PlayerStatsController : NetworkBehaviour, IDamageable
     }
     //Stats
     [ServerRpc]
-    private void SetHealthServerRpc(int healthPoint)
+    public void SetHealthServerRpc(int healthPoint)
     {
         
          health.Value = healthPoint;
 
     }
     [ServerRpc]
-    private void SetHasteServerRpc(int hastePoint)
+    public void SetHasteServerRpc(int hastePoint)
     {
         haste.Value = hastePoint;
     }
     [ServerRpc]
-    private void SetMaxHealthServerRpc(int maxHealth)
+    public void SetMaxHealthServerRpc(int maxHealth)
     {
         this.maxHealth.Value = maxHealth;
 
     }
     [ServerRpc]
-    private void SetArmorServerRpc(int armorPoint)
+    public void SetArmorServerRpc(int armorPoint)
     {
         armor.Value = armorPoint;
     }
     [ServerRpc]
-    private void SetDamageServerRpc(int damagePoint)
+    public void SetDamageServerRpc(int damagePoint)
     {
         damage.Value = damagePoint;
     }
     [ServerRpc]
-    private void SetStaminaServerRpc(int staminaPoint)
+    public void SetStaminaServerRpc(int staminaPoint)
     {
         stamina.Value = staminaPoint;
     }
     [ServerRpc]
-    private void SetSpeedServerRpc(int speedPoint)
+    public void SetSpeedServerRpc(int speedPoint)
     {
         speed.Value = speedPoint;
 

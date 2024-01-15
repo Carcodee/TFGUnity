@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Michsky.UI.ModernUIPack;
 using TMPro;
 using Unity.Netcode;
 using Unity.VisualScripting;
@@ -16,18 +17,20 @@ public class StatsPanelController : MonoBehaviour
     [Header("References")]
     [SerializeField] private PlayerStatsController playerStatsController;
     public GameObject [] statsObjects;
-
+    public WindowManager windowManager;
+    public Animator panelAnimator;
     [Header("Stats")]
     public TextMeshProUGUI[] statValues;
-
+    private bool isRefreshedStats = false;
+    private bool isPanelRefreshed = false;
 
     [Header("HeadStats")]
     public TextMeshProUGUI level;
     public TextMeshProUGUI avaliblePointsText;
 
     [Header("Buttons")]
-    public Button[] addButtons;
-    public Button[] removeButtons;
+    public ButtonManagerIcon[] addButtons;
+    public ButtonManagerIcon[] removeButtons;
     public Button openPannel;
 
     [Header("Sesion Variables")]
@@ -68,9 +71,8 @@ public class StatsPanelController : MonoBehaviour
         buttonSelectorIndex = 1;
         isPanelOpen =false;
         playerStatsController = GetComponentInParent<PlayerStatsController>();
-        // StartCoroutine("AddListenersToButtons", 0.5f);
-        endPos= targetPos.localPosition;
-        startPos= transform.localPosition;
+        endPos= targetPos.position;
+        startPos= transform.position;
     }
 
     void Update()
@@ -78,60 +80,29 @@ public class StatsPanelController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.B))
         {
             isPanelOpen = !isPanelOpen;
-            HandlePanel();
+
+            if (isPanelOpen)
+            {
+                isPanelRefreshed = false;
+            }
+            else
+            {
+                isPanelRefreshed = true;
+            }
+            // HandlePanel();
         }
-        AnimatePanel();
-        HandleSelector();
-    }
-    public void HandlePanel()
-    {
+
         if (isPanelOpen)
         {
-            OnPannelOpen?.Invoke();
+            OpenPanel();
         }
         else
         {
-            OnPannelClosed?.Invoke();
-        }
-    }
-    public void HandleSelector()
-    {
-        if (isPanelOpen)
-        {
-            if (Input.GetKeyDown(KeyCode.LeftArrow))
-            {
-                buttonSelector.transform.position = removeButtons[selectorIndex].transform.position;
-                buttonSelectorIndex = 0;
-            }
-            if (Input.GetKeyDown(KeyCode.RightArrow))
-            {
-                buttonSelector.transform.position = addButtons[selectorIndex].transform.position;
-                buttonSelectorIndex = 1;
-
-            }
-
-            if (Input.GetKeyDown(KeyCode.DownArrow) && selectorIndex < statsObjects.Length - 1)
-            {
-                selectorIndex++;
-            }
-            if (Input.GetKeyDown(KeyCode.UpArrow) && selectorIndex > 0)
-            {
-                selectorIndex--;
-            }
-
-            selector.transform.position = statsObjects[selectorIndex].transform.position;
-
-            if (Input.GetKeyDown(KeyCode.Return) && buttonSelectorIndex == 0)
-            {
-                removeButtons[selectorIndex].onClick.Invoke();
-            }
-            if (Input.GetKeyDown(KeyCode.Return) && buttonSelectorIndex == 1)
-            {
-                addButtons[selectorIndex].onClick.Invoke();
-            }
-
+            isRefreshedStats = false;
         }
 
+        AnimatePanel();
+        // HandleSelector();
     }
 
     public void AnimatePanel()
@@ -147,87 +118,32 @@ public class StatsPanelController : MonoBehaviour
             Mathf.Clamp(animationTime, 0, 1);
         }
 
-        transform.localPosition=Vector3.Lerp(startPos, new Vector3(-endPos.x, transform.localPosition.y, 0), animationFunction);
+        float xPos=Mathf.Lerp(startPos.x, endPos.y, animationFunction);
+        transform.position = new Vector3(xPos, transform.position.y, 0);
     }
-    IEnumerator AddListenersToButtons()
+
+    void AddListenersToButtons()
     {
-        yield return new WaitForSecondsRealtime(0.5f);
         for (int i = 0; i < addButtons.Length; i++)
         {
-            PointButtonFunction(addButtons[i], "+", playerStatsController.statHolderNames[i]);
-            PointButtonFunction(removeButtons[i], "-", playerStatsController.statHolderNames[i]);
-        }
-        openPannel.onClick.RemoveAllListeners();
-        openPannel.onClick.AddListener(OnPannelOpen);
-    }
-
-    public void PointButtonFunction(Button button, string operation, string stat)
-    {
-        if (button == null) return;
-        button.onClick.RemoveAllListeners();
-        if (operation == "+")
-        {
-            button.onClick.AddListener(() => AddPoint(stat));
-        }
-        else if (operation == "-")
-        {
-            button.onClick.AddListener(() => RemovePoint(stat));
+            addButtons[i].clickEvent.AddListener(() => AddStat(i));
+            removeButtons[i].clickEvent.AddListener(() => RemoveStat(i));
         }
     }
 
-    public void AddPoint(string statName)
-    {
-
-        if (avaliblePoints <= 0)
-        {
-            Debug.Log("Not points");
-            return;
-        }
-        for (int i = 0; i < playerStatsController.statHolderNames.Length; i++)
-        {
-            if (playerStatsController.statHolderNames[i] == statName)
-            {
-                playerStatsController.AddValueFromButton(i);
-                avaliblePoints--;
-                playerStatsController.OnStatsChanged?.Invoke();
-                Debug.Log("Add Value From Button");
-                return;
-                //add add stat
-            }
-        }
-        Debug.Log("Not finded");
-
-    }
-    public void RemovePoint(string statName)
-    {
-
-        if (avaliblePoints >= sesionPoints) return;
-        for (int i = 0; i < playerStatsController.statHolderNames.Length; i++)
-        {
-            if (playerStatsController.statHolderNames[i] == statName)
-            {
-                playerStatsController.SustractValueFromButton(i);
-                avaliblePoints++;
-                playerStatsController.OnStatsChanged?.Invoke();
-                Debug.Log("Add Value From Button");
-                return;
-                //sustract stat
-            }
-        }
-
-    }
+    
 
     public void OpenPanel()
     {
-
+        if (isPanelRefreshed)
+        {
+            return;
+        }
         avaliblePoints = playerStatsController.GetAvaliblePoints();
         avaliblePointsText.text = "Avalible Points: " + avaliblePoints.ToString();
         level.text = "Level: " + playerStatsController.GetLevel().ToString();
         sesionPoints = playerStatsController.GetAvaliblePoints();
-        for (int i = 0; i < statValues.Length; i++)
-        {
-            statValues[i].text = playerStatsController.statHolder[i].ToString();
-        }
+        isPanelRefreshed = true;
 
     }
     public void ClosePanel()
@@ -237,12 +153,163 @@ public class StatsPanelController : MonoBehaviour
     }
     public void UpdateStats()
     {
+        LoadAllStats();
         avaliblePointsText.text = "Avalible Points: " + avaliblePoints.ToString();
         level.text = "Level: " + playerStatsController.GetLevel().ToString();
+    }
+
+
+    public void LoadAllStats()
+    {
+        if (isRefreshedStats)
+        {
+            return;
+        }
         for (int i = 0; i < statValues.Length; i++)
         {
-            statValues[i].text = playerStatsController.statHolder[i].ToString();
+            LoadStat(i);
         }
+        isRefreshedStats = true;
+        
     }
+    public void LoadStat(int statType)
+    {
+        if (statType> statValues.Length)
+        {
+            Debug.Log(statType+ "index Stat not found");
+            return;            
+        }
+        
+        switch (statType)
+        {
+            case (int)StatType.reloadTime:
+                statValues[statType].text = playerStatsController.GetHaste().ToString();
+                break;
+            case (int)StatType.health:
+                statValues[statType].text = playerStatsController.GetHealth().ToString();
+                break;
+            case (int)StatType.armor:
+                statValues[statType].text = playerStatsController.GetArmor().ToString();
+                break;
+            case (int)StatType.damage:
+                statValues[statType].text = playerStatsController.GetDamageDone().ToString();
+                break;
+            case (int)StatType.stamina:
+                statValues[statType].text = playerStatsController.GetStamina().ToString();
+                break;
+        }
+        
+    }
+    public void AddStat(int buttonType)
+    {
+
+        if (avaliblePoints <= 0)
+        {
+            Debug.Log("No points");
+            return;
+        }
+        
+        switch (buttonType)
+        {
+            case (int)StatType.reloadTime:
+                playerStatsController.SetHasteServerRpc(playerStatsController.GetHaste() + 1);
+                Debug.Log("AddStat");
+                avaliblePoints--;
+                break;
+            case (int)StatType.health:
+                playerStatsController.SetHealthServerRpc(playerStatsController.GetHealth() + 1);
+                avaliblePoints--;
+                break;
+            case (int)StatType.armor:
+                playerStatsController.SetArmorServerRpc(playerStatsController.GetArmor() + 1);
+                avaliblePoints--;
+                break;
+            case (int)StatType.damage:
+                playerStatsController.SetDamageServerRpc(playerStatsController.GetDamageDone() + 1);
+                avaliblePoints--;
+                break;
+            case (int)StatType.stamina:
+                playerStatsController.SetStaminaServerRpc(playerStatsController.GetStamina() + 1);
+                avaliblePoints--;
+                break;
+        }
+        Debug.Log("Reloaded");
+        UpdateStats();
+        
+    }
+
+    public void RemoveStat(int buttonType)
+    {
+        switch (buttonType)
+        {
+            case (int)StatType.reloadTime:
+                if (playerStatsController.GetHaste() <= 1)
+                {
+                    Debug.Log("Cant remove");
+                    return;
+                }
+                playerStatsController.SetHasteServerRpc(playerStatsController.GetHaste() - 1);
+                Debug.Log("removed");
+                avaliblePoints++;
+                break;
+            
+            case (int)StatType.health:
+                if (playerStatsController.GetHealth() <= 1)
+                {
+                    Debug.Log("Cant remove");
+                    return;
+                }
+                playerStatsController.SetHealthServerRpc(playerStatsController.GetHealth() - 1);
+                Debug.Log("removed");
+                avaliblePoints++;
+                break;
+            
+            case (int)StatType.armor:
+                if (playerStatsController.GetArmor() <= 1)
+                {
+                    Debug.Log("Cant remove");
+                    return;
+                }
+                playerStatsController.SetArmorServerRpc(playerStatsController.GetArmor() - 1);
+                avaliblePoints++;
+                break;
+            
+            case (int)StatType.damage:
+                if (playerStatsController.GetDamageDone() <= 1)
+                {
+                    Debug.Log("Cant remove");
+                    return;
+                }
+                playerStatsController.SetDamageServerRpc(playerStatsController.GetDamageDone() - 1);
+                avaliblePoints++;
+                break;
+            
+            case (int)StatType.stamina:
+                if (playerStatsController.GetStamina() <= 1)
+                {
+                    Debug.Log("Cant remove");
+                    return;
+                }
+
+                playerStatsController.SetStaminaServerRpc(playerStatsController.GetStamina() - 1);
+                avaliblePoints++;
+                break;
+        }
+        Debug.Log("Reloaded");
+        UpdateStats();
+        
+    }
+    
+
 }
 
+[Serializable]
+public enum StatType
+{
+    reloadTime=0,
+    health=1,
+    armor=2,
+    damage=3,
+    stamina=4
+        
+}
