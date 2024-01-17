@@ -679,6 +679,8 @@ MonoBehaviour:
   shaderVariableGlowRate: 0.1
   glowGoalValue: -7
   shaderVariableNameGlow: 
+  applyPointsEffectPrefabVFX: {fileID: 4279623955448859043, guid: 2a8d0987891747e4dad0acfb2c766b84,
+    type: 3}
   levelUpEffectPrefabVFX: {fileID: 1366119824670227294, guid: 3c23754c8653f6a43b28a6fb5a622ad4,
     type: 3}
   jumpEffectPrefab: {fileID: 100000, guid: 83cd9cc9f9c88824ba18dc59b05ae328, type: 3}

@@ -16,6 +16,7 @@ public class StatsPanelController : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private PlayerStatsController playerStatsController;
+    [SerializeField]private PlayerVFXController playerVFXController;
     public GameObject [] statsObjects;
     public WindowManager windowManager;
     public Animator panelAnimator;
@@ -71,6 +72,7 @@ public class StatsPanelController : MonoBehaviour
         buttonSelectorIndex = 1;
         isPanelOpen =false;
         playerStatsController = GetComponentInParent<PlayerStatsController>();
+        playerVFXController = playerStatsController.GetComponent<PlayerVFXController>();
         endPos= targetPos.position;
         startPos= transform.position;
     }
@@ -80,6 +82,7 @@ public class StatsPanelController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.B))
         {
             isPanelOpen = !isPanelOpen;
+            UpdateStats();
 
             if (isPanelOpen)
             {
@@ -161,10 +164,6 @@ public class StatsPanelController : MonoBehaviour
 
     public void LoadAllStats()
     {
-        if (isRefreshedStats)
-        {
-            return;
-        }
         for (int i = 0; i < statValues.Length; i++)
         {
             LoadStat(i);
@@ -186,7 +185,7 @@ public class StatsPanelController : MonoBehaviour
                 statValues[statType].text = playerStatsController.GetHaste().ToString();
                 break;
             case (int)StatType.health:
-                statValues[statType].text = playerStatsController.GetHealth().ToString();
+                statValues[statType].text = playerStatsController.GetMaxHealth().ToString();
                 break;
             case (int)StatType.armor:
                 statValues[statType].text = playerStatsController.GetArmor().ToString();
@@ -213,23 +212,28 @@ public class StatsPanelController : MonoBehaviour
         {
             case (int)StatType.reloadTime:
                 playerStatsController.SetHasteServerRpc(playerStatsController.GetHaste() + 1);
+                playerVFXController.ApplyPointsEffect();
                 Debug.Log("AddStat");
                 avaliblePoints--;
                 break;
             case (int)StatType.health:
-                playerStatsController.SetHealthServerRpc(playerStatsController.GetHealth() + 1);
+                playerStatsController.SetMaxHealthServerRpc(playerStatsController.GetMaxHealth() + 1);
+                playerVFXController.ApplyPointsEffect();
                 avaliblePoints--;
                 break;
             case (int)StatType.armor:
                 playerStatsController.SetArmorServerRpc(playerStatsController.GetArmor() + 1);
+                playerVFXController.ApplyPointsEffect();
                 avaliblePoints--;
                 break;
             case (int)StatType.damage:
                 playerStatsController.SetDamageServerRpc(playerStatsController.GetDamageDone() + 1);
+                playerVFXController.ApplyPointsEffect();
                 avaliblePoints--;
                 break;
             case (int)StatType.stamina:
                 playerStatsController.SetStaminaServerRpc(playerStatsController.GetStamina() + 1);
+                playerVFXController.ApplyPointsEffect();
                 avaliblePoints--;
                 break;
         }
@@ -259,7 +263,8 @@ public class StatsPanelController : MonoBehaviour
                     Debug.Log("Cant remove");
                     return;
                 }
-                playerStatsController.SetHealthServerRpc(playerStatsController.GetHealth() - 1);
+                playerStatsController.SetMaxHealthServerRpc(playerStatsController.GetMaxHealth() -1 );
+
                 Debug.Log("removed");
                 avaliblePoints++;
                 break;

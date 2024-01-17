@@ -25,7 +25,8 @@ public class PlayerVFXController : NetworkBehaviour
     public float shaderVariableGlowRate = 0.1f;
     public float glowGoalValue= -7.0f;
     public string shaderVariableNameGlow;
-
+    
+    public GameObject applyPointsEffectPrefabVFX;
     public GameObject levelUpEffectPrefabVFX;
 
     [Header("Jump")]
@@ -45,6 +46,8 @@ public class PlayerVFXController : NetworkBehaviour
     
     public SkinnedMeshRenderer skinnedMeshRenderer; 
     protected MaterialPropertyBlock mPB;
+    
+    
 
 
     void Start()
@@ -53,6 +56,7 @@ public class PlayerVFXController : NetworkBehaviour
         playerController.OnPlyerShoot += ShootEffect;
         playerController.OnBulletHit += HitEffect;
         playerStatsController.OnLevelUp += LevelUpEffect;
+        
 
         if (IsOwner)
         {
@@ -72,6 +76,7 @@ public class PlayerVFXController : NetworkBehaviour
             stateMachineController = GetComponent<StateMachineController>();
             playerStatsController = GetComponent<PlayerStatsController>();
             playerStatsController.OnLevelUp += LevelUpEffect;
+            
         }
         else
         {
@@ -122,6 +127,10 @@ public class PlayerVFXController : NetworkBehaviour
         
     }
 
+    public void ApplyPointsEffect()
+    {
+        Instantiate(applyPointsEffectPrefabVFX, transform.position, Quaternion.identity, transform);
+    }
     public void LevelUpEffect() {
 
         Instantiate(levelUpEffectPrefabVFX, transform.position, Quaternion.identity, transform);

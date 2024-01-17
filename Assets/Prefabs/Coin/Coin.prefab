@@ -73,8 +73,9 @@ MonoBehaviour:
     m_InternalValue: 0
   zoneAssigned:
     m_InternalValue: 0
-  coinEffectPrefab: {fileID: 2500822206854964589, guid: 76891f9a50164424b86f9a697927a91e,
+  coinEffectPrefab: {fileID: 8092080803987448229, guid: 18cd3941c1b9ba042bad61ebc8eec214,
     type: 3}
+  playerStatsController: {fileID: 0}
 --- !u!114 &-3728427638229382649
 MonoBehaviour:
   m_ObjectHideFlags: 0
